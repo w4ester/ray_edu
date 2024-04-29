@@ -111,6 +111,6 @@ def _get_or_import_key_pair(config):
             public_key_file = config["auth"]["ssh_private_key"] + ".pub"
             # create new keypair, from local file
             with open(public_key_file) as f:
-                public_key = f.readline().strip("\n")
+                public_key = f.readline(5_000_000).strip("\n")
                 cli.import_key_pair(key_pair_name=key_name, public_key_body=public_key)
                 return

@@ -96,7 +96,7 @@ def file_tail_iterator(path: str) -> Iterator[Optional[List[str]]]:
                 chunk_char_count = 0
 
             # Read next line
-            curr_line = f.readline()
+            curr_line = f.readline(5_000_000)
 
             # `readline` will return
             #   - '' for EOF

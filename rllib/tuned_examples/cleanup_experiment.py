@@ -87,7 +87,7 @@ def process_single_run(in_dir, out_dir):
             col_idx_to_filter = []
             with open(absfile) as fp:
                 # Get column names.
-                col_names_orig = fp.readline().strip().split(",")
+                col_names_orig = fp.readline(5_000_000).strip().split(",")
                 # Split by comma (abiding to quotes), filter out
                 # unwanted columns, then write to disk.
                 cols_to_filter = args.results_filter.split(",")
@@ -101,7 +101,7 @@ def process_single_run(in_dir, out_dir):
                 with open(absfile_out, "w") as out_fp:
                     print(",".join(col_names), file=out_fp)
                     while True:
-                        line = fp.readline().strip()
+                        line = fp.readline(5_000_000).strip()
                         if not line:
                             break
                         line = re.sub(
