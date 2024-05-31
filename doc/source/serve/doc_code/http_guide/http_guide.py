@@ -13,7 +13,7 @@ class Counter:
 
 
 serve.run(Counter.bind())
-resp = requests.get("http://localhost:8000?a=b&c=d")
+resp = requests.get("http://localhost:8000?a=b&c=d", timeout=60)
 assert resp.json() == {"a": "b", "c": "d"}
 # __end_starlette__
 
@@ -35,7 +35,7 @@ class MyFastAPIDeployment:
 
 
 serve.run(MyFastAPIDeployment.bind(), route_prefix="/hello")
-resp = requests.get("http://localhost:8000/hello")
+resp = requests.get("http://localhost:8000/hello", timeout=60)
 assert resp.json() == "Hello, world!"
 # __end_fastapi__
 
@@ -62,7 +62,7 @@ class MyFastAPIDeployment:
 
 
 serve.run(MyFastAPIDeployment.bind(), route_prefix="/hello")
-resp = requests.post("http://localhost:8000/hello/Serve")
+resp = requests.post("http://localhost:8000/hello/Serve", timeout=60)
 assert resp.json() == "Hello from Serve!"
 # __end_fastapi_multi_routes__
 
@@ -87,6 +87,6 @@ class FastAPIWrapper:
 
 
 serve.run(FastAPIWrapper.bind(), route_prefix="/")
-resp = requests.get("http://localhost:8000/")
+resp = requests.get("http://localhost:8000/", timeout=60)
 assert resp.json() == "Hello from the root!"
 # __end_byo_fastapi__

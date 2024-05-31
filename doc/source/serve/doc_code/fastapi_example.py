@@ -19,5 +19,5 @@ class FastAPIDeployment:
 serve.run(FastAPIDeployment.bind(), route_prefix="/")
 
 # 3: Query the deployment and print the result.
-print(requests.get("http://localhost:8000/hello", params={"name": "Theodore"}).json())
+print(requests.get("http://localhost:8000/hello", params={"name": "Theodore"}, timeout=60).json())
 # "Hello Theodore!"

@@ -22,14 +22,14 @@ def gha_get_self_url():
     sha = os.environ["GITHUB_SHA"]
     repo = os.environ["GITHUB_REPOSITORY"]
     resp = requests.get(
-        "https://api.github.com/repos/{}/commits/{}/check-suites".format(repo, sha)
-    )
+        "https://api.github.com/repos/{}/commits/{}/check-suites".format(repo, sha), 
+    timeout=60)
     data = resp.json()
     for check in data["check_suites"]:
         slug = check["app"]["slug"]
         if slug == "github-actions":
             run_url = check["check_runs_url"]
-            html_url = requests.get(run_url).json()["check_runs"][0]["html_url"]
+            html_url = requests.get(run_url, timeout=60).json()["check_runs"][0]["html_url"]
             return html_url
 
     # Return a fallback url
@@ -72,7 +72,7 @@ def get_build_config():
 
     url = "https://api.travis-ci.com/job/{job_id}?include=job.config"
     url = url.format(job_id=os.environ["TRAVIS_JOB_ID"])
-    resp = requests.get(url, headers={"Travis-API-Version": "3"})
+    resp = requests.get(url, headers={"Travis-API-Version": "3"}, timeout=60)
     return resp.json()
 
 

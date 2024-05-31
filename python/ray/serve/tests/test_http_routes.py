@@ -40,7 +40,7 @@ def test_path_validation(serve_instance):
 
 
 def test_routes_healthz(serve_instance):
-    resp = requests.get("http://localhost:8000/-/healthz")
+    resp = requests.get("http://localhost:8000/-/healthz", timeout=60)
     assert resp.status_code == 200
     assert resp.content == b"success"
 
@@ -59,16 +59,16 @@ def test_routes_endpoint(serve_instance):
     serve.run(D1.bind(), name="app1", route_prefix="/D1")
     serve.run(D2.bind(), name="app2", route_prefix="/hello/world")
 
-    routes = requests.get("http://localhost:8000/-/routes").json()
+    routes = requests.get("http://localhost:8000/-/routes", timeout=60).json()
 
     assert len(routes) == 2, routes
 
-    assert requests.get("http://localhost:8000/D1").text == "D1"
-    assert requests.get("http://localhost:8000/D1").status_code == 200
-    assert requests.get("http://localhost:8000/hello/world").text == "D2"
-    assert requests.get("http://localhost:8000/hello/world").status_code == 200
-    assert requests.get("http://localhost:8000/not_exist").status_code == 404
-    assert requests.get("http://localhost:8000/").status_code == 404
+    assert requests.get("http://localhost:8000/D1", timeout=60).text == "D1"
+    assert requests.get("http://localhost:8000/D1", timeout=60).status_code == 200
+    assert requests.get("http://localhost:8000/hello/world", timeout=60).text == "D2"
+    assert requests.get("http://localhost:8000/hello/world", timeout=60).status_code == 200
+    assert requests.get("http://localhost:8000/not_exist", timeout=60).status_code == 404
+    assert requests.get("http://localhost:8000/", timeout=60).status_code == 404
 
 
 def test_deployment_without_route(serve_instance):
@@ -78,11 +78,11 @@ def test_deployment_without_route(serve_instance):
             return "1"
 
     serve.run(D.bind(), route_prefix=None)
-    routes = requests.get("http://localhost:8000/-/routes").json()
+    routes = requests.get("http://localhost:8000/-/routes", timeout=60).json()
     assert len(routes) == 0
 
     # make sure the deployment is not exposed under the default route
-    r = requests.get("http://localhost:8000/")
+    r = requests.get("http://localhost:8000/", timeout=60)
     assert r.status_code == 404
 
 
@@ -93,7 +93,7 @@ def test_deployment_options_default_route(serve_instance):
 
     serve.run(D1.bind())
 
-    routes = requests.get("http://localhost:8000/-/routes").json()
+    routes = requests.get("http://localhost:8000/-/routes", timeout=60).json()
     assert len(routes) == 1
     assert "/" in routes, routes
     assert routes["/"] == SERVE_DEFAULT_APP_NAME
@@ -101,7 +101,7 @@ def test_deployment_options_default_route(serve_instance):
 
 def test_path_prefixing_1(serve_instance):
     def check_req(subpath, text=None, status=None):
-        r = requests.get(f"http://localhost:8000{subpath}")
+        r = requests.get(f"http://localhost:8000{subpath}", timeout=60)
         if text is not None:
             assert r.text == text, f"{r.text} != {text}"
         if status is not None:
@@ -194,12 +194,12 @@ def test_redirect(serve_instance, base_path):
     if route_prefix != "/":
         route_prefix += "/"
 
-    r = requests.get(f"http://localhost:8000{route_prefix}redirect")
+    r = requests.get(f"http://localhost:8000{route_prefix}redirect", timeout=60)
     assert r.status_code == 200
     assert len(r.history) == 1
     assert r.json() == "hello from /"
 
-    r = requests.get(f"http://localhost:8000{route_prefix}redirect2")
+    r = requests.get(f"http://localhost:8000{route_prefix}redirect2", timeout=60)
     assert r.status_code == 200
     assert len(r.history) == 2
     assert r.json() == "hello from /"
@@ -211,7 +211,7 @@ def test_default_error_handling(serve_instance):
         1 / 0
 
     serve.run(f.bind())
-    r = requests.get("http://localhost:8000/f")
+    r = requests.get("http://localhost:8000/f", timeout=60)
     assert r.status_code == 500
     assert "ZeroDivisionError" in r.text, r.text
 
@@ -225,7 +225,7 @@ def test_default_error_handling(serve_instance):
         time.sleep(100)  # Don't return here to leave time for actor exit.
 
     serve.run(h.bind())
-    r = requests.get("http://localhost:8000/h")
+    r = requests.get("http://localhost:8000/h", timeout=60)
     assert r.status_code == 500
 
 

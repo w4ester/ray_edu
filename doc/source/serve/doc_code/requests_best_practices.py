@@ -15,7 +15,7 @@ serve.run(f.bind())
 # __prototype_code_start__
 import requests
 
-response = requests.get("http://localhost:8000/")
+response = requests.get("http://localhost:8000/", timeout=60)
 result = response.text
 # __prototype_code_end__
 

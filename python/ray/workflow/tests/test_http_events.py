@@ -32,7 +32,7 @@ def test_receive_event_by_http(workflow_start_regular_shared_serve):
             "http://127.0.0.1:8000/event/send_event/"
             + "workflow_test_receive_event_by_http",
             json={"event_key": "event_key", "event_payload": "event_message"},
-        )
+        timeout=60)
         return resp
 
     event_promise = workflow.wait_for_event(HTTPListener, event_key="event_key")
@@ -81,7 +81,7 @@ def test_dynamic_event_by_http(workflow_start_regular_shared_serve):
             "http://127.0.0.1:8000/event/send_event/"
             + "workflow_test_dynamic_event_by_http",
             json={"event_key": "event_key", "event_payload": "event_message_dynamic"},
-        )
+        timeout=60)
         return resp
 
     @ray.remote

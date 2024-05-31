@@ -95,7 +95,7 @@ def test_long_poll_timeout_with_max_ongoing_requests(ray_instance):
 
     @ray.remote
     def do_req():
-        return requests.get("http://localhost:8000").text
+        return requests.get("http://localhost:8000", timeout=60).text
 
     # The request should be hanging waiting on the `SignalActor`.
     first_ref = do_req.remote()
@@ -140,7 +140,7 @@ def test_replica_health_metric(ray_instance):
     serve.run(f.bind())
 
     def count_live_replica_metrics():
-        resp = requests.get("http://127.0.0.1:9999").text
+        resp = requests.get("http://127.0.0.1:9999", timeout=60).text
         resp = resp.split("\n")
         count = 0
         for metrics in resp:
@@ -209,10 +209,10 @@ def test_shutdown_remote(start_and_shutdown_ray_cli_function):
         # Ensure Serve can be restarted and shutdown with for loop
         for _ in range(2):
             subprocess.check_output(["python", deploy_file.name])
-            assert requests.get("http://localhost:8000/f").text == "got f"
+            assert requests.get("http://localhost:8000/f", timeout=60).text == "got f"
             subprocess.check_output(["python", shutdown_file.name])
             with pytest.raises(requests.exceptions.ConnectionError):
-                requests.get("http://localhost:8000/f")
+                requests.get("http://localhost:8000/f", timeout=60)
     finally:
         os.unlink(deploy_file.name)
         os.unlink(shutdown_file.name)
@@ -468,7 +468,7 @@ def test_healthz_and_routes_on_head_and_worker_nodes(
     # Ensure `/-/healthz` and `/-/routes` return 200 and expected responses
     # on both nodes.
     def check_request(url: str, expected_code: int, expected_text: str):
-        req = requests.get(url)
+        req = requests.get(url, timeout=60)
         return req.status_code == expected_code and req.text == expected_text
 
     wait_for_condition(
@@ -477,16 +477,16 @@ def test_healthz_and_routes_on_head_and_worker_nodes(
         expected_code=200,
         expected_text="success",
     )
-    assert requests.get("http://127.0.0.1:8000/-/routes").status_code == 200
-    assert requests.get("http://127.0.0.1:8000/-/routes").text == '{"/":"default"}'
+    assert requests.get("http://127.0.0.1:8000/-/routes", timeout=60).status_code == 200
+    assert requests.get("http://127.0.0.1:8000/-/routes", timeout=60).text == '{"/":"default"}'
     wait_for_condition(
         condition_predictor=check_request,
         url="http://127.0.0.1:8001/-/healthz",
         expected_code=200,
         expected_text="success",
     )
-    assert requests.get("http://127.0.0.1:8001/-/routes").status_code == 200
-    assert requests.get("http://127.0.0.1:8001/-/routes").text == '{"/":"default"}'
+    assert requests.get("http://127.0.0.1:8001/-/routes", timeout=60).status_code == 200
+    assert requests.get("http://127.0.0.1:8001/-/routes", timeout=60).text == '{"/":"default"}'
 
     # Delete the deployment should bring the active actors down to 3 and drop
     # replicas on all nodes.
@@ -517,17 +517,17 @@ def test_healthz_and_routes_on_head_and_worker_nodes(
         expected_code=200,
         expected_text="success",
     )
-    assert requests.get("http://127.0.0.1:8000/-/routes").status_code == 200
-    assert requests.get("http://127.0.0.1:8000/-/routes").text == "{}"
+    assert requests.get("http://127.0.0.1:8000/-/routes", timeout=60).status_code == 200
+    assert requests.get("http://127.0.0.1:8000/-/routes", timeout=60).text == "{}"
     wait_for_condition(
         condition_predictor=check_request,
         url="http://127.0.0.1:8001/-/healthz",
         expected_code=503,
         expected_text="This node is being drained.",
     )
-    assert requests.get("http://127.0.0.1:8001/-/routes").status_code == 503
+    assert requests.get("http://127.0.0.1:8001/-/routes", timeout=60).status_code == 503
     assert (
-        requests.get("http://127.0.0.1:8001/-/routes").text
+        requests.get("http://127.0.0.1:8001/-/routes", timeout=60).text
         == "This node is being drained."
     )
 

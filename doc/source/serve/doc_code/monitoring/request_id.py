@@ -10,6 +10,6 @@ class Model:
 
 
 serve.run(Model.bind())
-resp = requests.get("http://localhost:8000", headers={"X-Request-ID": "123-234"})
+resp = requests.get("http://localhost:8000", headers={"X-Request-ID": "123-234"}, timeout=60)
 
 print(resp.headers["X-Request-ID"])

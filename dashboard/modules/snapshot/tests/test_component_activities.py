@@ -60,7 +60,7 @@ def test_component_activities_hook(set_ray_cluster_activity_hook, call_ray_start
     """
     external_hook = set_ray_cluster_activity_hook
 
-    response = requests.get("http://127.0.0.1:8265/api/component_activities")
+    response = requests.get("http://127.0.0.1:8265/api/component_activities", timeout=60)
     response.raise_for_status()
 
     # Validate schema of response
@@ -102,7 +102,7 @@ def test_component_activities_hook(set_ray_cluster_activity_hook, call_ray_start
         assert external_activity_response.reason == "Counter: 1"
 
         # Call endpoint again to validate different response
-        response = requests.get("http://127.0.0.1:8265/api/component_activities")
+        response = requests.get("http://127.0.0.1:8265/api/component_activities", timeout=60)
         response.raise_for_status()
         data = response.json()
         jsonschema.validate(instance=data, schema=json.load(open(schema_path)))
@@ -143,7 +143,7 @@ time.sleep({sleep_time_s})
 
     def verify_driver_response():
         # Verify drivers are considered active after running script
-        response = requests.get(f"{webui_url}/api/component_activities")
+        response = requests.get(f"{webui_url}/api/component_activities", timeout=60)
         response.raise_for_status()
 
         # Validate schema of response

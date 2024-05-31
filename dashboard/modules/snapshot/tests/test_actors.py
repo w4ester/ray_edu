@@ -42,7 +42,7 @@ def _kill_actor_using_dashboard_gcs(webui_url: str, actor_id: str, force_kill=Fa
             "actor_id": actor_id,
             "force_kill": force_kill,
         },
-    )
+    timeout=60)
     resp.raise_for_status()
     resp_json = resp.json()
     assert resp_json["result"] is True, "msg" in resp_json

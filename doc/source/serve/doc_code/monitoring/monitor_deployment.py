@@ -28,6 +28,6 @@ serve.run(monitoring_app, name="monitor")
 
 import requests
 
-resp = requests.get("http://localhost:8000/")
+resp = requests.get("http://localhost:8000/", timeout=60)
 
-assert requests.get("http://localhost:8000/").json() == ["monitor"]
+assert requests.get("http://localhost:8000/", timeout=60).json() == ["monitor"]

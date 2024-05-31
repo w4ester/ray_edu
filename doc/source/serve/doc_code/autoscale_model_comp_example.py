@@ -44,5 +44,5 @@ app = Driver.bind(HeavyLoad.bind(), LightLoad.bind())
 import requests  # noqa
 
 serve.run(app)
-resp = requests.post("http://localhost:8000")
+resp = requests.post("http://localhost:8000", timeout=60)
 assert resp.json() == ["heavy", "light"]

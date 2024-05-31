@@ -88,7 +88,7 @@ def _download_example_file(
             ), f"`example_url` ({example_url}) must be a python or yaml file!"
             temp_file = tempfile.NamedTemporaryFile(suffix=".py")
 
-        r = requests.get(example_url)
+        r = requests.get(example_url, timeout=60)
         with open(temp_file.name, "wb") as f:
             print(r.content)
             f.write(r.content)

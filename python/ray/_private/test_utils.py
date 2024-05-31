@@ -1099,7 +1099,7 @@ def fetch_raw_prometheus(prom_addresses):
 
     for address in prom_addresses:
         try:
-            response = requests.get(f"http://{address}/metrics")
+            response = requests.get(f"http://{address}/metrics", timeout=60)
             yield address, response.text
         except requests.exceptions.ConnectionError:
             continue
@@ -1898,7 +1898,7 @@ def get_resource_usage(gcs_address, timeout=10):
 # Gets the load metrics report assuming gcs is local.
 def get_load_metrics_report(webui_url):
     webui_url = format_web_url(webui_url)
-    response = requests.get(f"{webui_url}/api/cluster_status")
+    response = requests.get(f"{webui_url}/api/cluster_status", timeout=60)
     response.raise_for_status()
     return response.json()["data"]["clusterStatus"]["loadMetricsReport"]
 

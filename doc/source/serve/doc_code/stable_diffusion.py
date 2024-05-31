@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     prompt = "a cute cat is dancing on the grass."
     prompt_query = "%20".join(prompt.split(" "))
-    resp = requests.get(f"http://127.0.0.1:8000/imagine?prompt={prompt_query}")
+    resp = requests.get(f"http://127.0.0.1:8000/imagine?prompt={prompt_query}", timeout=60)
 
     with open("output.png", "wb") as f:
         f.write(resp.content)

@@ -122,9 +122,9 @@ def test_unary_streaming_websocket_same_deployment(serve_instance):
 
     serve.run(RenaissanceMan.bind())
 
-    assert requests.get("http://localhost:8000/").json() == "hi"
+    assert requests.get("http://localhost:8000/", timeout=60).json() == "hi"
 
-    r = requests.get("http://localhost:8000/stream", stream=True)
+    r = requests.get("http://localhost:8000/stream", stream=True, timeout=60)
     r.raise_for_status()
     for chunk in r.iter_content(chunk_size=None, decode_unicode=True):
         assert chunk == "hi"

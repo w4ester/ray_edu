@@ -91,7 +91,7 @@ def fetch_nightly(test_name: str, output_path: Optional[str]):
         ),
         headers=auth_header,
         params={"branch": "master"},
-    ).json()
+    timeout=60).json()
     build_number = None
     job_id = None
     for build in builds:
@@ -125,11 +125,11 @@ def fetch_nightly(test_name: str, output_path: Optional[str]):
             f"builds/{build_number}/jobs/{job_id}/artifacts"
         ),
         headers=auth_header,
-    ).json()
+    timeout=60).json()
     results = None
     for artifact in artifacts:
         if artifact.get("filename") == "result.json":
-            results = requests.get(artifact["download_url"], headers=auth_header).json()
+            results = requests.get(artifact["download_url"], headers=auth_header, timeout=60).json()
             results = results["results"]
 
     if results is None:

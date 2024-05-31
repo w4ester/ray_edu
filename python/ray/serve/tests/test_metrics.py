@@ -101,7 +101,7 @@ def get_metric_float(
     Returns -1 if the metric isn't available.
     """
 
-    metrics = requests.get("http://127.0.0.1:9999").text
+    metrics = requests.get("http://127.0.0.1:9999", timeout=60).text
     metric_value = -1
     for line in metrics.split("\n"):
         if metric in line and contains_tags(line, expected_tags):
@@ -171,12 +171,12 @@ def get_metric_dictionaries(name: str, timeout: float = 20) -> List[Dict]:
     """
 
     def metric_available() -> bool:
-        metrics = requests.get("http://127.0.0.1:9999").text
+        metrics = requests.get("http://127.0.0.1:9999", timeout=60).text
         return name in metrics
 
     wait_for_condition(metric_available, retry_interval_ms=1000, timeout=timeout)
 
-    metrics = requests.get("http://127.0.0.1:9999").text
+    metrics = requests.get("http://127.0.0.1:9999", timeout=60).text
     print("metrics", metrics)
 
     metric_dicts = []
@@ -211,7 +211,7 @@ def test_serve_metrics_for_successful_connection(serve_start_shutdown):
 
     def verify_metrics(do_assert=False):
         try:
-            resp = requests.get("http://127.0.0.1:9999").text
+            resp = requests.get("http://127.0.0.1:9999", timeout=60).text
         # Requests will fail if we are crashing the controller
         except requests.ConnectionError:
             return False
@@ -276,7 +276,7 @@ def test_http_replica_gauge_metrics(serve_start_shutdown):
     print("serve_replica_processing_queries exists.")
 
     def ensure_request_processing():
-        resp = requests.get("http://127.0.0.1:9999").text
+        resp = requests.get("http://127.0.0.1:9999", timeout=60).text
         resp = resp.split("\n")
         for metrics in resp:
             if "# HELP" in metrics or "# TYPE" in metrics:
@@ -305,7 +305,7 @@ def test_proxy_metrics_not_found(serve_start_shutdown):
 
     def verify_metrics(_expected_metrics, do_assert=False):
         try:
-            resp = requests.get("http://127.0.0.1:9999").text
+            resp = requests.get("http://127.0.0.1:9999", timeout=60).text
         # Requests will fail if we are crashing the controller
         except requests.ConnectionError:
             return False
@@ -317,8 +317,8 @@ def test_proxy_metrics_not_found(serve_start_shutdown):
         return True
 
     # Trigger HTTP 404 error
-    requests.get("http://127.0.0.1:8000/B/")
-    requests.get("http://127.0.0.1:8000/B/")
+    requests.get("http://127.0.0.1:8000/B/", timeout=60)
+    requests.get("http://127.0.0.1:8000/B/", timeout=60)
 
     # Ping gPRC proxy
     channel = grpc.insecure_channel("localhost:9000")
@@ -337,7 +337,7 @@ def test_proxy_metrics_not_found(serve_start_shutdown):
         verify_metrics(expected_metrics, True)
 
     def verify_error_count(do_assert=False):
-        resp = requests.get("http://127.0.0.1:9999").text
+        resp = requests.get("http://127.0.0.1:9999", timeout=60).text
         resp = resp.split("\n")
         for metrics in resp:
             if "# HELP" in metrics or "# TYPE" in metrics:
@@ -398,7 +398,7 @@ def test_proxy_metrics_internal_error(serve_start_shutdown):
 
     def verify_metrics(_expected_metrics, do_assert=False):
         try:
-            resp = requests.get("http://127.0.0.1:9999").text
+            resp = requests.get("http://127.0.0.1:9999", timeout=60).text
         # Requests will fail if we are crashing the controller
         except requests.ConnectionError:
             return False
@@ -420,8 +420,8 @@ def test_proxy_metrics_internal_error(serve_start_shutdown):
 
     app_name = "app"
     serve.run(A.bind(), name=app_name)
-    requests.get("http://127.0.0.1:8000/A/")
-    requests.get("http://127.0.0.1:8000/A/")
+    requests.get("http://127.0.0.1:8000/A/", timeout=60)
+    requests.get("http://127.0.0.1:8000/A/", timeout=60)
     channel = grpc.insecure_channel("localhost:9000")
     with pytest.raises(grpc.RpcError):
         ping_grpc_call_method(channel=channel, app_name=app_name)
@@ -438,7 +438,7 @@ def test_proxy_metrics_internal_error(serve_start_shutdown):
         verify_metrics(expected_metrics, True)
 
     def verify_error_count(do_assert=False):
-        resp = requests.get("http://127.0.0.1:9999").text
+        resp = requests.get("http://127.0.0.1:9999", timeout=60).text
         resp = resp.split("\n")
         for metrics in resp:
             if "# HELP" in metrics or "# TYPE" in metrics:
@@ -481,7 +481,7 @@ def test_proxy_metrics_fields_not_found(serve_start_shutdown):
 
     # Should generate 404 responses
     broken_url = "http://127.0.0.1:8000/fake_route"
-    requests.get(broken_url).text
+    requests.get(broken_url, timeout=60).text
     print("Sent requests to broken URL.")
 
     # Ping gRPC proxy for not existing application.
@@ -534,7 +534,7 @@ def test_proxy_metrics_fields_internal_error(serve_start_shutdown):
 
     # Deployment should generate divide-by-zero errors
     correct_url = "http://127.0.0.1:8000/real_route"
-    requests.get(correct_url).text
+    requests.get(correct_url, timeout=60).text
     print("Sent requests to correct URL.")
 
     # Ping gPRC proxy for broken app
@@ -597,8 +597,8 @@ def test_replica_metrics_fields(serve_start_shutdown):
     url_f = "http://127.0.0.1:8000/f"
     url_g = "http://127.0.0.1:8000/g"
 
-    assert "hello" == requests.get(url_f).text
-    assert "world" == requests.get(url_g).text
+    assert "hello" == requests.get(url_f, timeout=60).text
+    assert "world" == requests.get(url_g, timeout=60).text
 
     def verify_metrics(metric, expected_output):
         for key in expected_output:
@@ -655,7 +655,7 @@ def test_replica_metrics_fields(serve_start_shutdown):
         return 1 / 0
 
     serve.run(h.bind(), name="app3", route_prefix="/h")
-    assert 500 == requests.get("http://127.0.0.1:8000/h").status_code
+    assert 500 == requests.get("http://127.0.0.1:8000/h", timeout=60).status_code
     wait_for_condition(
         lambda: len(get_metric_dictionaries("serve_deployment_error_counter")) == 1,
         timeout=40,
@@ -722,13 +722,13 @@ class TestRequestContextMetrics:
         serve.run(g.bind(), name="app2", route_prefix="/app2")
         serve.run(h.bind(), name="app3", route_prefix="/app3")
 
-        resp = requests.get("http://127.0.0.1:8000/app1")
+        resp = requests.get("http://127.0.0.1:8000/app1", timeout=60)
         assert resp.status_code == 200
         assert resp.text == "hello"
-        resp = requests.get("http://127.0.0.1:8000/app2")
+        resp = requests.get("http://127.0.0.1:8000/app2", timeout=60)
         assert resp.status_code == 200
         assert resp.text == "world"
-        resp = requests.get("http://127.0.0.1:8000/app3")
+        resp = requests.get("http://127.0.0.1:8000/app3", timeout=60)
         assert resp.status_code == 500
 
         wait_for_condition(
@@ -922,9 +922,9 @@ class TestRequestContextMetrics:
                 return await self.handle2.remote()
 
         serve.run(G.bind(g1.bind(), g2.bind()), name="app")
-        resp = requests.get("http://127.0.0.1:8000/api")
+        resp = requests.get("http://127.0.0.1:8000/api", timeout=60)
         assert resp.text == '"ok1"'
-        resp = requests.get("http://127.0.0.1:8000/api2")
+        resp = requests.get("http://127.0.0.1:8000/api2", timeout=60)
         assert resp.text == '"ok2"'
 
         # G deployment metrics:
@@ -999,7 +999,7 @@ class TestRequestContextMetrics:
                 ]
 
         serve.run(Model.bind(), name="app", route_prefix="/app")
-        resp = requests.get("http://127.0.0.1:8000/app")
+        resp = requests.get("http://127.0.0.1:8000/app", timeout=60)
         deployment_name, replica_id = resp.json()
         wait_for_condition(
             lambda: len(get_metric_dictionaries("my_gauge")) == 1,
@@ -1135,7 +1135,7 @@ class TestRequestContextMetrics:
                     return await fn.remote()
 
         serve.run(Model.bind(), name="app", route_prefix="/app")
-        resp = requests.get("http://127.0.0.1:8000/app")
+        resp = requests.get("http://127.0.0.1:8000/app", timeout=60)
         assert resp.text == "hello"
         wait_for_condition(
             lambda: len(get_metric_dictionaries("my_gauge")) == 1,
@@ -1195,7 +1195,7 @@ def test_multiplexed_metrics(serve_start_shutdown):
 
     def verify_metrics():
         try:
-            resp = requests.get("http://127.0.0.1:9999").text
+            resp = requests.get("http://127.0.0.1:9999", timeout=60).text
         # Requests will fail if we are crashing the controller
         except requests.ConnectionError:
             return False
@@ -1353,7 +1353,7 @@ class TestHandleMetrics:
 
         @ray.remote(num_cpus=0)
         def do_request():
-            r = requests.get("http://localhost:8000/")
+            r = requests.get("http://localhost:8000/", timeout=60)
             r.raise_for_status()
             return r
 

@@ -12,7 +12,7 @@ from ray.serve.handle import DeploymentHandle
 
 @serve.deployment
 def downloader(image_url: str):
-    image_bytes = requests.get(image_url).content
+    image_bytes = requests.get(image_url, timeout=60).content
     image = Image.open(BytesIO(image_bytes)).convert("RGB")
     return image
 
@@ -68,7 +68,7 @@ class ModifiedImageClassifier:
 serve.run(app, name="app1")
 # __request_begin__
 bear_url = "https://cdn.britannica.com/41/156441-050-A4424AEC/Grizzly-bear-Jasper-National-Park-Canada-Alberta.jpg"  # noqa
-resp = requests.post("http://localhost:8000/classify", json={"image_url": bear_url})
+resp = requests.post("http://localhost:8000/classify", json={"image_url": bear_url}, timeout=60)
 
 print(resp.text)
 # 'brown bear, bruin, Ursus arctos'
@@ -89,7 +89,7 @@ bear_url = "https://cdn.britannica.com/41/156441-050-A4424AEC/Grizzly-bear-Jaspe
 resp = requests.post(
     "http://localhost:8000/classify",
     json={"image_url": bear_url, "should_translate": True},
-)
+timeout=60)
 
 print(resp.text)
 # 'Braunbär, Bruin, Ursus arctos'

@@ -63,7 +63,7 @@ if __name__ == "__main__":
     serve.run(entrypoint)
     prompt = "a zebra is dancing in the grass, river, sunlit"
     input = "%20".join(prompt.split(" "))
-    resp = requests.get(f"http://127.0.0.1:8000/imagine?prompt={input}")
+    resp = requests.get(f"http://127.0.0.1:8000/imagine?prompt={input}", timeout=60)
 
     print("Write the response to `output.png`.")
     with open("output.png", "wb") as f:

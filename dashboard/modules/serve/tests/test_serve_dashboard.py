@@ -104,17 +104,17 @@ def test_put_get_multi_app(ray_start_stop, url):
         print("Sending PUT request for config1.")
         deploy_config_multi_app(config1, url)
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1", json=["ADD", 2]).text
+            lambda: requests.post("http://localhost:8000/app1", json=["ADD", 2], timeout=60).text
             == "5 pizzas please!",
             timeout=15,
         )
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1", json=["MUL", 2]).text
+            lambda: requests.post("http://localhost:8000/app1", json=["MUL", 2], timeout=60).text
             == "8 pizzas please!",
             timeout=15,
         )
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app2").text
+            lambda: requests.post("http://localhost:8000/app2", timeout=60).text
             == "wonderful world",
             timeout=15,
         )
@@ -124,7 +124,7 @@ def test_put_get_multi_app(ray_start_stop, url):
         print("Sending PUT request for config2.")
         deploy_config_multi_app(config2, url)
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1", json=["ADD", 2]).text
+            lambda: requests.post("http://localhost:8000/app1", json=["ADD", 2], timeout=60).text
             == "4 pizzas please!",
             timeout=15,
         )
@@ -134,7 +134,7 @@ def test_put_get_multi_app(ray_start_stop, url):
         print("Sending PUT request for config3.")
         deploy_config_multi_app(config3, url)
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1").text
+            lambda: requests.post("http://localhost:8000/app1", timeout=60).text
             == "wonderful world",
             timeout=15,
         )
@@ -258,17 +258,17 @@ def test_delete_multi_app(ray_start_stop, url):
         print("Sending PUT request for config.")
         deploy_config_multi_app(config, url)
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1", json=["ADD", 1]).text
+            lambda: requests.post("http://localhost:8000/app1", json=["ADD", 1], timeout=60).text
             == "2",
             timeout=15,
         )
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1", json=["SUB", 1]).text
+            lambda: requests.post("http://localhost:8000/app1", json=["SUB", 1], timeout=60).text
             == "-1",
             timeout=15,
         )
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app2").text
+            lambda: requests.post("http://localhost:8000/app2", timeout=60).text
             == "wonderful world",
             timeout=15,
         )
@@ -293,10 +293,10 @@ def test_delete_multi_app(ray_start_stop, url):
 
         with pytest.raises(requests.exceptions.ConnectionError):
             requests.post(
-                "http://localhost:8000/app1", json=["ADD", 1]
-            ).raise_for_status()
+                "http://localhost:8000/app1", json=["ADD", 1], 
+            timeout=60).raise_for_status()
         with pytest.raises(requests.exceptions.ConnectionError):
-            requests.post("http://localhost:8000/app2").raise_for_status()
+            requests.post("http://localhost:8000/app2", timeout=60).raise_for_status()
         print("Deployments have been deleted and are not reachable.\n")
 
 
@@ -307,7 +307,7 @@ def test_delete_multi_app(ray_start_stop, url):
 def test_get_serve_instance_details_not_started(ray_start_stop, url):
     """Test REST API when Serve hasn't started yet."""
     # Parse the response to ensure it's formatted correctly.
-    ServeInstanceDetails(**requests.get(url).json())
+    ServeInstanceDetails(**requests.get(url, timeout=60).json())
 
 
 @pytest.mark.skipif(
@@ -388,7 +388,7 @@ def test_get_serve_instance_details(ray_start_stop, f_deployment_options, url):
     wait_for_condition(applications_running, timeout=15)
     print("All applications are in a RUNNING state.")
 
-    serve_details = ServeInstanceDetails(**requests.get(url).json())
+    serve_details = ServeInstanceDetails(**requests.get(url, timeout=60).json())
     # CHECK: proxy location, HTTP host, and HTTP port
     assert serve_details.proxy_location == "HeadOnly"
     assert serve_details.http_options.host == "127.0.0.1"
@@ -479,7 +479,7 @@ def test_serve_namespace(ray_start_stop):
     print("Deploying config.")
     deploy_config_multi_app(config, SERVE_HEAD_URL)
     wait_for_condition(
-        lambda: requests.post("http://localhost:8000/").text == "wonderful world",
+        lambda: requests.post("http://localhost:8000/", timeout=60).text == "wonderful world",
         timeout=15,
     )
     print("Deployments are live and reachable over HTTP.\n")
@@ -542,12 +542,12 @@ def test_put_with_http_options(ray_start_stop, option, override):
 
     # Wait for deployments to be up
     wait_for_condition(
-        lambda: requests.post("http://localhost:8000/serve/app1", json=["ADD", 2]).text
+        lambda: requests.post("http://localhost:8000/serve/app1", json=["ADD", 2], timeout=60).text
         == "4 pizzas please!",
         timeout=15,
     )
     wait_for_condition(
-        lambda: requests.post("http://localhost:8000/serve/app2").text
+        lambda: requests.post("http://localhost:8000/serve/app2", timeout=60).text
         == "wonderful world",
         timeout=15,
     )
@@ -570,10 +570,10 @@ def test_put_with_http_options(ray_start_stop, option, override):
 
     # Deployments should still be up
     assert (
-        requests.post("http://localhost:8000/serve/app1", json=["ADD", 2]).text
+        requests.post("http://localhost:8000/serve/app1", json=["ADD", 2], timeout=60).text
         == "4 pizzas please!"
     )
-    assert requests.post("http://localhost:8000/serve/app2").text == "wonderful world"
+    assert requests.post("http://localhost:8000/serve/app2", timeout=60).text == "wonderful world"
 
 
 def test_put_with_grpc_options(ray_start_stop):
@@ -618,7 +618,7 @@ def test_put_with_grpc_options(ray_start_stop):
 
     # Ensure HTTP requests are still working
     wait_for_condition(
-        lambda: requests.post("http://localhost:8000/serve/app2").text
+        lambda: requests.post("http://localhost:8000/serve/app2", timeout=60).text
         == "wonderful world",
         timeout=15,
     )
@@ -686,7 +686,7 @@ def test_get_applications_while_gcs_down(
 def test_target_capacity_field(ray_start_stop, url: str):
     """Test that the `target_capacity` field is always populated as expected."""
 
-    raw_json = requests.get(url).json()
+    raw_json = requests.get(url, timeout=60).json()
 
     # `target_capacity` should be present in the response before deploying anything.
     assert raw_json["target_capacity"] is None
@@ -701,7 +701,7 @@ def test_target_capacity_field(ray_start_stop, url: str):
     deploy_config_multi_app(config, url)
 
     # `target_capacity` should be present in the response even if not set.
-    raw_json = requests.get(url).json()
+    raw_json = requests.get(url, timeout=60).json()
     assert raw_json["target_capacity"] is None
     details = ServeInstanceDetails(**raw_json)
     assert details.target_capacity is None
@@ -712,7 +712,7 @@ def test_target_capacity_field(ray_start_stop, url: str):
     # Set `target_capacity`, ensure it is returned properly.
     config["target_capacity"] = 20
     deploy_config_multi_app(config, url)
-    raw_json = requests.get(url).json()
+    raw_json = requests.get(url, timeout=60).json()
     assert raw_json["target_capacity"] == 20
     details = ServeInstanceDetails(**raw_json)
     assert details.target_capacity == 20
@@ -723,7 +723,7 @@ def test_target_capacity_field(ray_start_stop, url: str):
     # Update `target_capacity`, ensure it is returned properly.
     config["target_capacity"] = 40
     deploy_config_multi_app(config, url)
-    raw_json = requests.get(url).json()
+    raw_json = requests.get(url, timeout=60).json()
     assert raw_json["target_capacity"] == 40
     details = ServeInstanceDetails(**raw_json)
     assert details.target_capacity == 40
@@ -734,7 +734,7 @@ def test_target_capacity_field(ray_start_stop, url: str):
     # Reset `target_capacity` by omitting it, ensure it is returned properly.
     del config["target_capacity"]
     deploy_config_multi_app(config, url)
-    raw_json = requests.get(url).json()
+    raw_json = requests.get(url, timeout=60).json()
     assert raw_json["target_capacity"] is None
     details = ServeInstanceDetails(**raw_json)
     assert details.target_capacity is None
@@ -779,13 +779,13 @@ def test_put_with_logging_config(ray_start_stop):
 
     deploy_config_multi_app(config1, url)
     wait_for_condition(
-        lambda: requests.get("http://localhost:8000/app").status_code == 200,
+        lambda: requests.get("http://localhost:8000/app", timeout=60).status_code == 200,
         timeout=15,
     )
     print("Deployments are live and reachable over HTTP.\n")
 
     # Make sure deployment & controller both log in json format.
-    resp = requests.post("http://localhost:8000/app").json()
+    resp = requests.post("http://localhost:8000/app", timeout=60).json()
     replica_id = resp["replica"].split("#")[-1]
     expected_log_regex = [f'"replica": "{replica_id}", ']
     check_log_file(resp["log_file"], expected_log_regex)

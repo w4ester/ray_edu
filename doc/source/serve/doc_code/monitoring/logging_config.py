@@ -13,7 +13,7 @@ class Model:
 
 serve.run(Model.bind())
 
-resp = requests.get("http://localhost:8000/")
+resp = requests.get("http://localhost:8000/", timeout=60)
 
 # __deployment_json_end__
 
@@ -32,7 +32,7 @@ class Model:
 
 serve.run(Model.bind(), logging_config=LoggingConfig(encoding="JSON"))
 
-resp = requests.get("http://localhost:8000/")
+resp = requests.get("http://localhost:8000/", timeout=60)
 
 # __serve_run_json_end__
 
@@ -52,7 +52,7 @@ class Model:
 
 serve.run(Model.bind())
 
-resp = requests.get("http://localhost:8000/")
+resp = requests.get("http://localhost:8000/", timeout=60)
 
 
 # __logs_dir_start__
@@ -80,7 +80,7 @@ class Model:
 
 serve.run(Model.bind())
 
-resp = requests.get("http://localhost:8000/")
+resp = requests.get("http://localhost:8000/", timeout=60)
 
 # __enable_access_log_end__
 
@@ -111,7 +111,7 @@ class Model:
 
 
 serve.run(Router.bind(Model.bind()), logging_config={"log_level": "DEBUG"})
-resp = requests.get("http://localhost:8000/")
+resp = requests.get("http://localhost:8000/", timeout=60)
 # __application_and_deployment_end__
 
 # __configure_serve_component_start__

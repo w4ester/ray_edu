@@ -135,7 +135,7 @@ def test_callback(ray_instance, capsys):
             return "Not found custom headers"
 
     serve.run(Model.bind())
-    resp = requests.get("http://localhost:8000/")
+    resp = requests.get("http://localhost:8000/", timeout=60)
     assert resp.text == "custom_header_value"
 
     captured = capsys.readouterr()

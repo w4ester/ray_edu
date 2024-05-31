@@ -108,7 +108,7 @@ def send_sample_request():
 
     prompt = "How do I cook fried rice?"
     sample_input = {"prompt": prompt, "stream": True}
-    output = requests.post("http://localhost:8000/", json=sample_input)
+    output = requests.post("http://localhost:8000/", json=sample_input, timeout=60)
     for line in output.iter_lines():
         print(line.decode("utf-8"))
 

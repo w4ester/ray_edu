@@ -32,13 +32,13 @@ class Model:
             ]
         )
         resp = requests.get(
-            "https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt"
-        )
+            "https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt", 
+        timeout=60)
         self.categories = resp.content.decode("utf-8").split("\n")
 
     async def __call__(self, request: starlette.requests.Request) -> str:
         uri = (await request.json())["uri"]
-        image_bytes = requests.get(uri).content
+        image_bytes = requests.get(uri, timeout=60).content
         image = Image.open(BytesIO(image_bytes)).convert("RGB")
 
         # Batch size is 1
@@ -62,5 +62,5 @@ if __name__ == "__main__":
         json={
             "uri": "https://serve-resnet-benchmark-data.s3.us-west-1.amazonaws.com/000000000019.jpeg"  # noqa
         },
-    )  # noqa
+    timeout=60)  # noqa
     assert resp.text == "ox"

@@ -23,7 +23,7 @@ serve.run(SentimentAnalysisDeployment.bind(), route_prefix="/")
 # 3: Query the deployment and print the result.
 print(
     requests.get(
-        "http://localhost:8000/", params={"text": "Ray Serve is great!"}
-    ).json()
+        "http://localhost:8000/", params={"text": "Ray Serve is great!"}, 
+    timeout=60).json()
 )
 # {'label': 'POSITIVE', 'score': 0.9998476505279541}

@@ -44,7 +44,7 @@ def test_checkpoint_success_by_http(workflow_start_regular_shared_serve):
             "http://127.0.0.1:8000/event/send_event/"
             + "workflow_test_checkpoint_success_by_http",
             json={"event_key": "event_key", "event_payload": msg},
-        )
+        timeout=60)
         return resp
 
     utils.set_global_mark("checkpointing_succeed")
@@ -105,7 +105,7 @@ def test_checkpoint_failed_by_http(workflow_start_regular_shared_serve):
             "http://127.0.0.1:8000/event/send_event/"
             + "workflow_test_checkpoint_failed_by_http",
             json={"event_key": "event_key", "event_payload": msg},
-        )
+        timeout=60)
         return resp
 
     utils.set_global_mark("checkpointing_failed")

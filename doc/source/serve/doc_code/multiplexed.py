@@ -35,8 +35,8 @@ handle = serve.run(entry)
 import requests  # noqa: E402
 
 resp = requests.get(
-    "http://localhost:8000", headers={"serve_multiplexed_model_id": str("1")}
-)
+    "http://localhost:8000", headers={"serve_multiplexed_model_id": str("1")}, 
+timeout=60)
 # __serve_request_send_example_end__
 
 # __serve_handle_send_example_begin__
@@ -64,5 +64,5 @@ class Upstream:
 
 
 serve.run(Upstream.bind(Downstream.bind()))
-resp = requests.get("http://localhost:8000")
+resp = requests.get("http://localhost:8000", timeout=60)
 # __serve_model_composition_example_end__
