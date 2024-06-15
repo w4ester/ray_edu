@@ -13,23 +13,22 @@ $ python get_build_info.py
 import os
 import platform
 import json
+from security import safe_requests
 
 
 def gha_get_self_url():
-    import requests
 
     # stringed together api call to get the current check's html url.
     sha = os.environ["GITHUB_SHA"]
     repo = os.environ["GITHUB_REPOSITORY"]
-    resp = requests.get(
-        "https://api.github.com/repos/{}/commits/{}/check-suites".format(repo, sha)
+    resp = safe_requests.get("https://api.github.com/repos/{}/commits/{}/check-suites".format(repo, sha)
     )
     data = resp.json()
     for check in data["check_suites"]:
         slug = check["app"]["slug"]
         if slug == "github-actions":
             run_url = check["check_runs_url"]
-            html_url = requests.get(run_url).json()["check_runs"][0]["html_url"]
+            html_url = safe_requests.get(run_url).json()["check_runs"][0]["html_url"]
             return html_url
 
     # Return a fallback url
@@ -68,11 +67,9 @@ def get_build_config():
     if os.environ.get("BUILDKITE"):
         return {"config": {"env": "Buildkite " + os.environ["BUILDKITE_LABEL"]}}
 
-    import requests
-
     url = "https://api.travis-ci.com/job/{job_id}?include=job.config"
     url = url.format(job_id=os.environ["TRAVIS_JOB_ID"])
-    resp = requests.get(url, headers={"Travis-API-Version": "3"})
+    resp = safe_requests.get(url, headers={"Travis-API-Version": "3"})
     return resp.json()
 
 

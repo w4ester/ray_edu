@@ -6,6 +6,7 @@ import shutil
 import signal
 import subprocess as sp
 import time
+from security import safe_requests
 
 _proxy_bypass = {
     "http": None,
@@ -32,7 +33,7 @@ def start_service(service_name, host, port):
 
         try:
             # we need to bypass the proxies due to monkeypatches
-            requests.get(url, timeout=5, proxies=_proxy_bypass)
+            safe_requests.get(url, timeout=5, proxies=_proxy_bypass)
             break
         except requests.exceptions.ConnectionError:
             time.sleep(0.5)

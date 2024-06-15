@@ -46,6 +46,7 @@ from unittest.mock import MagicMock
 from ray.dashboard.utils import DashboardHeadModule
 
 import psutil
+from security import safe_requests
 
 try:
     import aiohttp.web
@@ -354,7 +355,7 @@ def test_http_get(enable_test_module, ray_start_with_dashboard):
     while True:
         time.sleep(3)
         try:
-            response = requests.get(webui_url + "/test/http_get?url=" + target_url)
+            response = safe_requests.get(webui_url + "/test/http_get?url=" + target_url)
             response.raise_for_status()
             try:
                 dump_info = response.json()
@@ -368,8 +369,7 @@ def test_http_get(enable_test_module, ray_start_with_dashboard):
             ip = ray_start_with_dashboard["node_ip_address"]
             http_port, grpc_port = ports
 
-            response = requests.get(
-                f"http://{ip}:{http_port}" f"/test/http_get_from_agent?url={target_url}"
+            response = safe_requests.get(f"http://{ip}:{http_port}" f"/test/http_get_from_agent?url={target_url}"
             )
             response.raise_for_status()
             try:
@@ -405,7 +405,7 @@ def test_browser_no_post_no_put(enable_test_module, ray_start_with_dashboard):
                 webui_url + "/api/jobs/", json={"entrypoint": "ls"}
             )
             response.raise_for_status()
-            response = requests.get(webui_url + "/api/jobs/")
+            response = safe_requests.get(webui_url + "/api/jobs/")
             response.raise_for_status()
 
             # Starting job should be blocked for browsers
@@ -424,7 +424,7 @@ def test_browser_no_post_no_put(enable_test_module, ray_start_with_dashboard):
                 response.raise_for_status()
 
             # Getting jobs should be fine for browsers
-            response = requests.get(webui_url + "/api/jobs/")
+            response = safe_requests.get(webui_url + "/api/jobs/")
             response.raise_for_status()
             break
         except (AssertionError, requests.exceptions.ConnectionError) as e:
@@ -614,7 +614,7 @@ def test_aiohttp_cache(enable_test_module, ray_start_with_dashboard):
         time.sleep(1)
         try:
             for x in range(10):
-                response = requests.get(webui_url + "/test/aiohttp_cache/t1?value=1")
+                response = safe_requests.get(webui_url + "/test/aiohttp_cache/t1?value=1")
                 response.raise_for_status()
                 timestamp = response.json()["data"]["timestamp"]
                 value1_timestamps.append(timestamp)
@@ -628,7 +628,7 @@ def test_aiohttp_cache(enable_test_module, ray_start_with_dashboard):
 
     sub_path_timestamps = []
     for x in range(10):
-        response = requests.get(webui_url + f"/test/aiohttp_cache/tt{x}?value=1")
+        response = safe_requests.get(webui_url + f"/test/aiohttp_cache/tt{x}?value=1")
         response.raise_for_status()
         timestamp = response.json()["data"]["timestamp"]
         sub_path_timestamps.append(timestamp)
@@ -636,13 +636,13 @@ def test_aiohttp_cache(enable_test_module, ray_start_with_dashboard):
 
     volatile_value_timestamps = []
     for x in range(10):
-        response = requests.get(webui_url + f"/test/aiohttp_cache/tt?value={x}")
+        response = safe_requests.get(webui_url + f"/test/aiohttp_cache/tt?value={x}")
         response.raise_for_status()
         timestamp = response.json()["data"]["timestamp"]
         volatile_value_timestamps.append(timestamp)
     assert len(collections.Counter(volatile_value_timestamps)) == 10
 
-    response = requests.get(webui_url + "/test/aiohttp_cache/raise_exception")
+    response = safe_requests.get(webui_url + "/test/aiohttp_cache/raise_exception")
     with pytest.raises(Exception):
         response.raise_for_status()
     result = response.json()
@@ -651,7 +651,7 @@ def test_aiohttp_cache(enable_test_module, ray_start_with_dashboard):
 
     volatile_value_timestamps = []
     for x in range(10):
-        response = requests.get(webui_url + f"/test/aiohttp_cache_lru/tt{x % 4}")
+        response = safe_requests.get(webui_url + f"/test/aiohttp_cache_lru/tt{x % 4}")
         response.raise_for_status()
         timestamp = response.json()["data"]["timestamp"]
         volatile_value_timestamps.append(timestamp)
@@ -660,7 +660,7 @@ def test_aiohttp_cache(enable_test_module, ray_start_with_dashboard):
     volatile_value_timestamps = []
     data = collections.defaultdict(set)
     for x in [0, 1, 2, 3, 4, 5, 2, 1, 0, 3]:
-        response = requests.get(webui_url + f"/test/aiohttp_cache_lru/t1?value={x}")
+        response = safe_requests.get(webui_url + f"/test/aiohttp_cache_lru/t1?value={x}")
         response.raise_for_status()
         timestamp = response.json()["data"]["timestamp"]
         data[x].add(timestamp)
@@ -683,7 +683,7 @@ def test_get_cluster_status(ray_start_with_dashboard):
     # Check that the cluster_status endpoint works without the underlying data
     # from the GCS, but returns nothing.
     def get_cluster_status():
-        response = requests.get(f"{webui_url}/api/cluster_status")
+        response = safe_requests.get(f"{webui_url}/api/cluster_status")
         response.raise_for_status()
         print(response.json())
         assert response.json()["result"]
@@ -704,7 +704,7 @@ def test_get_cluster_status(ray_start_with_dashboard):
     )
     ray.experimental.internal_kv._internal_kv_put(DEBUG_AUTOSCALING_ERROR, "world")
 
-    response = requests.get(f"{webui_url}/api/cluster_status")
+    response = safe_requests.get(f"{webui_url}/api/cluster_status")
     response.raise_for_status()
     assert response.json()["result"]
     assert "autoscalingStatus" in response.json()["data"]
@@ -739,7 +739,7 @@ def test_get_nodes_summary(call_ray_start):
     webui_url = format_web_url(webui_url)
 
     def get_nodes_summary():
-        response = requests.get(f"{webui_url}/nodes?view=summary")
+        response = safe_requests.get(f"{webui_url}/nodes?view=summary")
         response.raise_for_status()
         response = response.json()
         print(response)
@@ -971,12 +971,12 @@ def test_dashboard_does_not_depend_on_serve():
     ray.shutdown()
 
     with pytest.raises(ImportError):
-        from ray import serve  # noqa: F401
+        pass
 
     ctx = ray.init()
 
     # Ensure standard dashboard features, like component_activities, still work
-    response = requests.get(f"http://{ctx.dashboard_url}/api/component_activities")
+    response = safe_requests.get(f"http://{ctx.dashboard_url}/api/component_activities")
     assert response.status_code == 200
 
     assert "driver" in response.json()
@@ -989,7 +989,7 @@ def test_dashboard_does_not_depend_on_serve():
 
     # Check that Serve-dependent features fail
     try:
-        response = requests.get(f"http://{agent_url}/api/serve/applications/")
+        response = safe_requests.get(f"http://{agent_url}/api/serve/applications/")
         print(f"response status code: {response.status_code}, expected: 501")
         assert response.status_code == 501
     except requests.ConnectionError as e:
@@ -1006,7 +1006,7 @@ def test_agent_does_not_depend_on_serve(shutdown_only):
     ray.shutdown()
 
     with pytest.raises(ImportError):
-        from ray import serve  # noqa: F401
+        pass
 
     ray.init(include_dashboard=True)
 
@@ -1027,7 +1027,7 @@ def test_agent_does_not_depend_on_serve(shutdown_only):
 
     # Check that Serve-dependent features fail
     try:
-        response = requests.get(f"http://{agent_url}/api/serve/applications/")
+        response = safe_requests.get(f"http://{agent_url}/api/serve/applications/")
         print(f"response status code: {response.status_code}, expected: 501")
         assert response.status_code == 501
     except requests.ConnectionError as e:
@@ -1053,7 +1053,7 @@ def test_agent_port_conflict(shutdown_only):
     node = ray._private.worker._global_node
     agent_url = node.node_ip_address + ":" + str(node.dashboard_agent_listen_port)
     wait_for_condition(
-        lambda: requests.get(f"http://{agent_url}/api/serve/applications/").status_code
+        lambda: safe_requests.get(f"http://{agent_url}/api/serve/applications/").status_code
         == 200
     )
     ray.shutdown()
@@ -1090,8 +1090,7 @@ def test_agent_port_conflict(shutdown_only):
     # Check that Serve-dependent features fail.
     try:
         wait_for_condition(
-            lambda: requests.get(
-                f"http://{agent_url}/api/serve/applications/"
+            lambda: safe_requests.get(f"http://{agent_url}/api/serve/applications/"
             ).status_code
             == 200
         )

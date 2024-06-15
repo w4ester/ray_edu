@@ -26,6 +26,7 @@ from ray.serve._private.common import (
     ProxyStatus,
 )
 from ray.serve.generated import serve_pb2, serve_pb2_grpc
+from security import safe_requests
 
 
 # For local testing on a Macbook, set `export TEST_ON_DARWIN=1`.
@@ -307,7 +308,7 @@ def test_delete_multi_app(ray_start_stop, url):
 def test_get_serve_instance_details_not_started(ray_start_stop, url):
     """Test REST API when Serve hasn't started yet."""
     # Parse the response to ensure it's formatted correctly.
-    ServeInstanceDetails(**requests.get(url).json())
+    ServeInstanceDetails(**safe_requests.get(url).json())
 
 
 @pytest.mark.skipif(
@@ -376,7 +377,7 @@ def test_get_serve_instance_details(ray_start_stop, f_deployment_options, url):
     deploy_config_multi_app(config, url)
 
     def applications_running():
-        response = requests.get(url, timeout=15)
+        response = safe_requests.get(url, timeout=15)
         assert response.status_code == 200
 
         serve_details = ServeInstanceDetails(**response.json())
@@ -388,7 +389,7 @@ def test_get_serve_instance_details(ray_start_stop, f_deployment_options, url):
     wait_for_condition(applications_running, timeout=15)
     print("All applications are in a RUNNING state.")
 
-    serve_details = ServeInstanceDetails(**requests.get(url).json())
+    serve_details = ServeInstanceDetails(**safe_requests.get(url).json())
     # CHECK: proxy location, HTTP host, and HTTP port
     assert serve_details.proxy_location == "HeadOnly"
     assert serve_details.http_options.host == "127.0.0.1"
@@ -561,7 +562,7 @@ def test_put_with_http_options(ray_start_stop, option, override):
     assert put_response.status_code == 200
 
     # Fetch Serve status and confirm that HTTP options are unchanged
-    get_response = requests.get(SERVE_HEAD_URL, timeout=5)
+    get_response = safe_requests.get(SERVE_HEAD_URL, timeout=5)
     serve_details = ServeInstanceDetails.parse_obj(get_response.json())
 
     original_http_options = HTTPOptionsSchema.parse_obj(original_http_options_json)
@@ -664,17 +665,17 @@ def test_get_applications_while_gcs_down(
     monkeypatch.setenv("RAY_SERVE_KV_TIMEOUT_S", "3")
     serve.start(detached=True)
 
-    get_response = requests.get(url, timeout=15)
+    get_response = safe_requests.get(url, timeout=15)
     assert get_response.status_code == 200
     ray._private.worker._global_node.kill_gcs_server()
 
     for _ in range(10):
-        assert requests.get(url, timeout=30).status_code == 200
+        assert safe_requests.get(url, timeout=30).status_code == 200
 
     ray._private.worker._global_node.start_gcs_server()
 
     for _ in range(10):
-        assert requests.get(url, timeout=30).status_code == 200
+        assert safe_requests.get(url, timeout=30).status_code == 200
 
     serve.shutdown()
 
@@ -686,7 +687,7 @@ def test_get_applications_while_gcs_down(
 def test_target_capacity_field(ray_start_stop, url: str):
     """Test that the `target_capacity` field is always populated as expected."""
 
-    raw_json = requests.get(url).json()
+    raw_json = safe_requests.get(url).json()
 
     # `target_capacity` should be present in the response before deploying anything.
     assert raw_json["target_capacity"] is None
@@ -701,7 +702,7 @@ def test_target_capacity_field(ray_start_stop, url: str):
     deploy_config_multi_app(config, url)
 
     # `target_capacity` should be present in the response even if not set.
-    raw_json = requests.get(url).json()
+    raw_json = safe_requests.get(url).json()
     assert raw_json["target_capacity"] is None
     details = ServeInstanceDetails(**raw_json)
     assert details.target_capacity is None
@@ -712,7 +713,7 @@ def test_target_capacity_field(ray_start_stop, url: str):
     # Set `target_capacity`, ensure it is returned properly.
     config["target_capacity"] = 20
     deploy_config_multi_app(config, url)
-    raw_json = requests.get(url).json()
+    raw_json = safe_requests.get(url).json()
     assert raw_json["target_capacity"] == 20
     details = ServeInstanceDetails(**raw_json)
     assert details.target_capacity == 20
@@ -723,7 +724,7 @@ def test_target_capacity_field(ray_start_stop, url: str):
     # Update `target_capacity`, ensure it is returned properly.
     config["target_capacity"] = 40
     deploy_config_multi_app(config, url)
-    raw_json = requests.get(url).json()
+    raw_json = safe_requests.get(url).json()
     assert raw_json["target_capacity"] == 40
     details = ServeInstanceDetails(**raw_json)
     assert details.target_capacity == 40
@@ -734,7 +735,7 @@ def test_target_capacity_field(ray_start_stop, url: str):
     # Reset `target_capacity` by omitting it, ensure it is returned properly.
     del config["target_capacity"]
     deploy_config_multi_app(config, url)
-    raw_json = requests.get(url).json()
+    raw_json = safe_requests.get(url).json()
     assert raw_json["target_capacity"] is None
     details = ServeInstanceDetails(**raw_json)
     assert details.target_capacity is None

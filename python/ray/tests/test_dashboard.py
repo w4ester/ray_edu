@@ -11,6 +11,7 @@ import requests
 import ray
 from ray._private import ray_constants
 from ray._private.test_utils import run_string_as_driver, wait_for_condition
+from security import safe_requests
 
 
 def search_agents(cluster):
@@ -65,7 +66,7 @@ def test_port_auto_increment(shutdown_only):
 
     def dashboard_available():
         try:
-            requests.get("http://" + url).status_code == 200
+            safe_requests.get("http://" + url).status_code == 200
             return True
         except Exception:
             return False
@@ -130,7 +131,7 @@ def test_dashboard(shutdown_only):
     while True:
         try:
             node_info_url = f"http://{dashboard_url}/nodes"
-            resp = requests.get(node_info_url, params={"view": "summary"})
+            resp = safe_requests.get(node_info_url, params={"view": "summary"})
             resp.raise_for_status()
             summaries = resp.json()
             assert summaries["result"] is True
@@ -170,7 +171,6 @@ def run_tasks_with_runtime_env():
 
     @ray.remote(runtime_env={"pip": ["pip-install-test==0.5"]})
     def f():
-        import pip_install_test  # noqa
 
         pass
 

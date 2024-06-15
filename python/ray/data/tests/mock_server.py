@@ -7,6 +7,7 @@ import time
 #    https://github.com/terrycain/aioboto3/blob/16a1a1085191ebe6d40ee45d9588b2173738af0c/tests/mock_server.py
 import pytest
 import requests
+from security import safe_requests
 
 _proxy_bypass = {
     "http": None,
@@ -38,7 +39,7 @@ def start_service(service_name, host, port):
 
         try:
             # we need to bypass the proxies due to monkeypatches
-            requests.get(url, timeout=5, proxies=_proxy_bypass)
+            safe_requests.get(url, timeout=5, proxies=_proxy_bypass)
             break
         except requests.exceptions.ConnectionError:
             time.sleep(0.5)

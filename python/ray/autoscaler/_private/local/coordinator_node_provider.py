@@ -4,6 +4,7 @@ from http.client import RemoteDisconnected
 
 from ray.autoscaler.node_provider import NodeProvider
 from ray.autoscaler.tags import TAG_RAY_CLUSTER_NAME
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,9 @@ class CoordinatorSenderNodeProvider(NodeProvider):
         http_coordinator_address = "http://" + self.coordinator_address
 
         try:
-            import requests  # `requests` is not part of stdlib.
             from requests.exceptions import ConnectionError
 
-            r = requests.get(
-                http_coordinator_address,
+            r = safe_requests.get(http_coordinator_address,
                 data=request_message,
                 headers=headers,
                 timeout=None,

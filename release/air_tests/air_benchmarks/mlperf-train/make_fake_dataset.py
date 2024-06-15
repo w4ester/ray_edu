@@ -5,7 +5,6 @@ Download or generate a fake dataset for training resnet50 in TensorFlow.
 
 from typing import Union, Iterable, Tuple, Optional
 import os
-import requests
 import shutil
 import sys
 import tensorflow.compat.v1 as tf
@@ -13,6 +12,7 @@ import time
 
 from ray.util.scheduling_strategies import NodeAffinitySchedulingStrategy
 import ray
+from security import safe_requests
 
 DEFAULT_IMAGE_URL = "https://air-example-data-2.s3.us-west-2.amazonaws.com/1G-image-data-synthetic-raw/dog.jpg"  # noqa: E501
 
@@ -116,7 +116,7 @@ def download_single_shard(
 ) -> None:
 
     print(f"Downloading single shard from {shard_url} to {dst_filename}")
-    with requests.get(shard_url, stream=True) as request:
+    with safe_requests.get(shard_url, stream=True) as request:
         assert request.ok, "Downloading shard failed"
         with open(dst_filename, "wb") as dst:
             for chunk in request.iter_content(chunk_size=chunk_size_mb * 1 << 20):
@@ -180,7 +180,7 @@ class ImageCoder(object):
 
 
 def get_single_image(image_url: str) -> bytes:
-    r = requests.get(image_url)
+    r = safe_requests.get(image_url)
     assert r.ok, "Downloading image failed"
     return r.content
 

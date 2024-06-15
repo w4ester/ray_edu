@@ -14,6 +14,7 @@ from ray._private.test_utils import SignalActor
 from ray.serve._private.constants import RAY_SERVE_EAGERLY_START_REPLACEMENT_REPLICAS
 from ray.serve._private.utils import get_random_string
 from ray.serve.exceptions import RayServeException
+from security import safe_requests
 
 
 @pytest.mark.parametrize("use_handle", [True, False])
@@ -256,7 +257,7 @@ def test_reconfigure_multiple_replicas(serve_instance, use_handle):
             handle = serve.get_deployment_handle(name, "app")
             ret = handle.handler.remote().result()
         else:
-            ret = requests.get(f"http://localhost:8000/{name}").text
+            ret = safe_requests.get(f"http://localhost:8000/{name}").text
 
         return ret.split("|")[0], ret.split("|")[1]
 
@@ -370,7 +371,7 @@ def test_redeploy_scale_down(serve_instance, use_handle):
             handle = serve.get_app_handle("app")
             ret = handle.remote().result()
         else:
-            ret = requests.get(f"http://localhost:8000/{name}").text
+            ret = safe_requests.get(f"http://localhost:8000/{name}").text
 
         return ret.split("|")[0], ret.split("|")[1]
 
@@ -421,7 +422,7 @@ def test_redeploy_scale_up(serve_instance, use_handle):
             handle = serve.get_app_handle("app")
             ret = handle.remote().result()
         else:
-            ret = requests.get(f"http://localhost:8000/{name}").text
+            ret = safe_requests.get(f"http://localhost:8000/{name}").text
 
         return ret.split("|")[0], ret.split("|")[1]
 

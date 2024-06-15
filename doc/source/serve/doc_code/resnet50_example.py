@@ -10,6 +10,7 @@ import torchvision.models as models
 from torchvision.models import ResNet50_Weights
 
 from ray import serve
+from security import safe_requests
 
 
 @serve.deployment(
@@ -38,7 +39,7 @@ class Model:
 
     async def __call__(self, request: starlette.requests.Request) -> str:
         uri = (await request.json())["uri"]
-        image_bytes = requests.get(uri).content
+        image_bytes = safe_requests.get(uri).content
         image = Image.open(BytesIO(image_bytes)).convert("RGB")
 
         # Batch size is 1

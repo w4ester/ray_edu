@@ -2,8 +2,8 @@
 import click
 import json
 import logging
-import requests
 from typing import Dict, Optional
+from security import safe_requests
 
 logger = logging.getLogger(__file__)
 logging.basicConfig(level=logging.INFO)
@@ -84,8 +84,7 @@ def fetch_nightly(test_name: str, output_path: Optional[str]):
     # Get job ID of the most recent run that passed on master
     # Builds returned from buildkite rest api are sorted from newest to
     # oldest already
-    builds = requests.get(
-        (
+    builds = safe_requests.get((
             "https://api.buildkite.com/v2/organizations/ray-project/pipelines/release/"
             "builds"
         ),
@@ -119,8 +118,7 @@ def fetch_nightly(test_name: str, output_path: Optional[str]):
         )
 
     # Get results file from Job ID
-    artifacts = requests.get(
-        (
+    artifacts = safe_requests.get((
             "https://api.buildkite.com/v2/organizations/ray-project/pipelines/release/"
             f"builds/{build_number}/jobs/{job_id}/artifacts"
         ),
@@ -129,7 +127,7 @@ def fetch_nightly(test_name: str, output_path: Optional[str]):
     results = None
     for artifact in artifacts:
         if artifact.get("filename") == "result.json":
-            results = requests.get(artifact["download_url"], headers=auth_header).json()
+            results = safe_requests.get(artifact["download_url"], headers=auth_header).json()
             results = results["results"]
 
     if results is None:

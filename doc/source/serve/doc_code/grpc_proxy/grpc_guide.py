@@ -1,5 +1,6 @@
 # flake8: noqa
 import ray
+from security import safe_requests
 
 
 ray.init()
@@ -238,7 +239,7 @@ class ImageClassifier:
 @serve.deployment
 class ImageDownloader:
     def __call__(self, image_url: str):
-        image_bytes = requests.get(image_url).content
+        image_bytes = safe_requests.get(image_url).content
         return Image.open(BytesIO(image_bytes)).convert("RGB")
 
 

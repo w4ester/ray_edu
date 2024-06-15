@@ -33,6 +33,7 @@ from ray.serve._private.http_util import make_fastapi_class_based_view
 from ray.serve._private.utils import DEFAULT
 from ray.serve.exceptions import RayServeException
 from ray.serve.handle import DeploymentHandle
+from security import safe_requests
 
 
 def test_fastapi_function(serve_instance):
@@ -278,8 +279,7 @@ def test_fastapi_features(serve_instance):
     resp = requests.get(f"{url}/path_arg")
     assert resp.status_code == 422  # Malformed input
 
-    resp = requests.get(
-        f"{url}/path_arg",
+    resp = safe_requests.get(f"{url}/path_arg",
         json={"name": "serve", "price": 12, "nests": {"val": 1}},
         params={
             "query_arg": "query_arg",
@@ -304,8 +304,7 @@ def test_fastapi_features(serve_instance):
     ]
     assert open(resp.json()["file_path"]).read() == "hello"
 
-    resp = requests.get(
-        f"{url}/path_arg",
+    resp = safe_requests.get(f"{url}/path_arg",
         json={"name": "serve", "price": 12, "nests": {"val": 1}},
         params={
             "query_arg": "query_arg",
@@ -320,8 +319,7 @@ def test_fastapi_features(serve_instance):
     resp = requests.get(f"{url}/prefix/subpath")
     assert resp.status_code == 200
 
-    resp = requests.get(
-        f"{url}/docs",
+    resp = safe_requests.get(f"{url}/docs",
         headers={
             "Access-Control-Request-Method": "GET",
             "Origin": "https://googlebot.com",
@@ -417,7 +415,7 @@ def test_fastapi_duplicate_routes(serve_instance):
     assert resp.json() == "second"
 
     for version in ["v1", "v2"]:
-        resp = requests.get(f"http://localhost:8000/api/{version}/ignored")
+        resp = safe_requests.get(f"http://localhost:8000/api/{version}/ignored")
         assert resp.status_code == 404
 
 
@@ -454,14 +452,14 @@ def test_doc_generation(serve_instance, input_route_prefix, expected_route_prefi
 
     serve.run(App.bind(), route_prefix=input_route_prefix)
 
-    r = requests.get(f"http://localhost:8000{expected_route_prefix}openapi.json")
+    r = safe_requests.get(f"http://localhost:8000{expected_route_prefix}openapi.json")
     assert r.status_code == 200
     assert len(r.json()["paths"]) == 1
     assert "/" in r.json()["paths"]
     assert len(r.json()["paths"]["/"]) == 1
     assert "get" in r.json()["paths"]["/"]
 
-    r = requests.get(f"http://localhost:8000{expected_route_prefix}docs")
+    r = safe_requests.get(f"http://localhost:8000{expected_route_prefix}docs")
     assert r.status_code == 200
 
     @serve.deployment
@@ -477,7 +475,7 @@ def test_doc_generation(serve_instance, input_route_prefix, expected_route_prefi
 
     serve.run(App.bind(), route_prefix=input_route_prefix)
 
-    r = requests.get(f"http://localhost:8000{expected_route_prefix}openapi.json")
+    r = safe_requests.get(f"http://localhost:8000{expected_route_prefix}openapi.json")
     assert r.status_code == 200
     assert len(r.json()["paths"]) == 2
     assert "/" in r.json()["paths"]
@@ -487,7 +485,7 @@ def test_doc_generation(serve_instance, input_route_prefix, expected_route_prefi
     assert len(r.json()["paths"]["/hello"]) == 1
     assert "post" in r.json()["paths"]["/hello"]
 
-    r = requests.get(f"http://localhost:8000{expected_route_prefix}docs")
+    r = safe_requests.get(f"http://localhost:8000{expected_route_prefix}docs")
     assert r.status_code == 200
 
 
@@ -690,7 +688,7 @@ def test_fastapi_same_app_multiple_deployments(serve_instance):
         ("/app2/decr2", "decr2"),
     ]
     for path, resp in should_work:
-        assert requests.get("http://localhost:8000" + path).json() == resp, (path, resp)
+        assert safe_requests.get("http://localhost:8000" + path).json() == resp, (path, resp)
 
     should_404 = [
         "/app2/incr",
@@ -699,7 +697,7 @@ def test_fastapi_same_app_multiple_deployments(serve_instance):
         "/app1/decr2",
     ]
     for path in should_404:
-        assert requests.get("http://localhost:8000" + path).status_code == 404, path
+        assert safe_requests.get("http://localhost:8000" + path).status_code == 404, path
 
 
 @pytest.mark.parametrize("two_fastapi", [True, False])

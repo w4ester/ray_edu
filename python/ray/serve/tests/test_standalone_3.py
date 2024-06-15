@@ -20,7 +20,7 @@ from ray.serve._private.logging_utils import get_serve_logs_dir
 from ray.serve._private.utils import get_head_node_id
 from ray.serve.context import _get_global_client
 from ray.serve.schema import ServeInstanceDetails
-from ray.tests.conftest import call_ray_stop_only  # noqa: F401
+from security import safe_requests
 
 
 @pytest.fixture
@@ -468,7 +468,7 @@ def test_healthz_and_routes_on_head_and_worker_nodes(
     # Ensure `/-/healthz` and `/-/routes` return 200 and expected responses
     # on both nodes.
     def check_request(url: str, expected_code: int, expected_text: str):
-        req = requests.get(url)
+        req = safe_requests.get(url)
         return req.status_code == expected_code and req.text == expected_text
 
     wait_for_condition(

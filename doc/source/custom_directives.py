@@ -13,7 +13,6 @@ import random
 import urllib
 import urllib.request
 from queue import Queue
-import requests
 from preprocess_github_markdown import preprocess_github_markdown_file
 from sphinx.util import logging as sphinx_logging
 from sphinx.util.console import red  # type: ignore
@@ -25,6 +24,7 @@ from pydata_sphinx_theme.toctree import add_collapse_checkboxes
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
+from security import safe_requests
 
 
 logger = logging.getLogger(__name__)
@@ -93,7 +93,7 @@ class DownloadAndPreprocessEcosystemDocs:
     @staticmethod
     def get_latest_release_tag(repo: str) -> str:
         """repo is just the repo name, eg. ray-project/ray"""
-        response = requests.get(f"https://api.github.com/repos/{repo}/releases/latest")
+        response = safe_requests.get(f"https://api.github.com/repos/{repo}/releases/latest")
         return response.json()["tag_name"]
 
     @staticmethod

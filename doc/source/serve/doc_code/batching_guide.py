@@ -2,6 +2,7 @@
 # __single_sample_begin__
 from ray import serve
 from ray.serve.handle import DeploymentHandle
+from security import safe_requests
 
 
 @serve.deployment
@@ -139,7 +140,7 @@ serve.run(StreamingResponder.bind())
 
 def issue_request(max) -> List[str]:
     url = "http://localhost:8000/?max="
-    response = requests.get(url + str(max), stream=True)
+    response = safe_requests.get(url + str(max), stream=True)
     chunks = []
     for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
         chunks.append(chunk)

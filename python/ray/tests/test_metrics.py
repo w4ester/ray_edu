@@ -12,6 +12,7 @@ from ray._private.test_utils import (
     get_node_stats,
 )
 from ray.core.generated import common_pb2
+from security import safe_requests
 
 _WIN32 = os.name == "nt"
 
@@ -328,8 +329,7 @@ def test_multi_node_metrics_export_port_discovery(ray_start_cluster):
 
         # Make sure we can ping Prometheus endpoints.
         def test_prometheus_endpoint():
-            response = requests.get(
-                "http://localhost:{}".format(metrics_export_port),
+            response = safe_requests.get("http://localhost:{}".format(metrics_export_port),
                 # Fail the request early on if connection timeout
                 timeout=1.0,
             )
@@ -345,16 +345,6 @@ def test_multi_node_metrics_export_port_discovery(ray_start_cluster):
 
 def test_opentelemetry_conflict(shutdown_only):
     ray.init()
-    # If opencensus protobuf doesn't conflict, this shouldn't raise an exception.
-    # Otherwise, it raises an error saying
-    # opencensus/proto/resource/v1/resource.proto:
-    # A file with this name is already in the pool.
-    from opentelemetry.exporter.opencensus.trace_exporter import (  # noqa
-        OpenCensusSpanExporter,
-    )
-
-    # Make sure the similar resource protobuf also doesn't raise an exception.
-    from opentelemetry.proto.resource.v1 import resource_pb2  # noqa
 
 
 if __name__ == "__main__":

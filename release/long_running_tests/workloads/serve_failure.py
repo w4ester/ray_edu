@@ -6,13 +6,12 @@ import string
 import time
 from typing import List
 
-import requests
-
 import ray
 from ray import serve
 from ray.serve.context import _get_global_client
 from ray.cluster_utils import Cluster
 from ray._private.test_utils import safe_write_to_results_json
+from security import safe_requests
 
 # Global variables / constants appear only right after imports.
 # Ray serve deployment setup constants
@@ -163,7 +162,7 @@ class RandomTest:
         app = random.choice(self.applications)
         for _ in range(100):
             try:
-                r = requests.get("http://127.0.0.1:8000/" + app)
+                r = safe_requests.get("http://127.0.0.1:8000/" + app)
                 assert r.text == app
             except Exception:
                 print("Request to {} failed.".format(app))

@@ -3,14 +3,13 @@ import pytest
 from typing import Dict
 import numpy as np
 import sys
-
-import requests
 import ray
 from ray._private.test_utils import (
     raw_metrics,
     wait_for_condition,
 )
 from ray._private.worker import RayContext
+from security import safe_requests
 
 KiB = 1 << 10
 MiB = 1 << 20
@@ -369,7 +368,7 @@ def test_object_store_memory_matches_dashboard_obj_memory(shutdown_only):
             if sample.labels["Name"] == "object_store_memory":
                 object_store_memory_bytes_from_metrics += sample.value
 
-        r = requests.get(f"http://{ctx.dashboard_url}/nodes?view=summary")
+        r = safe_requests.get(f"http://{ctx.dashboard_url}/nodes?view=summary")
         object_store_memory_bytes_from_dashboard = int(
             r.json()["data"]["summary"][0]["raylet"]["objectStoreAvailableMemory"]
         )

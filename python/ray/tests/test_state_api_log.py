@@ -47,6 +47,7 @@ from ray.util.state import get_log, list_logs, list_nodes, list_workers
 from ray.util.state.common import GetLogOptions
 from ray.util.state.exception import DataSourceUnavailable, RayStateApiException
 from ray.util.state.state_manager import StateDataSourceClient
+from security import safe_requests
 
 
 def generate_task_event(
@@ -803,7 +804,7 @@ def test_logs_list(ray_start_with_dashboard):
     node_id = list_nodes()[0]["node_id"]
 
     def verify():
-        response = requests.get(webui_url + f"/api/v0/logs?node_id={node_id}")
+        response = safe_requests.get(webui_url + f"/api/v0/logs?node_id={node_id}")
         response.raise_for_status()
         result = json.loads(response.text)
         assert result["result"]
@@ -832,8 +833,7 @@ def test_logs_list(ray_start_with_dashboard):
 
     def verify_filter():
         # Test that logs/list can be filtered
-        response = requests.get(
-            webui_url + f"/api/v0/logs?node_id={node_id}&glob=*gcs*"
+        response = safe_requests.get(webui_url + f"/api/v0/logs?node_id={node_id}&glob=*gcs*"
         )
         response.raise_for_status()
         result = json.loads(response.text)
@@ -850,8 +850,7 @@ def test_logs_list(ray_start_with_dashboard):
     wait_for_condition(verify_filter)
 
     def verify_worker_logs():
-        response = requests.get(
-            webui_url + f"/api/v0/logs?node_id={node_id}&glob=*worker*"
+        response = safe_requests.get(webui_url + f"/api/v0/logs?node_id={node_id}&glob=*worker*"
         )
         response.raise_for_status()
         result = json.loads(response.text)
@@ -888,8 +887,7 @@ def test_logs_stream_and_tail(ray_start_with_dashboard):
     node_id = list_nodes()[0]["node_id"]
 
     def verify_basic():
-        stream_response = requests.get(
-            webui_url
+        stream_response = safe_requests.get(webui_url
             + f"/api/v0/logs/file?node_id={node_id}&filename=gcs_server.out&lines=5",
             stream=True,
         )
@@ -917,8 +915,7 @@ def test_logs_stream_and_tail(ray_start_with_dashboard):
     ray.get(actor.write_log.remote([test_log_text.format("XXXXXX")]))
 
     # Test stream and fetching by actor id
-    stream_response = requests.get(
-        webui_url
+    stream_response = safe_requests.get(webui_url
         + "/api/v0/logs/stream?&lines=-1"
         + f"&actor_id={actor._ray_actor_id.hex()}",
         stream=True,
@@ -948,8 +945,7 @@ def test_logs_stream_and_tail(ray_start_with_dashboard):
 
     # Test tailing log by actor id
     LINES = 150
-    file_response = requests.get(
-        webui_url
+    file_response = safe_requests.get(webui_url
         + f"/api/v0/logs/file?&lines={LINES}"
         + "&actor_id="
         + actor._ray_actor_id.hex(),
@@ -961,8 +957,7 @@ def test_logs_stream_and_tail(ray_start_with_dashboard):
     # Test query by pid & node_ip instead of actor id.
     node_ip = list(ray.nodes())[0]["NodeManagerAddress"]
     pid = ray.get(actor.getpid.remote())
-    file_response = requests.get(
-        webui_url
+    file_response = safe_requests.get(webui_url
         + f"/api/v0/logs/file?node_ip={node_ip}&lines={LINES}"
         + f"&pid={pid}",
     ).content.decode("utf-8")
@@ -1092,8 +1087,7 @@ def test_log_get_subdir(ray_start_with_dashboard):
     # HTTP endpoint
     def verify():
         # Direct logs stream
-        response = requests.get(
-            webui_url
+        response = safe_requests.get(webui_url
             + f"/api/v0/logs/file?node_id={node_id}"
             + f"&filename={urllib.parse.quote('test_subdir/test_#file.log')}"
         )

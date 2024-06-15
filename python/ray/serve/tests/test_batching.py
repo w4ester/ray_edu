@@ -9,6 +9,7 @@ from starlette.responses import StreamingResponse
 
 import ray
 from ray import serve
+from security import safe_requests
 
 
 def test_batching(serve_instance):
@@ -113,10 +114,10 @@ def test_batching_client_dropped_unary(serve_instance):
     # Sending requests with clients that drops the connection.
     for _ in range(3):
         with pytest.raises(requests.exceptions.ReadTimeout):
-            requests.get(url, timeout=0.005)
+            safe_requests.get(url, timeout=0.005)
 
     # The following request should succeed.
-    resp = requests.get(url, timeout=1)
+    resp = safe_requests.get(url, timeout=1)
     assert resp.status_code == 200
     assert resp.text == "fake-response"
 
@@ -147,10 +148,10 @@ def test_batching_client_dropped_streaming(serve_instance):
         with pytest.raises(
             (requests.exceptions.ReadTimeout, requests.exceptions.ConnectionError)
         ):
-            requests.get(url, timeout=0.005)
+            safe_requests.get(url, timeout=0.005)
 
     # The following request should succeed.
-    resp = requests.get(url, timeout=1)
+    resp = safe_requests.get(url, timeout=1)
     assert resp.status_code == 200
     assert resp.text == "0123456789"
 

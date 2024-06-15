@@ -9,6 +9,7 @@ from ray.cluster_utils import Cluster
 from ray import serve
 from ray.serve.config import DeploymentMode
 from ray.serve.context import _get_global_client
+from security import safe_requests
 
 logger = logging.getLogger(__file__)
 
@@ -78,8 +79,7 @@ def warm_up_one_cluster(
     logger.info(f"Warming up {endpoint} ..")
     for _ in range(num_warmup_iterations):
         try:
-            resp = requests.get(
-                f"http://{http_host}:{http_port}/{endpoint}", timeout=timeout
+            resp = safe_requests.get(f"http://{http_host}:{http_port}/{endpoint}", timeout=timeout
             ).text
             logger.info(resp)
         except requests.exceptions.ReadTimeout:

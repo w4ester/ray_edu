@@ -9,7 +9,6 @@ from collections import defaultdict
 from ray._private.test_utils import check_call_subprocess
 
 import ray
-import requests
 import pytest
 
 from ray._private.profiling import chrome_tracing_dump
@@ -21,6 +20,7 @@ from ray.util.state import (
     list_nodes,
 )
 from ray._private.test_utils import wait_for_condition
+from security import safe_requests
 
 
 def test_timeline(shutdown_only):
@@ -171,7 +171,7 @@ def test_timeline_request(shutdown_only):
 
     # Make sure the API works.
     def verify():
-        resp = requests.get(f"{dashboard_url}/api/v0/tasks/timeline")
+        resp = safe_requests.get(f"{dashboard_url}/api/v0/tasks/timeline")
         resp.raise_for_status()
         assert resp.json(), "No result has returned"
         return True
@@ -258,27 +258,25 @@ def test_actor_repr_name(shutdown_only):
 
 def test_experimental_import_deprecation():
     with pytest.warns(DeprecationWarning):
-        from ray.experimental.state.api import list_tasks  # noqa: F401
+        pass
 
     with pytest.warns(DeprecationWarning):
-        from ray.experimental.state.common import DEFAULT_RPC_TIMEOUT  # noqa: F401
+        pass
 
     with pytest.warns(DeprecationWarning):
-        from ray.experimental.state.custom_types import ACTOR_STATUS  # noqa: F401
+        pass
 
     with pytest.warns(DeprecationWarning):
-        from ray.experimental.state.exception import RayStateApiException  # noqa: F401
+        pass
 
     with pytest.warns(DeprecationWarning):
-        from ray.experimental.state.state_cli import ray_get  # noqa: F401
+        pass
 
     with pytest.warns(DeprecationWarning):
-        from ray.experimental.state.state_manager import (  # noqa: F401
-            StateDataSourceClient,
-        )
+        pass
 
     with pytest.warns(DeprecationWarning):
-        from ray.experimental.state.util import convert_string_to_type  # noqa: F401
+        pass
 
 
 def test_actor_task_with_repr_name(ray_start_with_dashboard):

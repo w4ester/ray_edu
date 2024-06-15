@@ -8,6 +8,7 @@ from starlette.responses import RedirectResponse
 import ray
 from ray import serve
 from ray.serve._private.constants import SERVE_DEFAULT_APP_NAME
+from security import safe_requests
 
 
 def test_path_validation(serve_instance):
@@ -101,7 +102,7 @@ def test_deployment_options_default_route(serve_instance):
 
 def test_path_prefixing_1(serve_instance):
     def check_req(subpath, text=None, status=None):
-        r = requests.get(f"http://localhost:8000{subpath}")
+        r = safe_requests.get(f"http://localhost:8000{subpath}")
         if text is not None:
             assert r.text == text, f"{r.text} != {text}"
         if status is not None:
@@ -194,12 +195,12 @@ def test_redirect(serve_instance, base_path):
     if route_prefix != "/":
         route_prefix += "/"
 
-    r = requests.get(f"http://localhost:8000{route_prefix}redirect")
+    r = safe_requests.get(f"http://localhost:8000{route_prefix}redirect")
     assert r.status_code == 200
     assert len(r.history) == 1
     assert r.json() == "hello from /"
 
-    r = requests.get(f"http://localhost:8000{route_prefix}redirect2")
+    r = safe_requests.get(f"http://localhost:8000{route_prefix}redirect2")
     assert r.status_code == 200
     assert len(r.history) == 2
     assert r.json() == "hello from /"

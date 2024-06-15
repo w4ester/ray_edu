@@ -7,6 +7,7 @@ import torch
 
 from ray import serve
 from ray.serve.handle import DeploymentHandle
+from security import safe_requests
 
 
 app = FastAPI()
@@ -66,7 +67,6 @@ entrypoint = APIIngress.bind(StableDiffusionV2.bind())
 if __name__ == "__main__":
     import ray
     import os
-    import requests
 
     ray.init(
         runtime_env={
@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     prompt = "a cute cat is dancing on the grass."
     prompt_query = "%20".join(prompt.split(" "))
-    resp = requests.get(f"http://127.0.0.1:8000/imagine?prompt={prompt_query}")
+    resp = safe_requests.get(f"http://127.0.0.1:8000/imagine?prompt={prompt_query}")
 
     with open("output.png", "wb") as f:
         f.write(resp.content)
