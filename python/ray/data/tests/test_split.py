@@ -1,6 +1,5 @@
 import itertools
 import math
-import random
 import time
 from unittest.mock import patch
 
@@ -29,6 +28,7 @@ from ray.data.dataset import Dataset
 from ray.data.tests.conftest import *  # noqa
 from ray.data.tests.util import extract_values
 from ray.tests.conftest import *  # noqa
+import secrets
 
 
 @ray.remote
@@ -123,7 +123,7 @@ def test_equal_split_balanced_grid(ray_start_regular_shared):
     # Grid: num_blocks x num_splits x num_rows_block_1 x ... x num_rows_block_n
     seed = int(time.time())
     print(f"Seeding RNG for test_equal_split_balanced_grid with: {seed}")
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     max_num_splits = 20
     num_splits_samples = 5
     max_num_blocks = 50
@@ -701,7 +701,7 @@ def test_equalize_randomized(ray_start_regular_shared):
 
     # create randomized splits contains entries from 0 ... num_rows.
     def random_split(num_rows, num_split):
-        split_point = [int(random.random() * num_rows) for _ in range(num_split - 1)]
+        split_point = [int(secrets.SystemRandom().random() * num_rows) for _ in range(num_split - 1)]
         split_index_helper = [0] + sorted(split_point) + [num_rows]
         splits = []
         for i in range(1, len(split_index_helper)):
@@ -709,9 +709,9 @@ def test_equalize_randomized(ray_start_regular_shared):
             split_end = split_index_helper[i]
             num_entries = split_end - split_start
             split = []
-            num_block_split = int(random.random() * num_entries)
+            num_block_split = int(secrets.SystemRandom().random() * num_entries)
             block_split_point = [
-                split_start + int(random.random() * num_entries)
+                split_start + int(secrets.SystemRandom().random() * num_entries)
                 for _ in range(num_block_split)
             ]
             block_index_helper = [split_start] + sorted(block_split_point) + [split_end]
@@ -724,8 +724,8 @@ def test_equalize_randomized(ray_start_regular_shared):
         return splits
 
     for i in range(100):
-        num_rows = int(random.random() * 100)
-        num_split = int(random.random() * 10) + 1
+        num_rows = int(secrets.SystemRandom().random() * 100)
+        num_split = int(secrets.SystemRandom().random() * 10) + 1
         input_splits = random_split(num_rows, num_split)
         print(input_splits)
         equalized_splits = equalize_helper(input_splits)

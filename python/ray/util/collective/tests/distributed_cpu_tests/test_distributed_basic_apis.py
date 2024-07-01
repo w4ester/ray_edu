@@ -1,10 +1,10 @@
 """Test the collective group APIs."""
 import pytest
 import ray
-from random import shuffle
 
 from ray.util.collective.types import Backend
 from ray.util.collective.tests.cpu_util import Worker, create_collective_workers
+import secrets
 
 
 @pytest.mark.parametrize("backend", [Backend.GLOO])
@@ -50,7 +50,7 @@ def test_get_rank(ray_start_distributed_2_nodes, world_size, backend):
     # orders of ranks.
     new_group_name = "default2"
     ranks = list(range(world_size))
-    shuffle(ranks)
+    secrets.SystemRandom().shuffle(ranks)
     _ = ray.get(
         [
             actor.init_group.remote(

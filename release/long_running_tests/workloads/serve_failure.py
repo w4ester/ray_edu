@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-import random
 import string
 import time
 from typing import List
@@ -13,6 +12,7 @@ from ray import serve
 from ray.serve.context import _get_global_client
 from ray.cluster_utils import Cluster
 from ray._private.test_utils import safe_write_to_results_json
+import secrets
 
 # Global variables / constants appear only right after imports.
 # Ray serve deployment setup constants
@@ -77,7 +77,7 @@ class RandomKiller:
 
     async def run(self):
         while True:
-            chosen = random.choice(self._get_serve_actors())
+            chosen = secrets.choice(self._get_serve_actors())
             print(f"Killing {chosen}")
             ray.kill(chosen, no_restart=False)
             await asyncio.sleep(self.kill_period_s)
@@ -131,7 +131,7 @@ class RandomTest:
             app_to_delete = self.applications.pop()
             serve.delete(app_to_delete)
 
-        new_name = "".join([random.choice(string.ascii_letters) for _ in range(10)])
+        new_name = "".join([secrets.choice(string.ascii_letters) for _ in range(10)])
 
         @serve.deployment(name=new_name)
         def handler(self, *args):
@@ -160,7 +160,7 @@ class RandomTest:
         return new_name
 
     def verify_application(self):
-        app = random.choice(self.applications)
+        app = secrets.choice(self.applications)
         for _ in range(100):
             try:
                 r = requests.get("http://127.0.0.1:8000/" + app)
@@ -175,7 +175,7 @@ class RandomTest:
         for iteration in range(NUM_ITERATIONS):
             for _ in range(ACTIONS_PER_ITERATION):
                 actions, weights = zip(*self.weighted_actions)
-                action_chosen = random.choices(actions, weights=weights)[0]
+                action_chosen = secrets.SystemRandom().choices(actions, weights=weights)[0]
                 print(f"Executing {action_chosen}")
                 action_chosen()
 

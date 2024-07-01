@@ -2,13 +2,12 @@ import pytest
 import sys
 import time
 
-from random import random
-
 import ray
 import ray.cluster_utils
 from ray._private.test_utils import wait_for_condition
 from ray.util.placement_group import placement_group, remove_placement_group
 from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
+import secrets
 
 
 def run_mini_integration_test(cluster, pg_removal=True, num_pgs=999):
@@ -58,7 +57,7 @@ def run_mini_integration_test(cluster, pg_removal=True, num_pgs=999):
         if pg_removal:
             print("removing pgs")
         for pg in pgs:
-            if random() < 0.5 and pg_removal:
+            if secrets.SystemRandom().random() < 0.5 and pg_removal:
                 pgs_removed.append(pg)
             else:
                 pgs_unremoved.append(pg)

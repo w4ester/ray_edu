@@ -1,11 +1,11 @@
 import asyncio
 from collections import deque
 import logging
-import random
 from typing import Tuple, List
 
 import grpc
 from ray._private.utils import get_or_create_event_loop
+import secrets
 
 try:
     from grpc import aio as aiogrpc
@@ -58,7 +58,7 @@ class _SubscriberBase:
         self._worker_id = worker_id
         # self._subscriber_id needs to match the binary format of a random
         # SubscriberID / UniqueID, which is 28 (kUniqueIDSize) random bytes.
-        self._subscriber_id = bytes(bytearray(random.getrandbits(8) for _ in range(28)))
+        self._subscriber_id = bytes(bytearray(secrets.SystemRandom().getrandbits(8) for _ in range(28)))
         self._last_batch_size = 0
         self._max_processed_sequence_id = 0
         self._publisher_id = b""

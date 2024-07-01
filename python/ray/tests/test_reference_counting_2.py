@@ -3,7 +3,6 @@ import logging
 import os
 import copy
 import platform
-import random
 import signal
 import sys
 import time
@@ -21,6 +20,7 @@ from ray._private.test_utils import (
     wait_for_num_actors,
 )
 import ray._private.gcs_utils as gcs_utils
+import secrets
 
 SIGKILL = signal.SIGKILL if sys.platform != "win32" else signal.SIGTERM
 
@@ -521,7 +521,7 @@ def test_object_unpin_stress(ray_start_cluster):
     ray.get(actor_on_head_node.get_obj_size.remote())
 
     def random_ops(actors):
-        r = random.random()
+        r = secrets.SystemRandom().random()
         for actor in actors:
             if r <= 0.25:
                 actor.put_10_mb.remote()

@@ -1,6 +1,5 @@
 import argparse
 import os
-import random
 import shutil
 import tempfile
 from typing import List, Tuple
@@ -10,6 +9,7 @@ from PIL import Image
 import ray
 
 from benchmark import Benchmark
+import secrets
 
 
 def parse_args():
@@ -59,9 +59,9 @@ def generate_images(
     images_dir = tempfile.mkdtemp()
 
     for image_idx in range(num_images):
-        size = random.choice(sizes)
-        file_format = random.choice(formats)
-        mode_idx = random.randrange(len(modes))
+        size = secrets.choice(sizes)
+        file_format = secrets.choice(formats)
+        mode_idx = secrets.SystemRandom().randrange(len(modes))
         mode = modes[mode_idx]
         dimension = dimensions[mode_idx]
 
@@ -84,7 +84,7 @@ def generate_images(
 
 def run_images_benchmark_single_node(benchmark: Benchmark):
     # Set global random seed.
-    random.seed(42)
+    secrets.SystemRandom().seed(42)
 
     test_input = [
         generate_images(100, [(256, 256)], ["RGB"], ["jpg"]),

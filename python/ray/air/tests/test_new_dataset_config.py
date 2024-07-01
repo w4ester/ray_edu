@@ -1,4 +1,3 @@
-import random
 from typing import Optional
 from unittest.mock import MagicMock
 
@@ -11,6 +10,7 @@ from ray.data._internal.execution.interfaces.execution_options import ExecutionO
 from ray.tests.conftest import *  # noqa
 from ray.train import DataConfig, ScalingConfig
 from ray.train.data_parallel_trainer import DataParallelTrainer
+import secrets
 
 
 @pytest.fixture
@@ -248,7 +248,7 @@ def test_per_epoch_preprocessing(ray_start_4_cpus):
     test.fit()
 
     ds = ray.data.range(100, override_num_blocks=100).map(
-        lambda x: {"id": x["id"] * random.random()}
+        lambda x: {"id": x["id"] * secrets.SystemRandom().random()}
     )
     test = TestRandom(2, True, datasets={"train": ds})
     test.fit()
@@ -278,7 +278,7 @@ def test_materialized_preprocessing(ray_start_4_cpus):
     test.fit()
 
     ds = ray.data.range(100, override_num_blocks=100).map(
-        lambda x: {"id": x["id"] * random.random()}
+        lambda x: {"id": x["id"] * secrets.SystemRandom().random()}
     )
     ds = ds.materialize()
     test = TestRandom(

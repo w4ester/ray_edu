@@ -1,4 +1,3 @@
-import random
 from typing import Any, Dict, List, Optional
 import numpy as np
 
@@ -13,6 +12,7 @@ from ray.rllib.utils.metrics.window_stat import WindowStat
 from ray.rllib.utils.replay_buffers.replay_buffer import ReplayBuffer
 from ray.rllib.utils.typing import SampleBatchType
 from ray.util.annotations import DeveloperAPI
+import secrets
 
 
 @DeveloperAPI
@@ -85,7 +85,7 @@ class PrioritizedReplayBuffer(ReplayBuffer):
         res = []
         for _ in range(num_items):
             # TODO(szymon): should we ensure no repeats?
-            mass = random.random() * self._it_sum.sum(0, len(self._storage))
+            mass = secrets.SystemRandom().random() * self._it_sum.sum(0, len(self._storage))
             idx = self._it_sum.find_prefixsum_idx(mass)
             res.append(idx)
         return res

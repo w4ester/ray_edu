@@ -1,5 +1,4 @@
 import logging
-import random
 from collections import defaultdict
 
 import numpy as np
@@ -18,6 +17,7 @@ from ray.data.context import DataContext
 from ray.data.tests.conftest import *  # noqa
 from ray.data.tests.util import extract_values
 from ray.tests.conftest import *  # noqa
+import secrets
 
 
 @pytest.mark.parametrize(
@@ -55,7 +55,7 @@ def test_sort_simple(ray_start_regular, use_push_based_shuffle):
     num_items = 100
     parallelism = 4
     xs = list(range(num_items))
-    random.shuffle(xs)
+    secrets.SystemRandom().shuffle(xs)
     ds = ray.data.from_items(xs, override_num_blocks=parallelism)
     assert extract_values("item", ds.sort("item").take(num_items)) == list(
         range(num_items)
@@ -198,9 +198,9 @@ def test_sort_with_multiple_keys(ray_start_regular, descending, batch_format):
     num_blocks = 100
     df = pd.DataFrame(
         {
-            "a": [random.choice("ABCD") for _ in range(num_items)],
+            "a": [secrets.choice("ABCD") for _ in range(num_items)],
             "b": [x % 3 for x in range(num_items)],
-            "c": [bool(random.getrandbits(1)) for _ in range(num_items)],
+            "c": [bool(secrets.SystemRandom().getrandbits(1)) for _ in range(num_items)],
         }
     )
     ds = ray.data.from_pandas(df).map_batches(

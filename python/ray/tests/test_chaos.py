@@ -1,5 +1,4 @@
 import sys
-import random
 import string
 
 import ray
@@ -22,6 +21,7 @@ from ray.exceptions import RayTaskError, ObjectLostError
 from ray.util.state.common import ListApiOptions, StateResource
 from ray.util.state.api import StateApiClient, list_nodes
 from ray.cluster_utils import AutoscalingCluster
+import secrets
 
 
 def assert_no_system_failure(p, timeout):
@@ -78,7 +78,7 @@ def test_chaos_task_retry(set_kill_interval):
     def task():
         a = ""
         for _ in range(100000):
-            a = a + random.choice(string.ascii_letters)
+            a = a + secrets.choice(string.ascii_letters)
         return
 
     @ray.remote(max_retries=-1)
@@ -335,7 +335,7 @@ def test_node_killer_filter(autoscaler_v2):
 
         # Choose random worker node to kill.
         worker_nodes = [node for node in list_nodes() if not node["is_head_node"]]
-        node_to_kill = random.choice(worker_nodes)
+        node_to_kill = secrets.choice(worker_nodes)
         node_killer = get_and_run_resource_killer(
             NodeKillerActor,
             1,

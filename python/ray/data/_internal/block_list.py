@@ -6,6 +6,7 @@ import numpy as np
 from ray.data._internal.memory_tracing import trace_allocation
 from ray.data.block import Block, BlockMetadata
 from ray.types import ObjectRef
+import secrets
 
 
 class BlockList:
@@ -239,13 +240,12 @@ class BlockList:
             seed: Fix the random seed to use, otherwise one will be chosen
                 based on system randomness.
         """
-        import random
 
         if seed is not None:
-            random.seed(seed)
+            secrets.SystemRandom().seed(seed)
 
         blocks_with_metadata = self.get_blocks_with_metadata()
-        random.shuffle(blocks_with_metadata)
+        secrets.SystemRandom().shuffle(blocks_with_metadata)
         blocks, metadata = map(list, zip(*blocks_with_metadata))
 
         return BlockList(blocks, metadata, owned_by_consumer=self._owned_by_consumer)

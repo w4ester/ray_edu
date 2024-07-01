@@ -2,7 +2,6 @@
 import logging
 import os
 import pickle
-import random
 import sys
 import time
 
@@ -16,6 +15,7 @@ from ray._private.test_utils import (
     run_string_as_driver,
 )
 from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -397,20 +397,20 @@ def test_invalid_arguments():
     # Type check
     for keyword in ("max_retries", "max_calls"):
         with pytest.raises(TypeError, match=re.escape(template1.format(keyword))):
-            ray.remote(**{keyword: random.random()})(f)
+            ray.remote(**{keyword: secrets.SystemRandom().random()})(f)
     num_returns_template = (
         "The type of keyword 'num_returns' "
         + f"must be {(int, str, type(None))}, but received type {float}"
     )
     with pytest.raises(TypeError, match=re.escape(num_returns_template)):
-        ray.remote(**{"num_returns": random.random()})(f)
+        ray.remote(**{"num_returns": secrets.SystemRandom().random()})(f)
 
     for keyword in ("max_restarts", "max_task_retries"):
         with pytest.raises(TypeError, match=re.escape(template1.format(keyword))):
-            ray.remote(**{keyword: random.random()})(A)
+            ray.remote(**{keyword: secrets.SystemRandom().random()})(A)
 
     # Value check for non-negative finite values
-    for v in (random.randint(-100, -2), -1):
+    for v in (secrets.SystemRandom().randint(-100, -2), -1):
         keyword = "max_calls"
         with pytest.raises(
             ValueError,
@@ -435,11 +435,11 @@ def test_invalid_arguments():
     )
 
     with pytest.raises(ValueError, match=template2.format("max_retries")):
-        ray.remote(max_retries=random.randint(-100, -2))(f)
+        ray.remote(max_retries=secrets.SystemRandom().randint(-100, -2))(f)
 
     for keyword in ("max_restarts", "max_task_retries"):
         with pytest.raises(ValueError, match=template2.format(keyword)):
-            ray.remote(**{keyword: random.randint(-100, -2)})(A)
+            ray.remote(**{keyword: secrets.SystemRandom().randint(-100, -2)})(A)
 
     metadata_type_err = (
         "The type of keyword '_metadata' "

@@ -13,7 +13,6 @@ https://docs.ray.io/en/master/rllib-algorithms.html#distributed-prioritized-expe
 """  # noqa: E501
 import copy
 import platform
-import random
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple, Union
 
@@ -48,6 +47,7 @@ from ray.rllib.utils.typing import (
 )
 from ray.tune.execution.placement_groups import PlacementGroupFactory
 from ray.tune.trainable import Trainable
+import secrets
 
 
 class ApexDQNConfig(DQNConfig):
@@ -424,7 +424,7 @@ class ApexDQN(DQN):
             with self._timers[SAMPLE_TIMER]:
                 local_sampling_worker = self.workers.local_worker()
                 batch = local_sampling_worker.sample()
-                actor_id = random.choice(self._replay_actor_manager.healthy_actor_ids())
+                actor_id = secrets.choice(self._replay_actor_manager.healthy_actor_ids())
                 self._replay_actor_manager.foreach_actor(
                     lambda actor: actor.add(batch),
                     remote_actor_ids=[actor_id],
@@ -451,7 +451,7 @@ class ApexDQN(DQN):
             # refs for the samples to the driver process and doing the sampling
             # operation on there.
             _batch = worker.sample()
-            _actor = random.choice(replay_actor_manager.healthy_actor_ids())
+            _actor = secrets.choice(replay_actor_manager.healthy_actor_ids())
             replay_actor_manager.foreach_actor(
                 lambda actor: actor.add(_batch),
                 remote_actor_ids=[_actor],
@@ -579,7 +579,7 @@ class ApexDQN(DQN):
 
             # Make num_requests_to_launch calls to the underlying replay actors.
             worker_ids_to_call = [
-                random.choice(healthy_worker_ids) for _ in range(num_requests_to_launch)
+                secrets.choice(healthy_worker_ids) for _ in range(num_requests_to_launch)
             ]
             self._replay_actor_manager.foreach_actor_async(
                 func=lambda actor: actor.sample(train_batch_size),

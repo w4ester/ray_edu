@@ -3,7 +3,6 @@ import contextlib
 import csv
 import logging
 import os
-import random
 import subprocess
 import tempfile
 from typing import Callable, Dict, Iterable, List
@@ -21,6 +20,7 @@ from ray.experimental.raysort.types import (
     RecordCount,
 )
 from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
+import secrets
 
 Args = argparse.Namespace
 
@@ -130,7 +130,7 @@ def _get_mount_points():
 
 def _part_info(args: Args, part_id: PartId, kind="input") -> PartInfo:
     node = ray._private.worker.global_worker.node_ip_address
-    mnt = random.choice(args.mount_points)
+    mnt = secrets.choice(args.mount_points)
     filepath = _get_part_path(mnt, part_id, kind)
     return PartInfo(part_id, node, filepath)
 
@@ -229,7 +229,7 @@ def _dummy_merge(
 ) -> Iterable[np.ndarray]:
     blocks = [((i, 0), get_block(i, 0)) for i in range(num_blocks)]
     while len(blocks) > 0:
-        (m, d), block = blocks.pop(random.randrange(len(blocks)))
+        (m, d), block = blocks.pop(secrets.SystemRandom().randrange(len(blocks)))
         yield block
         d_ = d + 1
         block = get_block(m, d_)

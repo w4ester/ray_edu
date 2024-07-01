@@ -9,10 +9,10 @@ Acceptance criteria: Should run through and print "PASSED"
 """
 
 import ray
-import random
 import os
 import time
 from ray._private.test_utils import safe_write_to_results_json
+import secrets
 
 
 def update_progress(result):
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     for i in range(NUM_TASK_ITERATIONS):
         results = []
         for j in range(NUM_ENVS_PER_ITERATION):
-            (env, expected_version) = random.choice(list(zip(envs, versions)))
+            (env, expected_version) = secrets.choice(list(zip(envs, versions)))
             remote_task = check_version_task.options(runtime_env=env)
             results.extend(
                 [
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     for i in range(NUM_ACTOR_ITERATIONS):
         results = []
         for j in range(NUM_ENVS_PER_ITERATION):
-            env, expected_version = random.choice(list(zip(envs, versions)))
+            env, expected_version = secrets.choice(list(zip(envs, versions)))
             actor = TestActor.options(runtime_env=env).remote()
             results.extend(
                 [

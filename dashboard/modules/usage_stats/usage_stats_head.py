@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-import random
 import requests
 from concurrent.futures import ThreadPoolExecutor
 
@@ -10,6 +9,7 @@ import ray._private.usage.usage_lib as ray_usage_lib
 from ray._private.utils import get_or_create_event_loop
 import ray.dashboard.utils as dashboard_utils
 from ray.dashboard.utils import async_loop_forever
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +199,7 @@ class UsageStatsHead(dashboard_utils.DashboardHeadModule):
             await self._report_usage_async()
             # Add a random offset before the second report to remove sample bias.
             await asyncio.sleep(
-                random.randint(0, ray_usage_lib._usage_stats_report_interval_s())
+                secrets.SystemRandom().randint(0, ray_usage_lib._usage_stats_report_interval_s())
             )
             await asyncio.gather(self.periodically_report_usage())
 

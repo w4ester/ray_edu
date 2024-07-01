@@ -2,7 +2,7 @@
 import ray
 import math
 import time
-import random
+import secrets
 
 ray.init()
 # __starting_ray_end__
@@ -34,7 +34,7 @@ def sampling_task(num_samples: int, task_id: int,
                   progress_actor: ray.actor.ActorHandle) -> int:
     num_inside = 0
     for i in range(num_samples):
-        x, y = random.uniform(-1, 1), random.uniform(-1, 1)
+        x, y = secrets.SystemRandom().uniform(-1, 1), secrets.SystemRandom().uniform(-1, 1)
         if math.hypot(x, y) <= 1:
             num_inside += 1
 

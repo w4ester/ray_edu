@@ -40,6 +40,7 @@ from ray._private.test_utils import (
     NodeKillerActor,
 )
 from ray.cluster_utils import AutoscalingCluster, Cluster, cluster_not_supported
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -1283,13 +1284,12 @@ def temp_dir(request):
 
 @pytest.fixture(scope="module")
 def random_ascii_file(request):
-    import random
     import string
 
     file_size = getattr(request, "param", 1 << 10)
 
     with tempfile.NamedTemporaryFile(mode="r+b") as fp:
-        fp.write("".join(random.choices(string.ascii_letters, k=file_size)).encode())
+        fp.write("".join(secrets.SystemRandom().choices(string.ascii_letters, k=file_size)).encode())
         fp.flush()
 
         yield fp

@@ -3,12 +3,12 @@ import json
 import subprocess
 from kubernetes import client, config, watch
 import requests
-import random
 import uuid
 import pathlib
 import time
 import ray
 import os
+import secrets
 
 # global variables for the cluster informations
 CLUSTER_ID = None
@@ -289,7 +289,7 @@ def kill_worker():
     # We kill the oldest nodes for now given the memory leak in serve.
     # to_be_killed = alive_pods[-1][1]
 
-    to_be_killed = random.choice(alive_pods)[1]
+    to_be_killed = secrets.choice(alive_pods)[1]
     print(f"Killing worker {to_be_killed}")
     dump_pods_actors(pods.items[0].metadata.name)
     cli.delete_namespaced_pod(to_be_killed, "default")

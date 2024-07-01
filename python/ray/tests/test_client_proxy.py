@@ -1,6 +1,5 @@
 import json
 import os
-import random
 import sys
 import time
 from glob import glob
@@ -17,6 +16,7 @@ from ray._private.ray_constants import REDIS_DEFAULT_PASSWORD
 from ray._private.test_utils import run_string_as_driver, wait_for_condition
 from ray.cloudpickle.compat import pickle
 from ray.job_config import JobConfig
+import secrets
 
 
 def start_ray_and_proxy_manager(n_ports=2):
@@ -30,7 +30,7 @@ def start_ray_and_proxy_manager(n_ports=2):
         redis_password=REDIS_DEFAULT_PASSWORD,
         runtime_env_agent_address=runtime_env_agent_address,
     )
-    free_ports = random.choices(pm._free_ports, k=n_ports)
+    free_ports = secrets.SystemRandom().choices(pm._free_ports, k=n_ports)
     assert len(free_ports) == n_ports
     pm._free_ports = free_ports.copy()
 

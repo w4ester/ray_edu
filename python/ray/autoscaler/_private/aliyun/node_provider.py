@@ -1,5 +1,4 @@
 import logging
-import random
 import threading
 import time
 from collections import defaultdict
@@ -25,6 +24,7 @@ from ray.autoscaler.tags import (
     TAG_RAY_NODE_STATUS,
     TAG_RAY_USER_NODE_TYPE,
 )
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class AliyunNodeProvider(NodeProvider):
         )
 
         # Try availability zones round-robin, starting from random offset
-        self.subnet_idx = random.randint(0, 100)
+        self.subnet_idx = secrets.SystemRandom().randint(0, 100)
 
         # Tags that we believe to actually be on the node.
         self.tag_cache = {}

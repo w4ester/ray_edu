@@ -1,5 +1,4 @@
 import os
-import random
 import unittest
 
 import numpy as np
@@ -13,6 +12,7 @@ from ray.tune.search.variant_generator import (
     RecursiveDependencyError,
     _resolve_nested_dict,
 )
+import secrets
 
 
 class VariantGeneratorTest(unittest.TestCase):
@@ -279,7 +279,7 @@ class VariantGeneratorTest(unittest.TestCase):
     def testDependentGridSearchCallable(self):
         class Normal:
             def __call__(self, _config):
-                return random.normalvariate(mu=0, sigma=1)
+                return secrets.SystemRandom().normalvariate(mu=0, sigma=1)
 
         class Single:
             def __call__(self, _config):

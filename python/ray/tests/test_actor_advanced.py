@@ -1,5 +1,4 @@
 import os
-import random
 import sys
 import threading
 import time
@@ -23,6 +22,7 @@ from ray._private.test_utils import (
 )
 from ray._private.ray_constants import gcs_actor_scheduling_enabled
 from ray.experimental.internal_kv import _internal_kv_get, _internal_kv_put
+import secrets
 
 
 def test_remote_functions_not_scheduled_on_actors(ray_start_regular):
@@ -1185,7 +1185,7 @@ def test_create_actor_race_condition(shutdown_only):
         pass
 
     def create(name, namespace, results, i):
-        time.sleep(random.random())
+        time.sleep(secrets.SystemRandom().random())
         try:
             Actor.options(
                 name=name,

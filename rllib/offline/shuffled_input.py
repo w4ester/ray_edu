@@ -1,9 +1,9 @@
 import logging
-import random
 
 from ray.rllib.offline.input_reader import InputReader
 from ray.rllib.utils.annotations import override, DeveloperAPI
 from ray.rllib.utils.typing import SampleBatchType
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +37,6 @@ class ShuffledInput(InputReader):
             while len(self.buffer) < self.n:
                 self.buffer.append(self.child.next())
             logger.info("Shuffle buffer filled")
-        i = random.randint(0, len(self.buffer) - 1)
+        i = secrets.SystemRandom().randint(0, len(self.buffer) - 1)
         self.buffer[i] = self.child.next()
-        return random.choice(self.buffer)
+        return secrets.choice(self.buffer)

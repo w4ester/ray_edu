@@ -1,7 +1,6 @@
 from gymnasium.spaces import Box, MultiDiscrete, Tuple as TupleSpace
 import logging
 import numpy as np
-import random
 import time
 from typing import Callable, Optional, Tuple
 
@@ -9,6 +8,7 @@ from ray.rllib.env.multi_agent_env import MultiAgentEnv
 from ray.rllib.policy.policy import PolicySpec
 from ray.rllib.utils.annotations import PublicAPI
 from ray.rllib.utils.typing import MultiAgentDict, PolicyID, AgentID
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ class Unity3DEnv(MultiAgentEnv):
             # environments (num_workers >> 1). Otherwise, would lead to port
             # conflicts sometimes.
             if port_ is not None:
-                time.sleep(random.randint(1, 10))
+                time.sleep(secrets.SystemRandom().randint(1, 10))
             port_ = port or (
                 self._BASE_PORT_ENVIRONMENT if file_name else self._BASE_PORT_EDITOR
             )

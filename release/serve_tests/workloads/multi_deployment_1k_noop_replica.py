@@ -28,7 +28,6 @@ Report:
 import click
 import logging
 import math
-import random
 from typing import List, Optional
 
 from starlette.requests import Request
@@ -46,6 +45,7 @@ from serve_test_cluster_utils import (
     NUM_CPU_PER_NODE,
     NUM_CONNECTIONS,
 )
+import secrets
 
 logger = logging.getLogger(__file__)
 
@@ -86,7 +86,7 @@ def setup_multi_deployment_replicas(num_replicas, num_deployments) -> List[str]:
                     serve.get_app_handle(app) for app in applications
                 ]
 
-            return random.choice(self.all_app_async_handles)
+            return secrets.choice(self.all_app_async_handles)
 
         async def handle_request(self, body: bytes, depth: int):
             # Max recursive call depth reached

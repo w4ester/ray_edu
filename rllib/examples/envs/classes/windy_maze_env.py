@@ -1,9 +1,9 @@
 import gymnasium as gym
 from gymnasium.spaces import Box, Discrete, Tuple
 import logging
-import random
 
 from ray.rllib.env import MultiAgentEnv
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class WindyMazeEnv(gym.Env):
         self.action_space = Discrete(2)  # whether to move or not
 
     def reset(self, *, seed=None, options=None):
-        self.wind_direction = random.choice([0, 1, 2, 3])
+        self.wind_direction = secrets.choice([0, 1, 2, 3])
         self.pos = self.start_pos
         self.num_steps = 0
         return [[self.pos[0], self.pos[1]], self.wind_direction], {}
@@ -52,7 +52,7 @@ class WindyMazeEnv(gym.Env):
         if action == 1:
             self.pos = self._get_new_pos(self.pos, self.wind_direction)
         self.num_steps += 1
-        self.wind_direction = random.choice([0, 1, 2, 3])
+        self.wind_direction = secrets.choice([0, 1, 2, 3])
         at_goal = self.pos == self.end_pos
         truncated = self.num_steps >= 200
         done = at_goal or truncated

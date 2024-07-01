@@ -1,6 +1,5 @@
 import numpy as np
 import json
-import random
 import os
 import shutil
 import platform
@@ -13,6 +12,7 @@ from ray._private.test_utils import (
     fetch_prometheus,
     wait_for_condition,
 )
+import secrets
 
 MB = 1024 * 1024
 
@@ -201,7 +201,7 @@ def test_fd_reuse_no_memory_corruption(shutdown_only):
     @ray.remote
     class Actor:
         def produce(self, i):
-            s = random.randrange(1, 200)
+            s = secrets.SystemRandom().randrange(1, 200)
             z = np.ones(s * 1024 * 1024)
             z[0] = i
             return z

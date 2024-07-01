@@ -1,5 +1,4 @@
 import os
-import random
 import subprocess
 import sys
 import time
@@ -15,6 +14,7 @@ from ray.rllib import _register_all
 from ray.train.tests.util import create_dict_checkpoint
 from ray.tune.cli import commands
 from ray.tune.result import CONFIG_PREFIX
+import secrets
 
 try:
     from cStringIO import StringIO
@@ -55,9 +55,9 @@ def test_time(start_ray, tmpdir, monkeypatch):
                 ray.train.report(
                     {
                         "epoch": i,
-                        "a": random.random(),
-                        "b/c": random.random(),
-                        "d": random.random(),
+                        "a": secrets.SystemRandom().random(),
+                        "b/c": secrets.SystemRandom().random(),
+                        "d": secrets.SystemRandom().random(),
                     },
                     checkpoint=checkpoint,
                 )

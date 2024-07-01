@@ -9,7 +9,6 @@ import bs4
 import logging
 import logging.handlers
 import pathlib
-import random
 import urllib
 import urllib.request
 from queue import Queue
@@ -25,6 +24,7 @@ from pydata_sphinx_theme.toctree import add_collapse_checkboxes
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.formatters import HtmlFormatter
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -847,11 +847,11 @@ def setup_context(app, pagename, templatename, context, doctree):
                 "img",
                 attrs={
                     "class": "example-icon",
-                    "src": f"../_static/img/icon_bg_{random.randint(1, 5)}.jpg",
+                    "src": f"../_static/img/icon_bg_{secrets.SystemRandom().randint(1, 5)}.jpg",
                 },
             )
             remix_icon = soup.new_tag(
-                "i", attrs={"class": f"{random.choice(REMIX_ICONS)} remix-icon"}
+                "i", attrs={"class": f"{secrets.choice(REMIX_ICONS)} remix-icon"}
             )
             icon.append(remix_icon)
             example_icon_area.append(icon)

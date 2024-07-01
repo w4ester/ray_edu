@@ -1,5 +1,4 @@
 import logging
-import random
 import time
 import uuid
 from collections import Counter, defaultdict
@@ -15,6 +14,7 @@ from ray.air.execution.resources import (
     ResourceRequest,
 )
 from ray.exceptions import RayActorError, RayTaskError
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -200,11 +200,11 @@ class RayActorManager:
 
         # Shuffle state futures
         shuffled_state_futures = list(actor_state_futures)
-        random.shuffle(shuffled_state_futures)
+        secrets.SystemRandom().shuffle(shuffled_state_futures)
 
         # Shuffle task futures
         shuffled_task_futures = list(actor_task_futures)
-        random.shuffle(shuffled_task_futures)
+        secrets.SystemRandom().shuffle(shuffled_task_futures)
 
         # Prioritize resource futures over actor state over task futures
         all_futures = resource_futures + shuffled_state_futures + shuffled_task_futures

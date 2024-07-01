@@ -10,13 +10,13 @@ Acceptance criteria: Should run through and print "PASSED"
 import argparse
 import os
 import time
-import random
 from typing import List, Optional
 from ray.dashboard.modules.job.common import JobStatus
 from ray.dashboard.modules.job.pydantic_models import JobDetails
 import ray
 from ray.job_submission import JobSubmissionClient
 from ray._private.test_utils import safe_write_to_results_json
+import secrets
 
 NUM_CLIENTS = 4
 NUM_JOBS_PER_BATCH = 4
@@ -119,7 +119,7 @@ if __name__ == "__main__":
         # Get job logs from random submission job
         is_submission_job = False
         while not is_submission_job:
-            job_details = random.choice(jobs)
+            job_details = secrets.choice(jobs)
             is_submission_job = job_details.type == "SUBMISSION"
         job_id = job_details.submission_id
         print(f"Getting logs for randomly chosen job {job_id}...")

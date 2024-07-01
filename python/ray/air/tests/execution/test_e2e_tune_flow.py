@@ -1,4 +1,3 @@
-import random
 from collections import defaultdict
 from typing import Dict, List, Optional
 
@@ -10,6 +9,7 @@ from ray.air.execution import FixedResourceManager, PlacementGroupResourceManage
 from ray.air.execution._internal.actor_manager import RayActorManager
 from ray.air.execution._internal.tracked_actor import TrackedActor
 from ray.exceptions import RayActorError
+import secrets
 
 
 @pytest.fixture(scope="module")
@@ -95,7 +95,7 @@ class TuneFlow:
 
         error_kwargs = {}
         if self._errors:
-            error = random.choice(self._errors)
+            error = secrets.choice(self._errors)
             error_kwargs[error] = True
 
         actor_id = self._actors_started

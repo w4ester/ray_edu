@@ -1,7 +1,6 @@
 import gymnasium as gym
 import numpy as np
 import tree  # pip install dm_tree
-import random
 from typing import Union, Optional
 
 from ray.rllib.models.torch.torch_action_dist import TorchMultiActionDistribution
@@ -13,6 +12,7 @@ from ray.rllib.utils.from_config import from_config
 from ray.rllib.utils.numpy import convert_to_numpy
 from ray.rllib.utils.schedules import Schedule, PiecewiseSchedule
 from ray.rllib.utils.torch_utils import FLOAT_MIN
+import secrets
 
 tf1, tf, tfv = try_import_tf()
 torch, _ = try_import_torch()
@@ -188,7 +188,7 @@ class EpsilonGreedy(Exploration):
             if isinstance(action_distribution, TorchMultiActionDistribution):
                 exploit_action = tree.flatten(exploit_action)
                 for i in range(batch_size):
-                    if random.random() < epsilon:
+                    if secrets.SystemRandom().random() < epsilon:
                         # TODO: (bcahlit) Mask out actions
                         random_action = tree.flatten(self.action_space.sample())
                         for j in range(len(exploit_action)):

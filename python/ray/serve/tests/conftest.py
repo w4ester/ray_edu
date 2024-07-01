@@ -1,5 +1,4 @@
 import os
-import random
 import subprocess
 import tempfile
 from copy import deepcopy
@@ -20,6 +19,7 @@ from ray.serve._private.test_utils import (
 )
 from ray.serve.context import _get_global_client
 from ray.tests.conftest import propagate_logs, pytest_runtest_makereport  # noqa
+import secrets
 
 # https://tools.ietf.org/html/rfc6335#section-6
 MIN_DYNAMIC_PORT = 49152
@@ -65,7 +65,7 @@ def ray_autoscaling_cluster(request):
 
 @pytest.fixture
 def ray_start(scope="module"):
-    port = random.randint(MIN_DYNAMIC_PORT, MAX_DYNAMIC_PORT)
+    port = secrets.SystemRandom().randint(MIN_DYNAMIC_PORT, MAX_DYNAMIC_PORT)
     subprocess.check_output(
         [
             "ray",

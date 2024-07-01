@@ -48,7 +48,6 @@ You should see results similar to the following in your console output:
 import gymnasium as gym
 from gymnasium.spaces import Discrete, Box
 import numpy as np
-import random
 
 from typing import Optional
 
@@ -57,6 +56,7 @@ from ray.rllib.utils.test_utils import (
     run_rllib_example_script_experiment,
 )
 from ray.tune.registry import get_trainable_cls, register_env  # noqa
+import secrets
 
 
 parser = add_rllib_example_script_args(
@@ -97,7 +97,7 @@ class SimpleCorridor(gym.Env):
         self.observation_space = Box(0.0, self.end_pos, shape=(1,), dtype=np.float32)
 
     def reset(self, *, seed=None, options=None):
-        random.seed(seed)
+        secrets.SystemRandom().seed(seed)
         self.cur_pos = 0
         # Return obs and (empty) info dict.
         return np.array([self.cur_pos], np.float32), {}
@@ -115,7 +115,7 @@ class SimpleCorridor(gym.Env):
         terminated = self.cur_pos >= self.end_pos
         truncated = False
         # Produce a random reward from [0.5, 1.5] when we reach the goal.
-        reward = random.uniform(0.5, 1.5) if terminated else -0.01
+        reward = secrets.SystemRandom().uniform(0.5, 1.5) if terminated else -0.01
         infos = {}
         return (
             np.array([self.cur_pos], np.float32),

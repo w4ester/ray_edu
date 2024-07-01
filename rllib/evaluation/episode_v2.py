@@ -1,4 +1,3 @@
-import random
 from collections import defaultdict
 import numpy as np
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
@@ -13,6 +12,7 @@ from ray.rllib.policy.policy_map import PolicyMap
 from ray.rllib.policy.sample_batch import SampleBatch
 from ray.rllib.utils.annotations import OldAPIStack
 from ray.rllib.utils.typing import AgentID, EnvID, EnvInfoDict, PolicyID, TensorType
+import secrets
 
 if TYPE_CHECKING:
     from ray.rllib.algorithms.callbacks import DefaultCallbacks
@@ -44,7 +44,7 @@ class EpisodeV2:
             worker: The RolloutWorker instance, in which this episode runs.
         """
         # Unique id identifying this trajectory.
-        self.episode_id: int = random.randrange(int(1e18))
+        self.episode_id: int = secrets.SystemRandom().randrange(int(1e18))
         # ID of the environment this episode is tracking.
         self.env_id = env_id
         # Summed reward across all agents in this episode.

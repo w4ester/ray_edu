@@ -4,7 +4,6 @@ Validates BatchingNodeProvider's book-keeping logic.
 from copy import copy
 from uuid import uuid4
 import os
-import random
 import sys
 from typing import Any, Dict
 from collections import defaultdict
@@ -30,6 +29,7 @@ from ray.autoscaler._private.constants import (
     DISABLE_NODE_UPDATERS_KEY,
     FOREGROUND_NODE_LAUNCH_KEY,
 )
+import secrets
 
 
 class MockBatchingNodeProvider(BatchingNodeProvider):
@@ -287,26 +287,26 @@ class BatchingNodeProviderTester:
         """Generates random sequences of create_node and terminate_nodes requests
         for the node provider. Generates random safe_to_scale_flag.
         """
-        num_creates = random.choice(range(100))
-        num_terminates = random.choice(range(100))
+        num_creates = secrets.choice(range(100))
+        num_terminates = secrets.choice(range(100))
 
         create_node_requests = []
         for _ in range(num_creates):
             # Choose from 5 worker types.
-            node_type = random.choice([f"type-{x}" for x in range(5)])
+            node_type = secrets.choice([f"type-{x}" for x in range(5)])
             # Create up to 9 workers.
-            count = random.choice(range(10))
+            count = secrets.choice(range(10))
             create_node_requests.append((node_type, count))
 
         terminate_nodes_requests = []
         for _ in range(num_terminates):
-            node_type = random.choice([f"type-{x}" for x in range(5)])
+            node_type = secrets.choice([f"type-{x}" for x in range(5)])
             # Terminate up to 9 workers.
-            count = random.choice(range(10))
+            count = secrets.choice(range(10))
             terminate_nodes_requests.append((node_type, count))
 
         # 50% chance of the update being executed.
-        safe_to_scale_flag = random.choice([True, False])
+        safe_to_scale_flag = secrets.choice([True, False])
 
         return create_node_requests, terminate_nodes_requests, safe_to_scale_flag
 

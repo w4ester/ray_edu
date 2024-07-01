@@ -1,13 +1,13 @@
 # This workload stresses distributed reference counting by passing and
 # returning serialized ObjectRefs.
 import time
-import random
 
 import numpy as np
 
 import ray
 from ray.cluster_utils import Cluster
 from ray._private.test_utils import safe_write_to_results_json
+import secrets
 
 
 def update_progress(result):
@@ -62,7 +62,7 @@ def child(*xs):
 @ray.remote(max_retries=0)
 def f(*xs):
     if xs:
-        return random.choice(xs)
+        return secrets.choice(xs)
     else:
         return child.remote(*xs)
 

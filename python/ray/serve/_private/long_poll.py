@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-import random
 from asyncio.events import AbstractEventLoop
 from collections import defaultdict
 from dataclasses import dataclass
@@ -16,6 +15,7 @@ from ray.serve.generated.serve_pb2 import EndpointInfo as EndpointInfoProto
 from ray.serve.generated.serve_pb2 import EndpointSet, LongPollRequest, LongPollResult
 from ray.serve.generated.serve_pb2 import UpdatedObject as UpdatedObjectProto
 from ray.util import metrics
+import secrets
 
 logger = logging.getLogger(SERVE_LOGGER_NAME)
 
@@ -192,7 +192,7 @@ class LongPollHost:
     ):
         # Map object_key -> int
         self.snapshot_ids: DefaultDict[KeyType, int] = defaultdict(
-            lambda: random.randint(0, 1_000_000)
+            lambda: secrets.SystemRandom().randint(0, 1_000_000)
         )
         # Map object_key -> object
         self.object_snapshots: Dict[KeyType, Any] = dict()
@@ -279,7 +279,7 @@ class LongPollHost:
         done, not_done = await asyncio.wait(
             async_task_to_watched_keys.keys(),
             return_when=asyncio.FIRST_COMPLETED,
-            timeout=random.uniform(*self._listen_for_change_request_timeout_s),
+            timeout=secrets.SystemRandom().uniform(*self._listen_for_change_request_timeout_s),
         )
 
         for task in not_done:

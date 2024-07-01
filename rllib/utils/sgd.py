@@ -2,11 +2,11 @@
 
 import logging
 import numpy as np
-import random
 
 from ray.rllib.utils.annotations import OldAPIStack
 from ray.rllib.policy.sample_batch import SampleBatch, MultiAgentBatch
 from ray.rllib.utils.metrics.learner_info import LearnerInfoBuilder
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -56,14 +56,14 @@ def minibatches(samples: SampleBatch, sgd_minibatch_size: int, shuffle: bool = T
 
     if len(state_slices) == 0:
         if shuffle:
-            random.shuffle(data_slices)
+            secrets.SystemRandom().shuffle(data_slices)
         for i, j in data_slices:
             yield samples[i:j]
     else:
         all_slices = list(zip(data_slices, state_slices))
         if shuffle:
             # Make sure to shuffle data and states while linked together.
-            random.shuffle(all_slices)
+            secrets.SystemRandom().shuffle(all_slices)
         for (i, j), (si, sj) in all_slices:
             yield samples.slice(i, j, si, sj)
 

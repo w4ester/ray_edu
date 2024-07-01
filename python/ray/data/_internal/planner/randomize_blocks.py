@@ -7,6 +7,7 @@ from ray.data._internal.execution.interfaces import (
 )
 from ray.data._internal.logical.operators.all_to_all_operator import RandomizeBlocks
 from ray.data._internal.stats import StatsDict
+import secrets
 
 
 def generate_randomize_blocks_fn(
@@ -17,7 +18,6 @@ def generate_randomize_blocks_fn(
     def fn(
         refs: List[RefBundle], context: TaskContext
     ) -> Tuple[List[RefBundle], StatsDict]:
-        import random
 
         nonlocal op
         blocks_with_metadata = []
@@ -29,9 +29,9 @@ def generate_randomize_blocks_fn(
             return refs, {op._name: []}
         else:
             if op._seed is not None:
-                random.seed(op._seed)
+                secrets.SystemRandom().seed(op._seed)
             input_owned = all(b.owns_blocks for b in refs)
-            random.shuffle(blocks_with_metadata)
+            secrets.SystemRandom().shuffle(blocks_with_metadata)
             output = []
             meta_list = []
             for block, meta in blocks_with_metadata:
