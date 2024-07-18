@@ -1855,7 +1855,7 @@ for worker in $workers; do
     echo;
 done
     """
-    subprocess.call(COMMAND, shell=True)
+    subprocess.call(COMMAND, shell=False)
 
 
 @cli.command()

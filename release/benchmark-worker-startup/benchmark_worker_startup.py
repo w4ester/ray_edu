@@ -258,7 +258,7 @@ async def run_and_stream_logs(
 
         if not test.with_runtime_env:
             # On non-workspaces, this will run as a job but without a runtime env.
-            subprocess.check_call(entrypoint, shell=True)
+            subprocess.check_call(entrypoint, shell=False)
         else:
             job_id = client.submit_job(
                 entrypoint=entrypoint,
