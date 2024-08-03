@@ -298,9 +298,9 @@ def test_complex_serialization(ray_start_regular):
     # Test StringIO serialization
     s = io.StringIO("Hello, world!\n")
     s.seek(0)
-    line = s.readline()
+    line = s.readline(5_000_000)
     s.seek(0)
-    assert ray.get(ray.put(s)).readline() == line
+    assert ray.get(ray.put(s)).readline(5_000_000) == line
 
 
 def test_numpy_serialization(ray_start_regular):
