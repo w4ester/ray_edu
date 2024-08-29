@@ -109,7 +109,7 @@ class HuggingFaceDatasource(Datasource):
             f"https://huggingface.co/api/datasets/{dataset_name}"
             f"/parquet/{config_name}/{split_name}"
         )
-        resp = requests.get(public_url)
+        resp = requests.get(public_url, timeout=60)
         if resp.status_code == requests.codes["ok"]:
             # dataset corresponds to a public dataset, return list of parquet_files
             return resp.json()

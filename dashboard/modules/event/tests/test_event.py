@@ -128,7 +128,7 @@ def test_event_basic(disable_aiohttp_cache, ray_start_with_dashboard):
 
     def _check_events():
         try:
-            resp = requests.get(f"{webui_url}/events")
+            resp = requests.get(f"{webui_url}/events", timeout=60)
             resp.raise_for_status()
             result = resp.json()
             all_events = result["data"]["events"]
@@ -194,7 +194,7 @@ def test_event_message_limit(
 
     def _check_events():
         try:
-            resp = requests.get(f"{webui_url}/events")
+            resp = requests.get(f"{webui_url}/events", timeout=60)
             resp.raise_for_status()
             result = resp.json()
             all_events = result["data"]["events"]

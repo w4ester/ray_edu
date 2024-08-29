@@ -225,7 +225,7 @@ def test_log_filenames_contain_only_posix_characters(serve_instance):
 
     serve.run(A.bind())
 
-    r = requests.get("http://localhost:8000/")
+    r = requests.get("http://localhost:8000/", timeout=60)
     r.raise_for_status()
     assert r.text == "hi"
 
@@ -278,8 +278,8 @@ def test_context_information_in_logging(serve_and_ray_shutdown, json_log_format)
 
     f = io.StringIO()
     with redirect_stderr(f):
-        resp = requests.get("http://127.0.0.1:8000/fn").json()
-        resp2 = requests.get("http://127.0.0.1:8000/class_method").json()
+        resp = requests.get("http://127.0.0.1:8000/fn", timeout=60).json()
+        resp2 = requests.get("http://127.0.0.1:8000/class_method", timeout=60).json()
 
         # Check the component log
         expected_log_infos = [
@@ -374,7 +374,7 @@ def test_extra_field(serve_and_ray_shutdown, raise_error):
         }
 
     serve.run(fn.bind(), name="app1", route_prefix="/fn")
-    resp = requests.get("http://127.0.0.1:8000/fn")
+    resp = requests.get("http://127.0.0.1:8000/fn", timeout=60)
     if raise_error:
         resp.status_code == 500
     else:
@@ -433,7 +433,7 @@ class TestLoggingAPI:
                 }
 
         serve.run(Model.bind())
-        resp = requests.get("http://127.0.0.1:8000/").json()
+        resp = requests.get("http://127.0.0.1:8000/", timeout=60).json()
 
         replica_id = resp["replica"].split("#")[-1]
         if encoding_type == "JSON":
@@ -455,7 +455,7 @@ class TestLoggingAPI:
                 }
 
         serve.run(Model.bind())
-        resp = requests.get("http://127.0.0.1:8000/").json()
+        resp = requests.get("http://127.0.0.1:8000/", timeout=60).json()
         expected_log_regex = [".*model_info_level.*"]
         check_log_file(resp["log_file"], expected_log_regex)
 
@@ -464,7 +464,7 @@ class TestLoggingAPI:
             check_log_file(resp["log_file"], [".*model_debug_level.*"])
 
         serve.run(Model.options(logging_config={"log_level": "DEBUG"}).bind())
-        resp = requests.get("http://127.0.0.1:8000/").json()
+        resp = requests.get("http://127.0.0.1:8000/", timeout=60).json()
         expected_log_regex = [".*model_info_level.*", ".*model_debug_level.*"]
         check_log_file(resp["log_file"], expected_log_regex)
 
@@ -480,14 +480,14 @@ class TestLoggingAPI:
                 }
 
         serve.run(Model.bind())
-        resp = requests.get("http://127.0.0.1:8000/").json()
+        resp = requests.get("http://127.0.0.1:8000/", timeout=60).json()
 
         paths = resp["logs_path"].split("/")
         paths[-1] = "new_dir"
         new_log_dir = "/".join(paths)
 
         serve.run(Model.options(logging_config={"logs_dir": new_log_dir}).bind())
-        resp = requests.get("http://127.0.0.1:8000/").json()
+        resp = requests.get("http://127.0.0.1:8000/", timeout=60).json()
         assert "new_dir" in resp["logs_path"]
 
         check_log_file(resp["logs_path"], [".*model_info_level.*"])
@@ -507,7 +507,7 @@ class TestLoggingAPI:
 
         serve.run(Model.bind())
 
-        resp = requests.get("http://127.0.0.1:8000/")
+        resp = requests.get("http://127.0.0.1:8000/", timeout=60)
         assert resp.status_code == 200
         resp = resp.json()
         check_log_file(resp["logs_path"], [".*model_info_level.*"])
@@ -529,7 +529,7 @@ class TestLoggingAPI:
                 }
 
         serve.run(Model.bind(), logging_config={"log_level": "DEBUG"})
-        resp = requests.get("http://127.0.0.1:8000/").json()
+        resp = requests.get("http://127.0.0.1:8000/", timeout=60).json()
         expected_log_regex = [".*model_info_level.*", ".*model_debug_level.*"]
         check_log_file(resp["log_file"], expected_log_regex)
 
@@ -552,7 +552,7 @@ class TestLoggingAPI:
             name="app2",
             route_prefix="/app2",
         )
-        resp = requests.get("http://127.0.0.1:8000/app2").json()
+        resp = requests.get("http://127.0.0.1:8000/app2", timeout=60).json()
         check_log_file(resp["log_file"], [".*model_info_level.*"])
         # Make sure 'model_debug_level' log content does not exist.
         with pytest.raises(AssertionError):
@@ -704,7 +704,7 @@ def test_logging_disable_stdout(serve_and_ray_shutdown, ray_instance, tmp_dir):
 
     app = disable_stdout.bind()
     serve.run(app)
-    requests.get("http://127.0.0.1:8000")
+    requests.get("http://127.0.0.1:8000", timeout=60)
 
     def contain_logging_prefix(message: str, from_replica: bool = False) -> bool:
         logging_prefix = r"^test_logging.py:" if not from_replica else r"^replica.py:"
@@ -768,7 +768,7 @@ def test_serve_logging_file_names(serve_and_ray_shutdown, ray_instance):
 
     app = app.bind()
     serve.run(app, logging_config=logging_config)
-    requests.get("http://127.0.0.1:8000")
+    requests.get("http://127.0.0.1:8000", timeout=60)
 
     # Construct serve log file names.
     client = _get_global_client()

@@ -71,7 +71,7 @@ serve.run(Echo.bind(), route_prefix="/echo")
 
 print("Warming up")
 for _ in range(5):
-    resp = requests.get("http://127.0.0.1:8000/echo").text
+    resp = requests.get("http://127.0.0.1:8000/echo", timeout=60).text
     print(resp)
     time.sleep(0.5)
 

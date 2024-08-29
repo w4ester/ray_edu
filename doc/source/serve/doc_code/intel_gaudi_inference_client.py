@@ -9,12 +9,12 @@ config = {}
 
 # Non-streaming response
 sample_input = {"text": prompt, "config": config, "stream": False}
-outputs = requests.post("http://127.0.0.1:8000/", json=sample_input, stream=False)
+outputs = requests.post("http://127.0.0.1:8000/", json=sample_input, stream=False, timeout=60)
 print(outputs.text, flush=True)
 
 # Streaming response
 sample_input["stream"] = True
-outputs = requests.post("http://127.0.0.1:8000/", json=sample_input, stream=True)
+outputs = requests.post("http://127.0.0.1:8000/", json=sample_input, stream=True, timeout=60)
 outputs.raise_for_status()
 for output in outputs.iter_content(chunk_size=None, decode_unicode=True):
     print(output, end="", flush=True)

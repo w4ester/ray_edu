@@ -171,7 +171,7 @@ def test_timeline_request(shutdown_only):
 
     # Make sure the API works.
     def verify():
-        resp = requests.get(f"{dashboard_url}/api/v0/tasks/timeline")
+        resp = requests.get(f"{dashboard_url}/api/v0/tasks/timeline", timeout=60)
         resp.raise_for_status()
         assert resp.json(), "No result has returned"
         return True

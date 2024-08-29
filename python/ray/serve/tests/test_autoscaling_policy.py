@@ -1078,7 +1078,7 @@ app = g.bind()
     # Step 3: Verify that it can scale from 0 to 1.
     @ray.remote
     def send_request():
-        return requests.get("http://localhost:8000/").text
+        return requests.get("http://localhost:8000/", timeout=60).text
 
     ref = send_request.remote()
 

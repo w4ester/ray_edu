@@ -164,7 +164,7 @@ def mock_candidate_number():
 
 
 def get_register_agents_number(webui_url):
-    response = requests.get(webui_url + "/internal/node_module")
+    response = requests.get(webui_url + "/internal/node_module", timeout=60)
     response.raise_for_status()
     result = response.json()
     data = result["data"]

@@ -29,7 +29,7 @@ serve.run(app, name="app2")
 
 # __request_begin__
 text = "Hello, the weather is quite fine today!"
-resp = requests.post("http://localhost:8000/translate", json={"text": text})
+resp = requests.post("http://localhost:8000/translate", json={"text": text}, timeout=60)
 
 print(resp.text)
 # 'Hallo, das Wetter ist heute ziemlich gut!'

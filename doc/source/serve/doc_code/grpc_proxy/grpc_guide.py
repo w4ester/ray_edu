@@ -202,7 +202,7 @@ class ImageClassifier:
         url = (
             "https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt"
         )
-        labels = requests.get(url).text
+        labels = requests.get(url, timeout=60).text
         for label in labels.split("\n"):
             categories.append(label.strip())
         return categories
@@ -238,7 +238,7 @@ class ImageClassifier:
 @serve.deployment
 class ImageDownloader:
     def __call__(self, image_url: str):
-        image_bytes = requests.get(image_url).content
+        image_bytes = requests.get(image_url, timeout=60).content
         return Image.open(BytesIO(image_bytes)).convert("RGB")
 
 

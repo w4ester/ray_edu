@@ -220,7 +220,7 @@ def _setup_cluster_for_test(request, ray_start_cluster):
     b = f.options(resources={"a": 1})  # noqa
 
     # Make a request to the dashboard to produce some dashboard metrics
-    requests.get(f"http://{ray_context.dashboard_url}/nodes")
+    requests.get(f"http://{ray_context.dashboard_url}/nodes", timeout=60)
 
     node_info_list = ray.nodes()
     prom_addresses = []

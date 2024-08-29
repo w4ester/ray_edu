@@ -35,7 +35,7 @@ class Model:
         uri = (await request.json())["uri"]
 
         try:
-            image_bytes = requests.get(uri).content
+            image_bytes = requests.get(uri, timeout=60).content
         except (
             requests.exceptions.ConnectionError,
             requests.exceptions.ChunkedEncodingError,

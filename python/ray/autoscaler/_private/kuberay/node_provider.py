@@ -252,7 +252,7 @@ class KubernetesHttpApiClient(IKubernetesHttpApiClient):
             path=path,
             kuberay_crd_version=self._kuberay_crd_version,
         )
-        result = requests.get(url, headers=self._headers, verify=self._verify)
+        result = requests.get(url, headers=self._headers, verify=self._verify, timeout=60)
         if not result.status_code == 200:
             result.raise_for_status()
         return result.json()
@@ -280,7 +280,7 @@ class KubernetesHttpApiClient(IKubernetesHttpApiClient):
             json.dumps(payload),
             headers={**self._headers, "Content-type": "application/json-patch+json"},
             verify=self._verify,
-        )
+        timeout=60)
         if not result.status_code == 200:
             result.raise_for_status()
         return result.json()

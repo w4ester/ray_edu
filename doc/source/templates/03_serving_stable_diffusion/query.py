@@ -5,7 +5,7 @@ endpoint = "http://localhost:8000/imagine"
 
 def generate_image(prompt, image_size):
     req = {"prompt": prompt, "img_size": image_size}
-    resp = requests.get(endpoint, params=req)
+    resp = requests.get(endpoint, params=req, timeout=60)
     return resp.content
 
 

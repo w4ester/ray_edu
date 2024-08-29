@@ -21,7 +21,7 @@ from ray.util.state import list_tasks
 
 @ray.remote
 def do_request():
-    return requests.get("http://localhost:8000")
+    return requests.get("http://localhost:8000", timeout=60)
 
 
 @pytest.fixture
@@ -95,7 +95,7 @@ def test_request_hangs_in_execution(ray_instance, shutdown_serve):
 
     serve.run(HangsOnFirstRequest.bind())
 
-    response = requests.get("http://localhost:8000")
+    response = requests.get("http://localhost:8000", timeout=60)
     assert response.status_code == 408
 
     ray.get(signal_actor.send.remote())
@@ -148,10 +148,10 @@ def test_with_rest_api(ray_start_stop):
     wait_for_condition(application_running, timeout=15)
     print("Application has started running. Testing requests...")
 
-    response = requests.get("http://localhost:8000")
+    response = requests.get("http://localhost:8000", timeout=60)
     assert response.status_code == 408
 
-    response = requests.get("http://localhost:8000")
+    response = requests.get("http://localhost:8000", timeout=60)
     assert response.status_code == 200
     print("Requests succeeded! Deleting application.")
     ServeSubmissionClient("http://localhost:8265").delete_applications()
@@ -220,7 +220,7 @@ def test_streaming_request_already_sent_and_timed_out(ray_instance, shutdown_ser
 
     serve.run(BlockOnSecondChunk.bind())
 
-    r = requests.get("http://localhost:8000", stream=True)
+    r = requests.get("http://localhost:8000", stream=True, timeout=60)
     iterator = r.iter_content(chunk_size=None, decode_unicode=True)
 
     # The first chunk should be received successfully.
@@ -327,7 +327,7 @@ def test_cancel_on_http_timeout_during_execution(
     serve.run(Ingress.bind(inner.bind()))
 
     # Request should time out, causing the handler and handle call to be cancelled.
-    assert requests.get("http://localhost:8000").status_code == 408
+    assert requests.get("http://localhost:8000", timeout=60).status_code == 408
     ray.get(inner_signal_actor.wait.remote())
     ray.get(outer_signal_actor.wait.remote())
 
@@ -364,7 +364,7 @@ def test_cancel_on_http_timeout_during_assignment(ray_instance, shutdown_serve):
     wait_for_condition(lambda: ray.get(signal_actor.cur_num_waiters.remote()) == 1)
 
     # Request should time out, causing the handler and handle call to be cancelled.
-    assert requests.get("http://localhost:8000").status_code == 408
+    assert requests.get("http://localhost:8000", timeout=60).status_code == 408
 
     # Now signal the initial request to finish and check that the request sent via HTTP
     # never reaches the replica.

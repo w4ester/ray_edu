@@ -65,7 +65,7 @@ def test_port_auto_increment(shutdown_only):
 
     def dashboard_available():
         try:
-            requests.get("http://" + url).status_code == 200
+            requests.get("http://" + url, timeout=60).status_code == 200
             return True
         except Exception:
             return False
@@ -130,7 +130,7 @@ def test_dashboard(shutdown_only):
     while True:
         try:
             node_info_url = f"http://{dashboard_url}/nodes"
-            resp = requests.get(node_info_url, params={"view": "summary"})
+            resp = requests.get(node_info_url, params={"view": "summary"}, timeout=60)
             resp.raise_for_status()
             summaries = resp.json()
             assert summaries["result"] is True

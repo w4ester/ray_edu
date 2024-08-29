@@ -129,7 +129,7 @@ def serve_instance(_shared_serve_instance):
 
 def check_ray_stop():
     try:
-        requests.get("http://localhost:52365/api/ray/version")
+        requests.get("http://localhost:52365/api/ray/version", timeout=60)
         return False
     except Exception:
         return True
@@ -144,7 +144,7 @@ def ray_start_stop():
     )
     subprocess.check_output(["ray", "start", "--head"])
     wait_for_condition(
-        lambda: requests.get("http://localhost:52365/api/ray/version").status_code
+        lambda: requests.get("http://localhost:52365/api/ray/version", timeout=60).status_code
         == 200,
         timeout=15,
     )
@@ -167,7 +167,7 @@ def ray_start_stop_in_specific_directory(request):
 
     subprocess.check_output(["ray", "start", "--head"])
     wait_for_condition(
-        lambda: requests.get("http://localhost:52365/api/ray/version").status_code
+        lambda: requests.get("http://localhost:52365/api/ray/version", timeout=60).status_code
         == 200,
         timeout=15,
     )

@@ -189,7 +189,7 @@ def test_observability_helpers():
 
     assert handle._is_batching_task_alive.remote().result()
 
-    requests.get("http://localhost:8000/")
+    requests.get("http://localhost:8000/", timeout=60)
 
     assert len(handle._get_handling_task_stack.remote().result()) is not None
     assert handle._is_batching_task_alive.remote().result()
@@ -197,7 +197,7 @@ def test_observability_helpers():
     curr_iteration_start_time = handle._get_curr_iteration_start_time.remote().result()
 
     for _ in range(5):
-        requests.get("http://localhost:8000/")
+        requests.get("http://localhost:8000/", timeout=60)
 
     new_iteration_start_time = handle._get_curr_iteration_start_time.remote().result()
 

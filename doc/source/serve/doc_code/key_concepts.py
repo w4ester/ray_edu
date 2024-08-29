@@ -79,7 +79,7 @@ class MostBasicIngress:
 app = MostBasicIngress.bind()
 serve.run(app)
 assert (
-    requests.get("http://127.0.0.1:8000/", json={"name": "Corey"}).text
+    requests.get("http://127.0.0.1:8000/", json={"name": "Corey"}, timeout=60).text
     == "Hello Corey!"
 )
 # __end_basic_ingress__
@@ -104,5 +104,5 @@ class FastAPIIngress:
 
 app = FastAPIIngress.bind()
 serve.run(app)
-assert requests.get("http://127.0.0.1:8000/Corey").text == "Hello Corey!"
+assert requests.get("http://127.0.0.1:8000/Corey", timeout=60).text == "Hello Corey!"
 # __end_fastapi_ingress__

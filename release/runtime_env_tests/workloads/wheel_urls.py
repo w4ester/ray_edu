@@ -51,7 +51,7 @@ if __name__ == "__main__":
                     ray_version=ray.__version__,
                     py_version=py_version,
                 )
-            if requests.head(url).status_code != 200:
+            if requests.head(url, timeout=60).status_code != 200:
                 print("URL not found (yet?):", url)
                 retry.add(url)
                 continue
@@ -71,7 +71,7 @@ if __name__ == "__main__":
         time.sleep(600)
         print("Retrying now...")
         for url in list(retry):
-            if requests.head(url).status_code != 200:
+            if requests.head(url, timeout=60).status_code != 200:
                 print(f"URL still not found: {url}")
             else:
                 print("Successfully tested URL: ", url)

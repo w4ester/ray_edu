@@ -380,7 +380,7 @@ def test_proxy_prefers_replicas_on_same_node(ray_cluster: Cluster, set_flag):
 
     # Since they're sent sequentially, all requests should be routed to
     # the replica on the head node
-    responses = [requests.post("http://localhost:8000").text for _ in range(10)]
+    responses = [requests.post("http://localhost:8000", timeout=60).text for _ in range(10)]
     if set_flag:
         assert all(resp == head_node_id for resp in responses)
     else:

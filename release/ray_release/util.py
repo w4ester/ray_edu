@@ -78,14 +78,14 @@ def dict_hash(dt: Dict[Any, Any]) -> str:
 
 def url_exists(url: str) -> bool:
     try:
-        return requests.head(url, allow_redirects=True).status_code == 200
+        return requests.head(url, allow_redirects=True, timeout=60).status_code == 200
     except requests.exceptions.RequestException:
         logger.exception(f"Failed to check url exists: {url}")
         return False
 
 
 def resolve_url(url: str) -> str:
-    return requests.head(url, allow_redirects=True).url
+    return requests.head(url, allow_redirects=True, timeout=60).url
 
 
 def format_link(link: str) -> str:

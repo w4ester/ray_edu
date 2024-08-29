@@ -72,7 +72,7 @@ def test_np_in_composed_model(serve_instance):
     cm_d = ComposedModel.bind(sum_d)
     serve.run(cm_d)
 
-    result = requests.get("http://127.0.0.1:8000/")
+    result = requests.get("http://127.0.0.1:8000/", timeout=60)
     assert result.status_code == 200
     assert float(result.text) == 100.0
 
@@ -91,7 +91,7 @@ def test_replica_memory_growth(serve_instance):
     handle = serve.run(gc_unreachable_objects.bind())
 
     def get_gc_garbage_len_http():
-        result = requests.get("http://127.0.0.1:8000")
+        result = requests.get("http://127.0.0.1:8000", timeout=60)
         assert result.status_code == 200
         return result.json()
 
@@ -235,7 +235,7 @@ def test_uvicorn_duplicate_headers(serve_instance):
             return JSONResponse({"a": "b"})
 
     serve.run(A.bind())
-    resp = requests.get("http://127.0.0.1:8000")
+    resp = requests.get("http://127.0.0.1:8000", timeout=60)
     # If the header duplicated, it will be "9, 9"
     assert resp.headers["content-length"] == "9"
 

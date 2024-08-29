@@ -124,7 +124,7 @@ def test_single_func_no_input(serve_instance):
 
     handle = serve.run(serve_dag)
     assert handle.remote().result() == "hello"
-    assert requests.get("http://127.0.0.1:8000/").text == "hello"
+    assert requests.get("http://127.0.0.1:8000/", timeout=60).text == "hello"
 
 
 async def json_resolver(request: starlette.requests.Request):
@@ -138,7 +138,7 @@ def test_multi_instantiation_class_deployment_in_init_args(serve_instance):
 
     handle = serve.run(serve_dag)
     assert handle.predict.remote(1).result() == 5
-    assert requests.post("http://127.0.0.1:8000/", json=1).json() == 5
+    assert requests.post("http://127.0.0.1:8000/", json=1, timeout=60).json() == 5
 
 
 def test_shared_deployment_handle(serve_instance):
@@ -147,7 +147,7 @@ def test_shared_deployment_handle(serve_instance):
 
     handle = serve.run(serve_dag)
     assert handle.predict.remote(1).result() == 4
-    assert requests.post("http://127.0.0.1:8000/", json=1).json() == 4
+    assert requests.post("http://127.0.0.1:8000/", json=1, timeout=60).json() == 4
 
 
 def test_multi_instantiation_class_nested_deployment_arg_dag(serve_instance):
@@ -157,7 +157,7 @@ def test_multi_instantiation_class_nested_deployment_arg_dag(serve_instance):
 
     handle = serve.run(serve_dag)
     assert handle.predict.remote(1).result() == 5
-    assert requests.post("http://127.0.0.1:8000/", json=1).json() == 5
+    assert requests.post("http://127.0.0.1:8000/", json=1, timeout=60).json() == 5
 
 
 def test_class_factory(serve_instance):
@@ -165,7 +165,7 @@ def test_class_factory(serve_instance):
 
     handle = serve.run(serve_dag)
     assert handle.get.remote().result() == 3
-    assert requests.get("http://127.0.0.1:8000/").text == "3"
+    assert requests.get("http://127.0.0.1:8000/", timeout=60).text == "3"
 
 
 @serve.deployment
@@ -215,7 +215,7 @@ def test_passing_handle(serve_instance):
     parent = TakeHandle.bind(child)
     handle = serve.run(parent)
     assert handle.predict.remote(1).result() == 2
-    assert requests.post("http://127.0.0.1:8000/", json=1).json() == 2
+    assert requests.post("http://127.0.0.1:8000/", json=1, timeout=60).json() == 2
 
 
 @serve.deployment
@@ -309,7 +309,7 @@ def test_single_functional_node_base_case(serve_instance):
     # Base case should work
     handle = serve.run(func.bind())
     assert handle.remote().result() == 1
-    assert requests.get("http://127.0.0.1:8000/").text == "1"
+    assert requests.get("http://127.0.0.1:8000/", timeout=60).text == "1"
 
 
 def test_unsupported_bind():

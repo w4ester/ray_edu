@@ -47,5 +47,5 @@ app = Ingress.bind(Adder.bind(increment=1), Adder.bind(increment=2), Combiner.bi
 serve.run(app)
 
 # 3: Query the application and print the result.
-print(requests.post("http://localhost:8000/", json={"val": 100.0}).json())
+print(requests.post("http://localhost:8000/", json={"val": 100.0}, timeout=60).json())
 # {"result": 101.5}

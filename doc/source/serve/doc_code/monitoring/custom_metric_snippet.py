@@ -27,10 +27,10 @@ my_deployment = MyDeployment.bind()
 serve.run(my_deployment)
 
 while True:
-    requests.get("http://localhost:8000/")
+    requests.get("http://localhost:8000/", timeout=60)
     time.sleep(1)
 
     # __end__
     break
-response = requests.get("http://localhost:8000/")
+response = requests.get("http://localhost:8000/", timeout=60)
 assert response.status_code == 200

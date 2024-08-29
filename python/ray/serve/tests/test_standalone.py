@@ -224,7 +224,7 @@ def test_deployment(ray_cluster):
 
     handle = serve.run(f.bind(), name="f", route_prefix="/say_hi_f")
     assert handle.remote().result() == "from_f"
-    assert requests.get("http://localhost:8000/say_hi_f").text == "from_f"
+    assert requests.get("http://localhost:8000/say_hi_f", timeout=60).text == "from_f"
 
     serve.context._global_client = None
     ray.shutdown()
@@ -239,8 +239,8 @@ def test_deployment(ray_cluster):
 
     handle = serve.run(g.bind(), name="g", route_prefix="/say_hi_g")
     assert handle.remote().result() == "from_g"
-    assert requests.get("http://localhost:8000/say_hi_g").text == "from_g"
-    assert requests.get("http://localhost:8000/say_hi_f").text == "from_f"
+    assert requests.get("http://localhost:8000/say_hi_g", timeout=60).text == "from_g"
+    assert requests.get("http://localhost:8000/say_hi_f", timeout=60).text == "from_f"
 
 
 def test_connect(ray_shutdown):
@@ -405,10 +405,10 @@ def test_middleware(ray_shutdown):
         "Access-Control-Request-Method": "GET",
     }
     root = f"http://localhost:{port}"
-    resp = requests.options(root, headers=headers)
+    resp = requests.options(root, headers=headers, timeout=60)
     assert resp.headers["access-control-allow-origin"] == "*"
 
-    resp = requests.get(f"{root}/-/routes", headers=headers)
+    resp = requests.get(f"{root}/-/routes", headers=headers, timeout=60)
     assert resp.headers["access-control-allow-origin"] == "*"
 
 
@@ -461,12 +461,12 @@ def test_http_root_path(ray_shutdown):
     assert hello.url == f"http://127.0.0.1:{port}{root_path}/hello"
 
     # check routing works as expected
-    resp = requests.get(hello.url)
+    resp = requests.get(hello.url, timeout=60)
     assert resp.status_code == 200
     assert resp.text == "hello"
 
     # check advertized routes are prefixed correctly
-    resp = requests.get(f"http://127.0.0.1:{port}{root_path}/-/routes")
+    resp = requests.get(f"http://127.0.0.1:{port}{root_path}/-/routes", timeout=60)
     assert resp.status_code == 200
     assert resp.json() == {"/hello": "default"}
 
@@ -745,7 +745,7 @@ def test_build_app_task_uses_zero_cpus(ray_shutdown):
 
     # If the task required any resources, this would fail.
     wait_for_condition(
-        lambda: requests.get("http://localhost:8000/").text == "May I take your order?"
+        lambda: requests.get("http://localhost:8000/", timeout=60).text == "May I take your order?"
     )
 
     serve.shutdown()

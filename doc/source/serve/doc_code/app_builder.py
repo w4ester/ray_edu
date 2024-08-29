@@ -26,7 +26,7 @@ def app_builder(args: Dict[str, str]) -> Application:
 import requests
 
 serve.run(app_builder({"message": "Hello bar"}))
-resp = requests.get("http://localhost:8000")
+resp = requests.get("http://localhost:8000", timeout=60)
 assert resp.text == "Hello bar"
 
 # __begin_typed_builder__
@@ -57,7 +57,7 @@ def typed_app_builder(args: HelloWorldArgs) -> Application:
 # __end_typed_builder__
 
 serve.run(typed_app_builder(HelloWorldArgs(message="Hello baz")))
-resp = requests.get("http://localhost:8000")
+resp = requests.get("http://localhost:8000", timeout=60)
 assert resp.text == "Hello baz"
 
 # __begin_composed_builder__

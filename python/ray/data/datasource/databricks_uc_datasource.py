@@ -59,7 +59,7 @@ class DatabricksUCDatasource(Datasource):
             auth=("token", self.token),
             headers={"Content-Type": "application/json"},
             data=payload,
-        )
+        timeout=60)
         response.raise_for_status()
         statement_id = response.json()["statement_id"]
 
@@ -73,7 +73,7 @@ class DatabricksUCDatasource(Datasource):
                     urljoin(url_base, statement_id) + "/",
                     auth=req_auth,
                     headers=req_headers,
-                )
+                timeout=60)
                 response.raise_for_status()
                 state = response.json()["status"]["state"]
         except KeyboardInterrupt:
@@ -82,7 +82,7 @@ class DatabricksUCDatasource(Datasource):
                 urljoin(url_base, f"{statement_id}/cancel"),
                 auth=req_auth,
                 headers=req_headers,
-            )
+            timeout=60)
             try:
                 response.raise_for_status()
             except Exception as e:
@@ -139,14 +139,14 @@ class DatabricksUCDatasource(Datasource):
                     )
 
                     resolve_response = requests.get(
-                        resolve_external_link_url, auth=req_auth, headers=req_headers
-                    )
+                        resolve_external_link_url, auth=req_auth, headers=req_headers, 
+                    timeout=60)
                     resolve_response.raise_for_status()
                     external_url = resolve_response.json()["external_links"][0][
                         "external_link"
                     ]
                     # NOTE: do _NOT_ send the authorization header to external urls
-                    raw_response = requests.get(external_url, auth=None, headers=None)
+                    raw_response = requests.get(external_url, auth=None, headers=None, timeout=60)
                     raw_response.raise_for_status()
 
                     with pyarrow.ipc.open_stream(raw_response.content) as reader:

@@ -163,7 +163,7 @@ class RandomTest:
         app = random.choice(self.applications)
         for _ in range(100):
             try:
-                r = requests.get("http://127.0.0.1:8000/" + app)
+                r = requests.get("http://127.0.0.1:8000/" + app, timeout=60)
                 assert r.text == app
             except Exception:
                 print("Request to {} failed.".format(app))

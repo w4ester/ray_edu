@@ -726,7 +726,7 @@ def test_usage_stats_enabled_endpoint(
         webui_url = context["webui_url"]
         assert wait_until_server_available(webui_url)
         webui_url = format_web_url(webui_url)
-        response = requests.get(f"{webui_url}/usage_stats_enabled")
+        response = requests.get(f"{webui_url}/usage_stats_enabled", timeout=60)
         assert response.status_code == 200
         assert response.json()["result"] is True
         assert response.json()["data"]["usageStatsEnabled"] is False
@@ -1624,7 +1624,7 @@ def test_usages_stats_dashboard(monkeypatch, ray_start_cluster, reset_usage_stat
             return
 
         # Open the dashboard will set the dashboard_used == "True".
-        resp = requests.get(webui_url)
+        resp = requests.get(webui_url, timeout=60)
         resp.raise_for_status()
 
         def verify_dashboard_used():

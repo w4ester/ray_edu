@@ -15,9 +15,9 @@ s = sleeper.bind()
 serve.run(s)
 
 while True:
-    requests.get("http://localhost:8000/")
+    requests.get("http://localhost:8000/", timeout=60)
     # __end__
     break
 
-response = requests.get("http://localhost:8000/")
+response = requests.get("http://localhost:8000/", timeout=60)
 assert response.status_code == 200
