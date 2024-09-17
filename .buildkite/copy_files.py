@@ -7,6 +7,7 @@ from collections import OrderedDict
 
 import requests
 from aws_requests_auth.boto_utils import BotoAWSRequestsAuth
+from security import safe_requests
 
 
 def retry(f):
@@ -35,7 +36,7 @@ def perform_auth():
         aws_region="us-west-2",
         aws_service="execute-api",
     )
-    resp = requests.get(
+    resp = safe_requests.get(
         "https://vop4ss7n22.execute-api.us-west-2.amazonaws.com/endpoint/",
         auth=auth,
         params={"job_id": os.environ["BUILDKITE_JOB_ID"]},

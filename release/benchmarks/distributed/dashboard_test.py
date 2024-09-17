@@ -3,8 +3,6 @@ import time
 import urllib
 from typing import Dict, Optional, List
 from pprint import pprint
-
-import requests
 import ray
 import logging
 
@@ -15,6 +13,7 @@ from ray.util.scheduling_strategies import NodeAffinitySchedulingStrategy
 from pydantic import BaseModel
 from ray.dashboard.consts import DASHBOARD_METRIC_PORT
 from ray.dashboard.utils import get_address_for_submission_client
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +75,7 @@ class DashboardTester:
             else:
                 url = f"{self.dashboard_url}{endpoint}"
 
-            resp = requests.get(url, timeout=30)
+            resp = safe_requests.get(url, timeout=30)
             elapsed = time.monotonic() - start
 
             if resp.status_code == 200:

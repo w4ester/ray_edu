@@ -10,13 +10,14 @@ from ray import serve
 from ray._private.test_utils import SignalActor, wait_for_condition
 from ray.serve._private.common import DeploymentID
 from ray.serve._private.constants import SERVE_DEFAULT_APP_NAME
+from security import safe_requests
 
 
 def request_with_retries(endpoint, timeout=30):
     start = time.time()
     while True:
         try:
-            return requests.get("http://127.0.0.1:8000" + endpoint, timeout=timeout)
+            return safe_requests.get("http://127.0.0.1:8000" + endpoint, timeout=timeout)
         except requests.RequestException:
             if time.time() - start > timeout:
                 raise TimeoutError

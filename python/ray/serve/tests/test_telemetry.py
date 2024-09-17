@@ -17,6 +17,7 @@ from ray.serve._private.test_utils import check_apps_running, check_telemetry
 from ray.serve._private.usage import ServeUsageTag
 from ray.serve.context import _get_global_client
 from ray.serve.schema import ServeDeploySchema
+from security import safe_requests
 
 
 def test_fastapi_detected(manage_ray_with_telemetry):
@@ -360,7 +361,7 @@ def test_multiplexed_detect(manage_ray_with_telemetry):
     check_telemetry(ServeUsageTag.MULTIPLEXED_API_USED, expected=None)
 
     headers = {SERVE_MULTIPLEXED_MODEL_ID: "1"}
-    resp = requests.get("http://localhost:8000/app", headers=headers)
+    resp = safe_requests.get("http://localhost:8000/app", headers=headers)
     assert resp.status_code == 200
 
     wait_for_condition(

@@ -4,11 +4,11 @@ import sys
 import time
 
 import pytest
-import requests
 
 import ray
 from ray._private.test_utils import format_web_url, wait_until_server_available
 from ray.dashboard.tests.conftest import *  # noqa
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ def _actor_killed_loop(worker_pid: str, timeout_secs=3) -> bool:
 
 
 def _kill_actor_using_dashboard_gcs(webui_url: str, actor_id: str, force_kill=False):
-    resp = requests.get(
+    resp = safe_requests.get(
         webui_url + KILL_ACTOR_ENDPOINT,
         params={
             "actor_id": actor_id,

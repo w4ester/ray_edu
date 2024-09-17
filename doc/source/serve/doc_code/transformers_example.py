@@ -1,10 +1,10 @@
-import requests
 from starlette.requests import Request
 from typing import Dict
 
 from transformers import pipeline
 
 from ray import serve
+from security import safe_requests
 
 
 # 1: Wrap the pretrained sentiment analysis model in a Serve deployment.
@@ -22,7 +22,7 @@ serve.run(SentimentAnalysisDeployment.bind(), route_prefix="/")
 
 # 3: Query the deployment and print the result.
 print(
-    requests.get(
+    safe_requests.get(
         "http://localhost:8000/", params={"text": "Ray Serve is great!"}
     ).json()
 )

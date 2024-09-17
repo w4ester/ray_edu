@@ -2,7 +2,6 @@ import asyncio
 import time
 
 import pytest
-import requests
 from starlette.requests import Request
 
 import ray
@@ -10,6 +9,7 @@ from ray import serve
 from ray._private.test_utils import SignalActor
 from ray.serve._private.constants import SERVE_DEFAULT_APP_NAME
 from ray.serve.handle import DeploymentHandle
+from security import safe_requests
 
 
 def test_serve_forceful_shutdown(serve_instance):
@@ -137,7 +137,7 @@ def test_passing_object_ref_to_deployment_not_pinned_to_memory(serve_instance):
     serve.run(target=app)
 
     length = 10
-    response = requests.get(f"http://localhost:8000?length={length}").json()
+    response = safe_requests.get(f"http://localhost:8000?length={length}").json()
     assert response["result"] == length * 2
     assert response["length"] == length
 

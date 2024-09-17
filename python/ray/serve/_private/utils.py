@@ -15,8 +15,6 @@ from enum import Enum
 from functools import wraps
 from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
 
-import requests
-
 import ray
 import ray.util.serialization_addons
 from ray._private.resource_spec import HEAD_NODE_RESOURCE_NAME
@@ -29,6 +27,7 @@ from ray.serve._private.common import ServeComponentType
 from ray.serve._private.constants import HTTP_PROXY_TIMEOUT, SERVE_LOGGER_NAME
 from ray.types import ObjectRef
 from ray.util.serialization import StandaloneSerializationContext
+from security import safe_requests
 
 try:
     import pandas as pd
@@ -122,7 +121,7 @@ def block_until_http_ready(
 
     while not http_is_ready:
         try:
-            resp = requests.get(http_endpoint)
+            resp = safe_requests.get(http_endpoint)
             assert resp.status_code == 200
             if check_ready is None:
                 http_is_ready = True

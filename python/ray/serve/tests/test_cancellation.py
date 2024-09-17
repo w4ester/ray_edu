@@ -15,6 +15,7 @@ from ray._private.test_utils import (
     wait_for_condition,
 )
 from ray.serve._private.test_utils import send_signal_on_cancellation
+from security import safe_requests
 
 
 @pytest.mark.parametrize("use_fastapi", [False, True])
@@ -58,7 +59,7 @@ def test_cancel_on_http_client_disconnect_during_execution(
 
     # Intentionally time out on the client, causing it to disconnect.
     with pytest.raises(requests.exceptions.ReadTimeout):
-        requests.get("http://localhost:8000", timeout=0.5)
+        safe_requests.get("http://localhost:8000", timeout=0.5)
 
     # Both the HTTP handler and the inner deployment handle call should be cancelled.
     ray.get(inner_signal_actor.wait.remote(), timeout=10)
@@ -89,7 +90,7 @@ def test_cancel_on_http_client_disconnect_during_assignment(serve_instance):
 
     # Intentionally time out on the client, causing it to disconnect.
     with pytest.raises(requests.exceptions.ReadTimeout):
-        requests.get("http://localhost:8000", timeout=0.5)
+        safe_requests.get("http://localhost:8000", timeout=0.5)
 
     # Now signal the initial request to finish and check that the request sent via HTTP
     # never reaches the replica.

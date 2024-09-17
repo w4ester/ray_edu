@@ -24,6 +24,7 @@ from ray.autoscaler.tags import (
     STATUS_UPDATE_FAILED,
     TAG_RAY_USER_NODE_TYPE,
 )
+from security import safe_requests
 
 # Key for KubeRay label that identifies a Ray pod as head or worker.
 KUBERAY_LABEL_KEY_KIND = "ray.io/node-type"
@@ -252,7 +253,7 @@ class KubernetesHttpApiClient(IKubernetesHttpApiClient):
             path=path,
             kuberay_crd_version=self._kuberay_crd_version,
         )
-        result = requests.get(url, headers=self._headers, verify=self._verify)
+        result = safe_requests.get(url, headers=self._headers, verify=self._verify)
         if not result.status_code == 200:
             result.raise_for_status()
         return result.json()

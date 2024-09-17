@@ -9,6 +9,7 @@ from torchvision.models import ResNet50_Weights
 from torchvision import transforms
 
 from ray import serve
+from security import safe_requests
 
 
 @serve.deployment
@@ -35,7 +36,7 @@ class Model:
         uri = (await request.json())["uri"]
 
         try:
-            image_bytes = requests.get(uri).content
+            image_bytes = safe_requests.get(uri).content
         except (
             requests.exceptions.ConnectionError,
             requests.exceptions.ChunkedEncodingError,

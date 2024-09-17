@@ -17,6 +17,7 @@ from ray.dashboard import dashboard
 from ray.dashboard.consts import RAY_CLUSTER_ACTIVITY_HOOK
 from ray.dashboard.modules.snapshot.snapshot_head import RayActivityResponse
 from ray.dashboard.tests.conftest import *  # noqa
+from security import safe_requests
 
 
 @pytest.fixture
@@ -143,7 +144,7 @@ time.sleep({sleep_time_s})
 
     def verify_driver_response():
         # Verify drivers are considered active after running script
-        response = requests.get(f"{webui_url}/api/component_activities")
+        response = safe_requests.get(f"{webui_url}/api/component_activities")
         response.raise_for_status()
 
         # Validate schema of response

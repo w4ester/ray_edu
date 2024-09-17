@@ -3,12 +3,11 @@
 # __begin_example__
 import time
 from typing import Generator
-
-import requests
 from starlette.responses import StreamingResponse
 from starlette.requests import Request
 
 from ray import serve
+from security import safe_requests
 
 
 @serve.deployment
@@ -26,7 +25,7 @@ class StreamingResponder:
 
 serve.run(StreamingResponder.bind())
 
-r = requests.get("http://localhost:8000?max=10", stream=True)
+r = safe_requests.get("http://localhost:8000?max=10", stream=True)
 start = time.time()
 r.raise_for_status()
 for chunk in r.iter_content(chunk_size=None, decode_unicode=True):
@@ -34,7 +33,7 @@ for chunk in r.iter_content(chunk_size=None, decode_unicode=True):
 # __end_example__
 
 
-r = requests.get("http://localhost:8000?max=10", stream=True)
+r = safe_requests.get("http://localhost:8000?max=10", stream=True)
 r.raise_for_status()
 for i, chunk in enumerate(r.iter_content(chunk_size=None, decode_unicode=True)):
     assert chunk == str(i)
@@ -44,8 +43,6 @@ for i, chunk in enumerate(r.iter_content(chunk_size=None, decode_unicode=True)):
 import asyncio
 import time
 from typing import AsyncGenerator
-
-import requests
 from starlette.responses import StreamingResponse
 from starlette.requests import Request
 
@@ -71,7 +68,7 @@ class StreamingResponder:
 
 serve.run(StreamingResponder.bind())
 
-r = requests.get("http://localhost:8000?max=10", stream=True)
+r = safe_requests.get("http://localhost:8000?max=10", stream=True)
 start = time.time()
 r.raise_for_status()
 for i, chunk in enumerate(r.iter_content(chunk_size=None, decode_unicode=True)):

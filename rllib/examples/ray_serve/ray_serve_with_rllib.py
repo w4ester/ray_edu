@@ -6,8 +6,6 @@ to a Ray Serve client.
 import argparse
 import atexit
 import os
-
-import requests
 import subprocess
 import time
 
@@ -17,6 +15,7 @@ from pathlib import Path
 import ray
 from ray.rllib.algorithms.algorithm import AlgorithmConfig
 from ray.rllib.algorithms.ppo import PPOConfig
+from security import safe_requests
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--train-iters", type=int, default=3)
@@ -109,7 +108,7 @@ if __name__ == "__main__":
 
             # print("-> Requesting action for obs ...")
             # Send a request to serve.
-            resp = requests.get(
+            resp = safe_requests.get(
                 "http://localhost:8000/rllib-rlmodule",
                 json={"observation": obs.tolist()},
                 # timeout=5.0,

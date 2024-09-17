@@ -7,6 +7,7 @@ from fastapi import FastAPI
 
 import ray
 from ray import serve
+from security import safe_requests
 
 
 def test_request_id_header_by_default(serve_instance):
@@ -36,7 +37,7 @@ def test_request_id_header_by_default(serve_instance):
 class TestUserProvidedRequestIDHeader:
     def verify_result(self):
         for header_attr in ["X-Request-ID"]:
-            resp = requests.get(
+            resp = safe_requests.get(
                 "http://localhost:8000", headers={header_attr: "123-234"}
             )
             assert resp.status_code == 200
@@ -93,7 +94,7 @@ def test_set_request_id_headers_with_two_attributes(serve_instance):
             return request_id
 
     serve.run(Model.bind())
-    resp = requests.get(
+    resp = safe_requests.get(
         "http://localhost:8000",
         headers={
             "X-Request-ID": "234",

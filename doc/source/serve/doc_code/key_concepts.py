@@ -3,6 +3,7 @@
 # __start_my_first_deployment__
 from ray import serve
 from ray.serve.handle import DeploymentHandle
+from security import safe_requests
 
 
 @serve.deployment
@@ -79,7 +80,7 @@ class MostBasicIngress:
 app = MostBasicIngress.bind()
 serve.run(app)
 assert (
-    requests.get("http://127.0.0.1:8000/", json={"name": "Corey"}).text
+    safe_requests.get("http://127.0.0.1:8000/", json={"name": "Corey"}).text
     == "Hello Corey!"
 )
 # __end_basic_ingress__

@@ -3,6 +3,7 @@ from io import BytesIO
 from fastapi import FastAPI
 from fastapi.responses import Response
 from ray import serve
+from security import safe_requests
 
 
 app = FastAPI()
@@ -54,7 +55,6 @@ entrypoint = APIIngress.bind(StableDiffusionV2.bind())
 
 # __neuron_serve_code_end__
 if __name__ == "__main__":
-    import requests
     import ray
 
     # On inf2.8xlarge instance, there are 2 Neuron cores.
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     serve.run(entrypoint)
     prompt = "a zebra is dancing in the grass, river, sunlit"
     input = "%20".join(prompt.split(" "))
-    resp = requests.get(f"http://127.0.0.1:8000/imagine?prompt={input}")
+    resp = safe_requests.get(f"http://127.0.0.1:8000/imagine?prompt={input}")
 
     print("Write the response to `output.png`.")
     with open("output.png", "wb") as f:

@@ -1,8 +1,6 @@
 import logging
 import os
 import ray
-
-import requests
 import shutil
 import sys
 import tempfile
@@ -41,6 +39,7 @@ from ray.util.state import (
 from ray.job_submission import JobStatus, JobSubmissionClient
 from ray.tests.conftest import _ray_start
 from ray.dashboard.modules.job.job_head import JobAgentSubmissionClient
+from security import safe_requests
 
 # This test requires you have AWS credentials set up (any AWS credentials will
 # do, this test only accesses a public bucket).
@@ -473,7 +472,7 @@ async def test_job_log_in_multiple_node(
         job_check_status.append(False)
 
     async def _check_all_jobs_log():
-        response = requests.get(webui_url + "/nodes?view=summary")
+        response = safe_requests.get(webui_url + "/nodes?view=summary")
         response.raise_for_status()
         summary = response.json()
         assert summary["result"] is True, summary["msg"]

@@ -3,7 +3,6 @@ import tempfile
 import time
 import os
 from ray.dashboard.modules.job.pydantic_models import JobType
-import requests
 import pytest
 import psutil
 import sys
@@ -28,6 +27,7 @@ from ray.tests.conftest import _ray_start
 import ray
 import ray.experimental.internal_kv as kv
 from ray.util.state import list_nodes
+from security import safe_requests
 
 
 def _check_job_succeeded(client: JobSubmissionClient, job_id: str) -> bool:
@@ -164,7 +164,7 @@ def mock_candidate_number():
 
 
 def get_register_agents_number(webui_url):
-    response = requests.get(webui_url + "/internal/node_module")
+    response = safe_requests.get(webui_url + "/internal/node_module")
     response.raise_for_status()
     result = response.json()
     data = result["data"]

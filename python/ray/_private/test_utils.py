@@ -22,8 +22,6 @@ from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from typing import Any, Callable, Dict, List, Optional, Tuple
 import uuid
 from dataclasses import dataclass
-
-import requests
 from ray._raylet import Config
 
 import psutil  # We must import psutil after ray because we bundle it with ray.
@@ -48,6 +46,7 @@ from ray.core.generated import (
 )
 from ray.util.queue import Empty, Queue, _QueueActor
 from ray.util.scheduling_strategies import NodeAffinitySchedulingStrategy
+from security import safe_requests
 
 
 logger = logging.getLogger(__name__)
@@ -1099,7 +1098,7 @@ def fetch_raw_prometheus(prom_addresses):
 
     for address in prom_addresses:
         try:
-            response = requests.get(f"http://{address}/metrics")
+            response = safe_requests.get(f"http://{address}/metrics")
             yield address, response.text
         except requests.exceptions.ConnectionError:
             continue
@@ -1898,7 +1897,7 @@ def get_resource_usage(gcs_address, timeout=10):
 # Gets the load metrics report assuming gcs is local.
 def get_load_metrics_report(webui_url):
     webui_url = format_web_url(webui_url)
-    response = requests.get(f"{webui_url}/api/cluster_status")
+    response = safe_requests.get(f"{webui_url}/api/cluster_status")
     response.raise_for_status()
     return response.json()["data"]["clusterStatus"]["loadMetricsReport"]
 

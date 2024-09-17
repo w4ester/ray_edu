@@ -4,6 +4,7 @@ from ray import serve
 import aioboto3
 import torch
 import starlette
+from security import safe_requests
 
 
 @serve.deployment
@@ -34,7 +35,7 @@ handle = serve.run(entry)
 # __serve_request_send_example_begin__
 import requests  # noqa: E402
 
-resp = requests.get(
+resp = safe_requests.get(
     "http://localhost:8000", headers={"serve_multiplexed_model_id": str("1")}
 )
 # __serve_request_send_example_end__

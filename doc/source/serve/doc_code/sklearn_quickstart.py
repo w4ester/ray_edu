@@ -2,7 +2,6 @@
 # fmt: off
 
 # __serve_example_begin__
-import requests
 from starlette.requests import Request
 from typing import Dict
 
@@ -10,6 +9,7 @@ from sklearn.datasets import load_iris
 from sklearn.ensemble import GradientBoostingClassifier
 
 from ray import serve
+from security import safe_requests
 
 
 # Train model.
@@ -38,7 +38,7 @@ serve.run(BoostingModel.bind(model), route_prefix="/iris")
 
 # Query it!
 sample_request_input = {"vector": [1.2, 1.0, 1.1, 0.9]}
-response = requests.get(
+response = safe_requests.get(
     "http://localhost:8000/iris", json=sample_request_input)
 print(response.text)
 # __serve_example_end__
