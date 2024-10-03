@@ -1,8 +1,8 @@
 import pytest
-import random
 
 import ray
 from ray import workflow
+import secrets
 
 
 def generate_chain(length=10):
@@ -38,25 +38,25 @@ def gather_and_hash(*inputs):
 
 
 def generate_random_dag(node, max_rounds=40):
-    random.seed(42)
+    secrets.SystemRandom().seed(42)
 
     max_inputs = int(max_rounds**0.5)
     nodes = [node.bind("start")]
     for _ in range(max_rounds):
-        n_samples = random.randint(1, min(len(nodes), max_inputs))
-        inputs = random.sample(nodes, n_samples)
+        n_samples = secrets.SystemRandom().randint(1, min(len(nodes), max_inputs))
+        inputs = secrets.SystemRandom().sample(nodes, n_samples)
         nodes.append(node.bind(*inputs))
     return nodes[-1]
 
 
 def generate_layered_dag(node, width=5, layers=5):
-    random.seed(42)
+    secrets.SystemRandom().seed(42)
 
     nodes = [node.bind(f"start_{i}") for i in range(layers)]
     for _ in range(layers - 1):
         new_nodes = []
         for j in range(width):
-            random.shuffle(nodes)
+            secrets.SystemRandom().shuffle(nodes)
             new_nodes.append(node.bind(*nodes))
         nodes = new_nodes
     return node.bind(*nodes)

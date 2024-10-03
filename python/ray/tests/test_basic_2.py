@@ -2,7 +2,6 @@
 import array
 import logging
 import os
-import random
 import subprocess
 import sys
 import tempfile
@@ -17,6 +16,7 @@ from ray._private.test_utils import client_test_enabled
 from ray.cluster_utils import Cluster, cluster_not_supported
 from ray.exceptions import GetTimeoutError, RayTaskError
 from ray.tests.client_test_utils import create_remote_signal_actor
+import secrets
 
 if client_test_enabled():
     from ray.util.client import ray
@@ -250,7 +250,7 @@ def test_actor_call_order(shutdown_only):
 
     @ray.remote
     def small_value():
-        time.sleep(0.01 * random.randint(0, 10))
+        time.sleep(0.01 * secrets.SystemRandom().randint(0, 10))
         return 0
 
     @ray.remote
@@ -359,7 +359,7 @@ def test_get_multiple(ray_start_regular_shared):
     assert ray.get(object_refs) == list(range(10))
 
     # Get a random choice of object refs with duplicates.
-    indices = [random.choice(range(10)) for i in range(5)]
+    indices = [secrets.choice(range(10)) for i in range(5)]
     indices += indices
     results = ray.get([object_refs[i] for i in indices])
     assert results == indices

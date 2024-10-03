@@ -1,6 +1,5 @@
 # coding: utf-8
 import logging
-import random
 import sys
 import time
 
@@ -9,6 +8,7 @@ import pytest
 import ray
 import ray.cluster_utils
 from ray._private.test_utils import dicts_equal
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -84,9 +84,9 @@ def test_many_fractional_resources(shutdown_only):
     # Check that the resource are assigned correctly.
     result_ids = []
     for i in range(100):
-        rand1 = random.random()
-        rand2 = random.random()
-        rand3 = random.random()
+        rand1 = secrets.SystemRandom().random()
+        rand2 = secrets.SystemRandom().random()
+        rand3 = secrets.SystemRandom().random()
 
         resource_set = {"CPU": int(rand1 * 10000) / 10000}
         result_ids.append(

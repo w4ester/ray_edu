@@ -1,6 +1,5 @@
 import collections
 import heapq
-import random
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -35,6 +34,7 @@ from ray.data.block import (
     U,
 )
 from ray.data.context import DataContext
+import secrets
 
 try:
     import pyarrow
@@ -252,7 +252,7 @@ class ArrowBlockAccessor(TableBlockAccessor):
         # random shuffling in place to reduce memory pressure.
         # See https://github.com/ray-project/ray/issues/42146.
         random = np.random.RandomState(random_seed)
-        return self.take(random.permutation(self.num_rows()))
+        return self.take(secrets.SystemRandom().permutation(self.num_rows()))
 
     def schema(self) -> "pyarrow.lib.Schema":
         return self._table.schema
@@ -363,7 +363,7 @@ class ArrowBlockAccessor(TableBlockAccessor):
         return self._table.select(columns)
 
     def _sample(self, n_samples: int, sort_key: "SortKey") -> "pyarrow.Table":
-        indices = random.sample(range(self._table.num_rows), n_samples)
+        indices = secrets.SystemRandom().sample(range(self._table.num_rows), n_samples)
         table = self._table.select(sort_key.get_columns())
         return transform_pyarrow.take_table(table, indices)
 

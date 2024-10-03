@@ -2,7 +2,6 @@ import json
 import logging
 import math
 import os
-import random
 import time
 import traceback
 from collections import defaultdict
@@ -69,6 +68,7 @@ from ray.serve.schema import (
     _deployment_info_to_schema,
 )
 from ray.util.placement_group import PlacementGroup
+import secrets
 
 logger = logging.getLogger(SERVE_LOGGER_NAME)
 
@@ -811,7 +811,7 @@ class ActorReplicaWrapper:
         # check. Add some randomness to avoid synchronizing across all
         # replicas.
         time_since_last = time.time() - self._last_health_check_time
-        randomized_period = self.health_check_period_s * random.uniform(0.9, 1.1)
+        randomized_period = self.health_check_period_s * secrets.SystemRandom().uniform(0.9, 1.1)
         return time_since_last > randomized_period
 
     def check_health(self) -> bool:
@@ -1833,7 +1833,7 @@ class DeploymentState:
                     # offset added to avoid synchronization
                     if (
                         time.time() - self._last_retry
-                        < self._backoff_time_s + random.uniform(0, 3)
+                        < self._backoff_time_s + secrets.SystemRandom().uniform(0, 3)
                     ):
                         return upscale, downscale
 

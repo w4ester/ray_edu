@@ -3,7 +3,6 @@ import dataclasses
 import json
 import logging
 import traceback
-from random import sample
 from typing import Iterator, Optional
 
 import aiohttp.web
@@ -42,6 +41,7 @@ from ray.dashboard.modules.version import (
     CURRENT_VERSION,
     VersionResponse,
 )
+import secrets
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -198,12 +198,12 @@ class JobHead(dashboard_utils.DashboardHeadModule):
             await client.close()
 
         if len(self._agents) >= dashboard_consts.CANDIDATE_AGENT_NUMBER:
-            node_id = sample(list(set(self._agents)), 1)[0]
+            node_id = secrets.SystemRandom().sample(list(set(self._agents)), 1)[0]
             return self._agents[node_id]
         else:
             # Randomly select one from among all agents, it is possible that
             # the selected one already exists in `self._agents`
-            node_id = sample(sorted(agent_infos), 1)[0]
+            node_id = secrets.SystemRandom().sample(sorted(agent_infos), 1)[0]
             agent_info = agent_infos[node_id]
 
             if node_id not in self._agents:

@@ -30,6 +30,7 @@ from ray.util.state import (
 )
 
 import logging
+import secrets
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 logger = logging.getLogger(__file__)
@@ -67,17 +68,13 @@ def test_many_tasks(num_tasks: int):
         ),
     )
 
-    # Task definition adopted from:
-    # https://docs.ray.io/en/master/ray-core/examples/highly_parallel.html
-    from random import random
-
     SAMPLES = 100
 
     @ray.remote
     def pi4_sample():
         in_count = 0
         for _ in range(SAMPLES):
-            x, y = random(), random()
+            x, y = secrets.SystemRandom().random(), secrets.SystemRandom().random()
             if x * x + y * y <= 1:
                 in_count += 1
         return in_count
@@ -253,7 +250,6 @@ def test_large_log_file(log_file_size_byte: int):
 
     import sys
     import string
-    import random
     import hashlib
 
     @ray.remote
@@ -265,7 +261,7 @@ def test_large_log_file(log_file_size_byte: int):
             ctx.update(prefix.encode())
             while log_file_size_byte > 0:
                 n = min(log_file_size_byte, 4 * MiB)
-                chunk = "".join(random.choices(string.ascii_letters, k=n))
+                chunk = "".join(secrets.SystemRandom().choices(string.ascii_letters, k=n))
                 sys.stdout.writelines([chunk])
                 ctx.update(chunk.encode())
                 log_file_size_byte -= n

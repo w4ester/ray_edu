@@ -2,13 +2,13 @@ from typing import Any, Tuple, Optional
 
 import ray
 from ray import workflow
+import secrets
 
 
 @ray.remote
 def flaky_step() -> str:
-    import random
 
-    if random.choice([0, 1, 1]) != 0:
+    if secrets.choice([0, 1, 1]) != 0:
         raise ValueError("oops")
 
     return "ok"

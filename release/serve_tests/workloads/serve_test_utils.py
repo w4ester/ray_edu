@@ -2,7 +2,6 @@
 import json
 import logging
 import os
-import random
 import ray
 import re
 import subprocess
@@ -11,6 +10,7 @@ from collections import defaultdict
 from serve_test_cluster_utils import NUM_CPU_PER_NODE
 from subprocess import PIPE
 from typing import Dict, List, Optional, Union
+import secrets
 
 logger = logging.getLogger(__file__)
 
@@ -284,7 +284,7 @@ def run_wrk_on_all_nodes(
         if node["Alive"]:
             node_resource = f"node:{node['NodeManagerAddress']}"
             # Randomly pick one from all available endpoints in ray cluster
-            endpoint = random.choice(all_endpoints)
+            endpoint = secrets.choice(all_endpoints)
             rst_ray_refs.append(
                 run_one_wrk_trial.options(
                     num_cpus=0, resources={node_resource: 0.01}

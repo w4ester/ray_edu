@@ -1,9 +1,9 @@
 """Test the collective group APIs."""
 import pytest
 import ray
-from random import shuffle
 
 from ray.util.collective.tests.util import create_collective_multigpu_workers
+import secrets
 
 
 @pytest.mark.parametrize("group_name", ["default", "test", "123?34!"])
@@ -33,7 +33,7 @@ def test_get_rank(ray_start_distributed_multigpu_2_nodes_4_gpus):
     # orders of ranks.
     new_group_name = "default2"
     ranks = list(range(world_size))
-    shuffle(ranks)
+    secrets.SystemRandom().shuffle(ranks)
     ray.get(
         [
             actor.init_group.remote(world_size, ranks[i], group_name=new_group_name)

@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import random
 import shutil
 import subprocess
 import sys
@@ -19,6 +18,7 @@ from ray.autoscaler._private.fake_multi_node.node_provider import (
     FAKE_DOCKER_DEFAULT_GCS_PORT,
 )
 from ray.util.queue import Empty, Queue
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -336,7 +336,7 @@ class DockerCluster:
                     "fffffffffffffffffffffffffffffffffffffffffffffffffff00000"
                 )
             # Else: any
-            node_id = random.choice(choices)
+            node_id = secrets.choice(choices)
 
         assert node_id in self._nodes, f"Node with ID {node_id} is not in active nodes."
         return node_id

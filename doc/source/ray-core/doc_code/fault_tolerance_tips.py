@@ -1,5 +1,6 @@
 # __return_ray_put_start__
 import ray
+import secrets
 
 
 # Non-fault tolerant version:
@@ -63,9 +64,8 @@ b.options(
 class Actor:
     def read_only(self):
         import sys
-        import random
 
-        rand = random.random()
+        rand = secrets.SystemRandom().random()
         if rand < 0.2:
             return 2 / 0
         elif rand < 0.3:

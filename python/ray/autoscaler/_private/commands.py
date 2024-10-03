@@ -4,7 +4,6 @@ import hashlib
 import json
 import logging
 import os
-import random
 import shutil
 import subprocess
 import sys
@@ -72,6 +71,7 @@ from ray.autoscaler.tags import (
 )
 from ray.experimental.internal_kv import _internal_kv_put, internal_kv_get_gcs_client
 from ray.util.debug import log_once
+import secrets
 
 try:  # py3
     from shlex import quote
@@ -482,7 +482,7 @@ def teardown_cluster(
                 cf.bold("--keep-min-workers"),
             )
 
-            workers = random.sample(workers, len(workers) - min_workers)
+            workers = secrets.SystemRandom().sample(workers, len(workers) - min_workers)
 
         # todo: it's weird to kill the head node but not all workers
         if workers_only:
@@ -579,7 +579,7 @@ def kill_node(
     if not nodes:
         cli_logger.print("No worker nodes detected.")
         return None
-    node = random.choice(nodes)
+    node = secrets.choice(nodes)
     cli_logger.print("Shutdown " + cf.bold("{}"), node)
     if hard:
         provider.terminate_node(node)

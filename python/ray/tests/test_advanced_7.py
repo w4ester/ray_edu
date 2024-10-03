@@ -1,6 +1,5 @@
 # coding: utf-8
 import logging
-import random
 import sys
 import threading
 import time
@@ -11,6 +10,7 @@ import pytest
 
 import ray.cluster_utils
 from ray._private.test_utils import client_test_enabled
+import secrets
 
 if client_test_enabled():
     from ray.util.client import ray
@@ -33,7 +33,7 @@ def test_multithreading(ray_start_2_cpus):
         def wrapper():
             for _ in range(num_repeats):
                 test_case()
-                time.sleep(random.randint(0, 10) / 1000.0)
+                time.sleep(secrets.SystemRandom().randint(0, 10) / 1000.0)
             return "ok"
 
         executor = ThreadPoolExecutor(max_workers=num_threads)
@@ -57,7 +57,7 @@ def test_multithreading(ray_start_2_cpus):
 
         # Test calling remote functions in multiple threads.
         def test_remote_call():
-            value = random.randint(0, 1000000)
+            value = secrets.SystemRandom().randint(0, 1000000)
             result = ray.get(echo.remote(value))
             assert value == result
 
@@ -67,7 +67,7 @@ def test_multithreading(ray_start_2_cpus):
         actor = Echo.remote()
 
         def test_call_actor():
-            value = random.randint(0, 1000000)
+            value = secrets.SystemRandom().randint(0, 1000000)
             result = ray.get(actor.echo.remote(value))
             assert value == result
 
@@ -75,7 +75,7 @@ def test_multithreading(ray_start_2_cpus):
 
         # Test put and get.
         def test_put_and_get():
-            value = random.randint(0, 1000000)
+            value = secrets.SystemRandom().randint(0, 1000000)
             result = ray.get(ray.put(value))
             assert value == result
 
@@ -131,7 +131,7 @@ def test_multithreading(ray_start_2_cpus):
                     # Test put and get
                     objects = [ray.put(i) for i in range(num)]
                     assert ray.get(objects) == list(range(num))
-                    time.sleep(random.randint(0, 10) / 1000.0)
+                    time.sleep(secrets.SystemRandom().randint(0, 10) / 1000.0)
             except Exception as e:
                 with self.lock:
                     self.thread_results.append(e)

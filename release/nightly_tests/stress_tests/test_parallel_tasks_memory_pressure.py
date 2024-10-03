@@ -1,9 +1,9 @@
 from math import ceil
 import time
-import random
 
 import ray
 from ray._private.utils import get_system_memory, get_used_memory
+import secrets
 
 
 @ray.remote
@@ -21,7 +21,7 @@ def allocate_memory(
         # If all tasks try to allocate memory at the same time,
         # the memory monitor might not be able to kill them in time.
         # To avoid this, we introduce a random sleep interval.
-        r = 1 + 5 * random.random()
+        r = 1 + 5 * secrets.SystemRandom().random()
         time.sleep(allocate_interval_s * r)
     return 1
 

@@ -1,6 +1,6 @@
 import gymnasium as gym
 from gymnasium.spaces import Discrete, Tuple
-import random
+import secrets
 
 
 class CorrelatedActionsEnv(gym.Env):
@@ -25,7 +25,7 @@ class CorrelatedActionsEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         self.t = 0
-        self.last_observation = random.choice([0, 1])
+        self.last_observation = secrets.choice([0, 1])
         return self.last_observation, {}
 
     def step(self, action):
@@ -39,5 +39,5 @@ class CorrelatedActionsEnv(gym.Env):
         if a1 == a2:
             reward += 5
         done = truncated = self.t > 20
-        self.last_observation = random.choice([0, 1])
+        self.last_observation = secrets.choice([0, 1])
         return self.last_observation, reward, done, truncated, {}

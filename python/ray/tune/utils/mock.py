@@ -1,6 +1,5 @@
 import logging
 import os
-import random
 import time
 from collections import defaultdict
 from pathlib import Path
@@ -8,6 +7,7 @@ from typing import Dict
 
 from ray.tune.callback import Callback
 from ray.tune.experiment import Trial
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +43,9 @@ class FailureInjectorCallback(Callback):
         failures = 0
         max_failures = 3
         # With 10% probability inject failure to a worker.
-        if random.random() < self.probability and not self.disable:
+        if secrets.SystemRandom().random() < self.probability and not self.disable:
             # With 10% probability fully terminate the node.
-            should_terminate = random.random() < self.probability
+            should_terminate = secrets.SystemRandom().random() < self.probability
             while failures < max_failures:
                 try:
                     kill_node(

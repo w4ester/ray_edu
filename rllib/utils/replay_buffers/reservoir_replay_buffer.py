@@ -1,5 +1,4 @@
 from typing import Any, Dict
-import random
 
 # Import ray before psutil will make sure we use psutil's bundled version
 import ray  # noqa F401
@@ -11,6 +10,7 @@ from ray.rllib.utils.replay_buffers.replay_buffer import (
     warn_replay_capacity,
 )
 from ray.rllib.utils.typing import SampleBatchType
+import secrets
 
 
 # __sphinx_doc_reservoir_buffer__begin__
@@ -64,7 +64,7 @@ class ReservoirReplayBuffer(ReplayBuffer):
         else:
             # Eviction of older samples has already started (buffer is "full")
             self._eviction_started = True
-            idx = random.randint(0, self._num_add_calls - 1)
+            idx = secrets.SystemRandom().randint(0, self._num_add_calls - 1)
             if idx < len(self._storage):
                 self._num_evicted += 1
                 self._evicted_hit_stats.push(self._hit_count[idx])

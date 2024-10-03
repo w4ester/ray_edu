@@ -3,7 +3,6 @@ import json
 import logging
 import math
 import os
-import random
 import shutil
 import warnings
 from pathlib import Path
@@ -22,6 +21,7 @@ from ray.tune.search.variant_generator import format_vars
 from ray.tune.utils.util import SafeFallbackEncoder
 from ray.util import PublicAPI
 from ray.util.debug import log_once
+import secrets
 
 if TYPE_CHECKING:
     from ray.tune.execution.tune_controller import TuneController
@@ -94,15 +94,15 @@ def _explore(
         elif isinstance(distribution, (list, tuple)):
             # Case 1: Hyperparameter resample distribution is a list/tuple
             if (
-                random.random() < resample_probability
+                secrets.SystemRandom().random() < resample_probability
                 or config[key] not in distribution
             ):
                 # Resample a value from the list with `resample_probability`
-                new_config[key] = random.choice(distribution)
+                new_config[key] = secrets.choice(distribution)
                 operations[key] = "resample"
             else:
                 # Otherwise, perturb by shifting to the left or right of the list
-                shift = random.choice([-1, 1])
+                shift = secrets.choice([-1, 1])
                 old_idx = distribution.index(config[key])
                 new_idx = old_idx + shift
                 new_idx = min(max(new_idx, 0), len(distribution) - 1)
@@ -115,7 +115,7 @@ def _explore(
             # Case 2: Hyperparameter resample distribution is:
             # 1. a function (ex: lambda: np.random.uniform(0, 1))
             # 2. tune search Domain (ex: tune.uniform(0, 1))
-            if random.random() < resample_probability:
+            if secrets.SystemRandom().random() < resample_probability:
                 # Resample a value from the function/domain with `resample_probability`
                 new_config[key] = (
                     distribution.sample(None)
@@ -126,7 +126,7 @@ def _explore(
             else:
                 # Otherwise, perturb by multiplying the hyperparameter by one
                 # of the `perturbation_factors`
-                perturbation_factor = random.choice(perturbation_factors)
+                perturbation_factor = secrets.choice(perturbation_factors)
                 new_config[key] = config[key] * perturbation_factor
                 operations[key] = f"* {perturbation_factor}"
             if isinstance(config[key], int):
@@ -167,7 +167,7 @@ def _fill_config(
     elif isinstance(search_space, Domain):
         config[attr] = search_space.sample(None)
     elif isinstance(search_space, (list, tuple)):
-        config[attr] = random.choice(search_space)
+        config[attr] = secrets.choice(search_space)
     elif isinstance(search_space, dict):
         config[attr] = {}
         for k, v in search_space.items():
@@ -687,7 +687,7 @@ class PopulationBasedTraining(FIFOScheduler):
             state.last_checkpoint = None  # not a top trial
 
         if trial in lower_quantile:
-            trial_to_clone = random.choice(upper_quantile)
+            trial_to_clone = secrets.choice(upper_quantile)
             assert trial is not trial_to_clone
             clone_state = self._trial_state[trial_to_clone]
             last_checkpoint = clone_state.last_checkpoint

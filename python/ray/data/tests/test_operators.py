@@ -1,5 +1,4 @@
 import collections
-import random
 import time
 from typing import Any, Iterable, List
 from unittest.mock import MagicMock
@@ -41,6 +40,7 @@ from ray.data.block import Block
 from ray.data.context import DataContext
 from ray.data.tests.util import run_one_op_task, run_op_tasks_sync
 from ray.tests.conftest import *  # noqa
+import secrets
 
 
 def _get_blocks(bundle: RefBundle, output_list: List[Block]):
@@ -282,8 +282,8 @@ def test_split_operator(ray_start_regular_shared, equal, chunk_size):
 @pytest.mark.parametrize("equal", [False, True])
 @pytest.mark.parametrize("random_seed", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 def test_split_operator_random(ray_start_regular_shared, equal, random_seed):
-    random.seed(random_seed)
-    inputs = make_ref_bundles([[i] * random.randint(0, 10) for i in range(100)])
+    secrets.SystemRandom().seed(random_seed)
+    inputs = make_ref_bundles([[i] * secrets.SystemRandom().randint(0, 10) for i in range(100)])
     num_inputs = sum(x.num_rows() for x in inputs)
     input_op = InputDataBuffer(inputs)
     op = OutputSplitter(input_op, 3, equal=equal)

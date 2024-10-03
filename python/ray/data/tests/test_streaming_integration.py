@@ -1,5 +1,4 @@
 import itertools
-import random
 import threading
 import time
 from typing import Any, List
@@ -30,6 +29,7 @@ from ray.data._internal.execution.util import make_ref_bundles
 from ray.data.context import DataContext
 from ray.data.tests.conftest import *  # noqa
 from ray.data.tests.util import extract_values
+import secrets
 
 
 def make_map_transformer(block_fn):
@@ -573,7 +573,7 @@ def test_streaming_fault_tolerance(ray_start_10_cpus_shared, restore_data_contex
         def __call__(self, x):
             import os
 
-            if random.random() > 0.9:
+            if secrets.SystemRandom().random() > 0.9:
                 print("force exit")
                 os._exit(1)
             return x

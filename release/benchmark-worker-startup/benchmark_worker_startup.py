@@ -46,11 +46,11 @@ from ray._private.test_utils import safe_write_to_results_json
 from ray.job_submission import JobSubmissionClient, JobStatus
 import argparse
 import asyncio
-import random
 import ray
 import statistics
 import subprocess
 import sys
+import secrets
 
 
 def main(
@@ -81,7 +81,7 @@ def main(
     )
     print(f"List of tests: {run_matrix}")
 
-    for test in random.sample(list(run_matrix), k=len(run_matrix)):
+    for test in secrets.SystemRandom().sample(list(run_matrix), k=len(run_matrix)):
         print(f"Running test {test}")
         asyncio.run(
             run_and_stream_logs(

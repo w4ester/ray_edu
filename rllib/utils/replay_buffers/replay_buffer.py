@@ -1,7 +1,6 @@
 from enum import Enum
 import logging
 import numpy as np
-import random
 from typing import Any, Dict, List, Optional, Union
 
 # Import ray before psutil will make sure we use psutil's bundled version
@@ -16,6 +15,7 @@ from ray.rllib.utils.replay_buffers.base import ReplayBufferInterface
 from ray.rllib.utils.typing import SampleBatchType
 from ray.util.annotations import DeveloperAPI
 from ray.util.debug import log_once
+import secrets
 
 # Constant that represents all policies in lockstep replay mode.
 _ALL_POLICIES = "__all__"
@@ -311,7 +311,7 @@ class ReplayBuffer(ReplayBufferInterface, FaultAwareApply):
         """
         if len(self) == 0:
             raise ValueError("Trying to sample from an empty buffer.")
-        idxes = [random.randint(0, len(self) - 1) for _ in range(num_items)]
+        idxes = [secrets.SystemRandom().randint(0, len(self) - 1) for _ in range(num_items)]
         sample = self._encode_sample(idxes)
         self._num_timesteps_sampled += sample.count
         return sample

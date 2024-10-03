@@ -1,5 +1,4 @@
 import logging
-import random
 import time
 from functools import wraps
 from typing import Callable, Dict, Iterable, List, Optional, Tuple, Union
@@ -33,6 +32,7 @@ from ray.serve.generated.serve_pb2 import (
 from ray.serve.generated.serve_pb2 import StatusOverview as StatusOverviewProto
 from ray.serve.handle import DeploymentHandle, _HandleOptions
 from ray.serve.schema import LoggingConfig, ServeApplicationSchema, ServeDeploySchema
+import secrets
 
 logger = logging.getLogger(__file__)
 
@@ -462,7 +462,7 @@ class ServeControllerClient:
             # Perform random eviction to keep the handle cache from growing
             # infinitely. We used use WeakValueDictionary but hit
             # https://github.com/ray-project/ray/issues/18980.
-            evict_key = random.choice(list(self.handle_cache.keys()))
+            evict_key = secrets.choice(list(self.handle_cache.keys()))
             self._evicted_handle_keys.add(evict_key)
             self.handle_cache.pop(evict_key)
 

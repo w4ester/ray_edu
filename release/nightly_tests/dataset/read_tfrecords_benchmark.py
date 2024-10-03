@@ -1,4 +1,3 @@
-import random
 import shutil
 import tempfile
 from typing import List, Tuple
@@ -10,6 +9,7 @@ from benchmark import Benchmark
 from read_images_benchmark import generate_images
 import pyarrow as pa
 import numpy as np
+import secrets
 
 
 def read_tfrecords(path: str) -> Dataset:
@@ -53,12 +53,12 @@ def generate_random_tfrecords(
         for _ in range(batch_size):
             if num_int > 0:
                 int_features = [
-                    random.randint(lower_bound, upper_bound) for _ in range(num_int)
+                    secrets.SystemRandom().randint(lower_bound, upper_bound) for _ in range(num_int)
                 ]
                 features["int_features"].append(int_features)
             if num_float > 0:
                 float_features = [
-                    random.uniform(lower_bound, upper_bound) for _ in range(num_float)
+                    secrets.SystemRandom().uniform(lower_bound, upper_bound) for _ in range(num_float)
                 ]
                 features["float_features"].append(float_features)
             if num_bytes > 0:
@@ -77,7 +77,7 @@ def generate_random_tfrecords(
 
 def run_tfrecords_benchmark(benchmark: Benchmark):
     # Set global random seed.
-    random.seed(42)
+    secrets.SystemRandom().seed(42)
 
     test_input = [
         generate_tfrecords_from_images(100, [(256, 256)], ["RGB"], ["jpg"]),

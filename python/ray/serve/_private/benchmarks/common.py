@@ -1,7 +1,6 @@
 import asyncio
 import inspect
 import logging
-import random
 import string
 import time
 from functools import partial
@@ -17,6 +16,7 @@ from tqdm import tqdm
 from ray import serve
 from ray.serve.generated import serve_pb2, serve_pb2_grpc
 from ray.serve.handle import DeploymentHandle
+import secrets
 
 
 async def run_latency_benchmark(
@@ -106,7 +106,7 @@ async def collect_profile_events(coro: Coroutine):
 
 
 def generate_payload(size: int = 100, chars=string.ascii_uppercase + string.digits):
-    return "".join(random.choice(chars) for _ in range(size))
+    return "".join(secrets.choice(chars) for _ in range(size))
 
 
 class Blackhole:

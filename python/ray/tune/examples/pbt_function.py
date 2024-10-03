@@ -3,7 +3,6 @@
 import argparse
 import json
 import os
-import random
 import tempfile
 
 import numpy as np
@@ -12,6 +11,7 @@ import ray
 from ray import train, tune
 from ray.train import Checkpoint
 from ray.tune.schedulers import PopulationBasedTraining
+import secrets
 
 
 def pbt_function(config):
@@ -72,9 +72,9 @@ def pbt_function(config):
         # compute accuracy increase
         q_err = max(lr, optimal_lr) / min(lr, optimal_lr)
         if q_err < q_tolerance:
-            accuracy += (1.0 / q_err) * random.random()
+            accuracy += (1.0 / q_err) * secrets.SystemRandom().random()
         elif lr > optimal_lr:
-            accuracy -= (q_err - q_tolerance) * random.random()
+            accuracy -= (q_err - q_tolerance) * secrets.SystemRandom().random()
         accuracy += noise_level * np.random.normal()
         accuracy = max(0, accuracy)
 

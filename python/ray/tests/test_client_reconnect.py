@@ -8,7 +8,6 @@ from mock import Mock
 import numpy as np
 
 import time
-import random
 import pytest
 from typing import Any, Callable, Optional
 from unittest.mock import patch
@@ -19,6 +18,7 @@ import ray.core.generated.ray_client_pb2 as ray_client_pb2
 import ray.core.generated.ray_client_pb2_grpc as ray_client_pb2_grpc
 from ray.tests.conftest import call_ray_start_context
 from ray.util.client.common import CLIENT_SERVER_MAX_THREADS, GRPC_OPTIONS
+import secrets
 
 
 @pytest.fixture(scope="module")
@@ -548,11 +548,11 @@ def test_noisy_puts(call_ray_start_shared):
     (requests made it to server, responses dropped) and checks that final
     result is still consistent
     """
-    random.seed(12345)
+    secrets.SystemRandom().seed(12345)
     with start_middleman_server() as middleman:
 
         def fail_randomly(response: ray_client_pb2.DataResponse):
-            if random.random() < 0.1:
+            if secrets.SystemRandom().random() < 0.1:
                 raise RuntimeError
 
         middleman.data_servicer.on_response = fail_randomly

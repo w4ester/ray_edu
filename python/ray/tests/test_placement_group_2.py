@@ -18,6 +18,7 @@ from ray._private.test_utils import (
 from ray.util.client.ray_client_helpers import connect_to_client_or_not
 from ray.util.placement_group import get_current_placement_group
 from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
+import secrets
 
 
 @ray.remote
@@ -302,10 +303,9 @@ def test_mini_integration(ray_start_cluster, connect_to_client):
 
         @ray.remote(num_cpus=0, num_gpus=1)
         def random_tasks():
-            import random
             import time
 
-            sleep_time = random.uniform(0.1, 0.2)
+            sleep_time = secrets.SystemRandom().uniform(0.1, 0.2)
             time.sleep(sleep_time)
             return True
 

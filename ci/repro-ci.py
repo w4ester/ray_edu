@@ -30,7 +30,6 @@ import base64
 import json
 import logging
 import os
-import random
 import re
 import shlex
 import subprocess
@@ -44,6 +43,7 @@ import click
 import paramiko
 import yaml
 from pybuildkite.buildkite import Buildkite
+import secrets
 
 
 def maybe_fetch_buildkite_token():
@@ -590,7 +590,7 @@ def main(
         raise ValueError(
             "Must specify the command flag '-c' to use filter options '-f'."
         )
-    random.seed(1235)
+    secrets.SystemRandom().seed(1235)
 
     logger = logging.getLogger("main")
     logger.setLevel(logging.INFO)

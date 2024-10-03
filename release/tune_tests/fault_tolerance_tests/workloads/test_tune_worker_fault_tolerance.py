@@ -24,7 +24,6 @@ import pickle
 import argparse
 import tempfile
 import time
-import random
 import gc
 
 import ray
@@ -34,6 +33,7 @@ from ray.tune.tune_config import TuneConfig
 from ray.tune.tuner import Tuner
 
 from terminate_node_aws import create_instance_killer
+import secrets
 
 
 MAX_ITERS = 40
@@ -56,7 +56,7 @@ def objective(config):
             start_iteration = checkpoint_dict["iteration"] + 1
 
     for iteration in range(start_iteration, MAX_ITERS + 1):
-        time.sleep(random.uniform(*ITER_TIME_BOUNDS))
+        time.sleep(secrets.SystemRandom().uniform(*ITER_TIME_BOUNDS))
         dct = {"iteration": iteration}
         with tempfile.TemporaryDirectory() as tmpdir:
             with open(os.path.join(tmpdir, "ckpt.pkl"), "wb") as f:

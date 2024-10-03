@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import argparse
-import random
 
 import numpy as np
 
 import ray
 from ray import train, tune
 from ray.tune.schedulers import PopulationBasedTraining
+import secrets
 
 
 class PBTBenchmarkExample(tune.Trainable):
@@ -53,9 +53,9 @@ class PBTBenchmarkExample(tune.Trainable):
         # compute accuracy increase
         q_err = max(self.lr, optimal_lr) / min(self.lr, optimal_lr)
         if q_err < q_tolerance:
-            self.accuracy += (1.0 / q_err) * random.random()
+            self.accuracy += (1.0 / q_err) * secrets.SystemRandom().random()
         elif self.lr > optimal_lr:
-            self.accuracy -= (q_err - q_tolerance) * random.random()
+            self.accuracy -= (q_err - q_tolerance) * secrets.SystemRandom().random()
         self.accuracy += noise_level * np.random.normal()
         self.accuracy = max(0, self.accuracy)
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
         perturbation_interval=perturbation_interval,
         hyperparam_mutations={
             # distribution for resampling
-            "lr": lambda: random.uniform(0.0001, 0.02),
+            "lr": lambda: secrets.SystemRandom().uniform(0.0001, 0.02),
             # allow perturbations within this set of categorical values
             "some_other_factor": [1, 2],
         },

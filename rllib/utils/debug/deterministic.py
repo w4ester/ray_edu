@@ -1,10 +1,10 @@
 import numpy as np
 import os
-import random
 from typing import Optional
 
 from ray.rllib.utils.annotations import DeveloperAPI
 from ray.rllib.utils.framework import try_import_tf, try_import_torch
+import secrets
 
 
 @DeveloperAPI
@@ -24,7 +24,7 @@ def update_global_seed_if_necessary(
         return
 
     # Python random module.
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     # Numpy.
     np.random.seed(seed)
 

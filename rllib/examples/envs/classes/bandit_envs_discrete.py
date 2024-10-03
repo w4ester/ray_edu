@@ -2,7 +2,7 @@ import copy
 import gymnasium as gym
 from gymnasium.spaces import Box, Discrete
 import numpy as np
-import random
+import secrets
 
 
 class SimpleContextualBandit(gym.Env):
@@ -20,7 +20,7 @@ class SimpleContextualBandit(gym.Env):
         self.cur_context = None
 
     def reset(self, *, seed=None, options=None):
-        self.cur_context = random.choice([-1.0, 1.0])
+        self.cur_context = secrets.choice([-1.0, 1.0])
         return np.array([self.cur_context, -self.cur_context]), {}
 
     def step(self, action):

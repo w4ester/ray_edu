@@ -1,5 +1,4 @@
 import itertools
-import random
 import sys
 from typing import Dict, List
 
@@ -8,6 +7,7 @@ import pytest
 from ray import serve
 from ray.serve._private.config import DeploymentConfig
 from ray.serve.deployment import deployment_to_schema, schema_to_deployment
+import secrets
 
 
 def get_random_dict_combos(d: Dict, n: int) -> List[Dict]:
@@ -19,13 +19,13 @@ def get_random_dict_combos(d: Dict, n: int) -> List[Dict]:
     """
 
     # Shuffle dictionary without modifying original dictionary
-    d = dict(random.sample(list(d.items()), len(d)))
+    d = dict(secrets.SystemRandom().sample(list(d.items()), len(d)))
 
     combos = []
 
     # Sample random combos of random size
     subset_sizes = list(range(len(d) + 1))
-    random.shuffle(subset_sizes)
+    secrets.SystemRandom().shuffle(subset_sizes)
 
     for subset_size in subset_sizes:
         subset_combo_iterator = map(

@@ -1,6 +1,5 @@
 import datetime
 import os
-import random
 import sys
 import tempfile
 
@@ -22,6 +21,7 @@ from ray._private.test_utils import SignalActor
 # NOTE: We have to import setproctitle after ray because we bundle setproctitle
 # with ray.
 import setproctitle  # noqa
+import secrets
 
 
 @pytest.mark.parametrize("set_enable_auto_connect", [True, False], indirect=True)
@@ -657,10 +657,10 @@ def test_random_id_generation(ray_start_regular_shared):
     # Make sure that seeding numpy does not interfere with the generation
     # of actor IDs.
     np.random.seed(1234)
-    random.seed(1234)
+    secrets.SystemRandom().seed(1234)
     f1 = Foo.remote()
     np.random.seed(1234)
-    random.seed(1234)
+    secrets.SystemRandom().seed(1234)
     f2 = Foo.remote()
 
     assert f1._actor_id != f2._actor_id

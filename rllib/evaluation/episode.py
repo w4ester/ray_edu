@@ -1,4 +1,3 @@
-import random
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 
@@ -20,6 +19,7 @@ from ray.rllib.utils.typing import (
     SampleBatchType,
 )
 from ray.util import log_once
+import secrets
 
 if TYPE_CHECKING:
     from ray.rllib.evaluation.rollout_worker import RolloutWorker
@@ -92,7 +92,7 @@ class Episode:
         self.total_reward: float = 0.0
         self.length: int = 0
         self.started = False
-        self.episode_id: int = random.randrange(int(1e18))
+        self.episode_id: int = secrets.SystemRandom().randrange(int(1e18))
         self.env_id = env_id
         self.worker = worker
         self.agent_rewards: Dict[Tuple[AgentID, PolicyID], float] = defaultdict(float)

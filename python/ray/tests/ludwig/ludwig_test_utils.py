@@ -19,7 +19,6 @@
 
 import multiprocessing
 import os
-import random
 import shutil
 import sys
 import traceback
@@ -39,6 +38,7 @@ from ludwig.data.dataset_synthesizer import build_synthetic_dataset
 from ludwig.experiment import experiment_cli
 from ludwig.features.feature_utils import compute_feature_hash
 from ludwig.utils.data_utils import read_csv, replace_file_extension
+import secrets
 
 ENCODERS = [
     "embed",
@@ -314,7 +314,7 @@ def date_feature(**kwargs):
         "name": "date_" + random_string(),
         "type": "date",
         "preprocessing": {
-            "datetime_format": random.choice(list(DATETIME_FORMATS.keys()))
+            "datetime_format": secrets.choice(list(DATETIME_FORMATS.keys()))
         },
     }
     feature.update(kwargs)

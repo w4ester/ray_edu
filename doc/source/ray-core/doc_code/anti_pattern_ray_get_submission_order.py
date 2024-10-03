@@ -1,14 +1,14 @@
 # __anti_pattern_start__
-import random
 import time
 import ray
+import secrets
 
 ray.init()
 
 
 @ray.remote
 def f(i):
-    time.sleep(random.random())
+    time.sleep(secrets.SystemRandom().random())
     return i
 
 

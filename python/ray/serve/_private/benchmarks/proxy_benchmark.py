@@ -5,7 +5,6 @@ import asyncio
 import json
 import logging
 import time
-from random import random
 from typing import Callable, Dict
 
 import aiohttp
@@ -20,6 +19,7 @@ from ray.serve._private.common import RequestProtocol
 from ray.serve.config import gRPCOptions
 from ray.serve.generated import serve_pb2, serve_pb2_grpc
 from ray.serve.handle import DeploymentHandle
+import secrets
 
 CALLS_PER_BATCH = 100
 DELTA = 10**-7
@@ -189,7 +189,7 @@ async def trial(
     proxy: RequestProtocol,
 ) -> Dict[str, float]:
     # Generate input data as array of random floats.
-    data = [random() for _ in range(data_size)]
+    data = [secrets.SystemRandom().random() for _ in range(data_size)]
 
     # Build and deploy the app.
     app = build_app(

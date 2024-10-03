@@ -1,8 +1,8 @@
-import random
 
 import gymnasium as gym
 import numpy as np
 from gymnasium.spaces import Box, Dict, Discrete
+import secrets
 
 
 class ParametricActionsCartPole(gym.Env):
@@ -47,7 +47,7 @@ class ParametricActionsCartPole(gym.Env):
             [[0.0, 0.0]] * self.action_space.n, dtype=np.float32
         )
         self.action_mask = np.array([0.0] * self.action_space.n, dtype=np.int8)
-        self.left_idx, self.right_idx = random.sample(range(self.action_space.n), 2)
+        self.left_idx, self.right_idx = secrets.SystemRandom().sample(range(self.action_space.n), 2)
         self.action_assignments[self.left_idx] = self.left_action_embed
         self.action_assignments[self.right_idx] = self.right_action_embed
         self.action_mask[self.left_idx] = 1
@@ -102,7 +102,7 @@ class ParametricActionsCartPoleNoEmbeddings(gym.Env):
 
     def __init__(self, max_avail_actions):
         # Randomly set which two actions are valid and available.
-        self.left_idx, self.right_idx = random.sample(range(max_avail_actions), 2)
+        self.left_idx, self.right_idx = secrets.SystemRandom().sample(range(max_avail_actions), 2)
         self.valid_avail_actions_mask = np.array(
             [0.0] * max_avail_actions, dtype=np.int8
         )

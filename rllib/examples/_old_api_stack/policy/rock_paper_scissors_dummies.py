@@ -1,8 +1,8 @@
 import gymnasium as gym
 import numpy as np
-import random
 from ray.rllib.policy.policy import Policy
 from ray.rllib.policy.view_requirement import ViewRequirement
+import secrets
 
 ROCK = 0
 PAPER = 1
@@ -26,7 +26,7 @@ class AlwaysSameHeuristic(Policy):
         )
 
     def get_initial_state(self):
-        return [random.choice([ROCK, PAPER, SCISSORS])]
+        return [secrets.choice([ROCK, PAPER, SCISSORS])]
 
     def is_recurrent(self) -> bool:
         return True
@@ -71,7 +71,7 @@ class BeatLastHeuristic(Policy):
                 elif x == SCISSORS:
                     return ROCK
                 else:
-                    return random.choice([ROCK, PAPER, SCISSORS])
+                    return secrets.choice([ROCK, PAPER, SCISSORS])
             # One-hot (auto-preprocessed) inputs.
             else:
                 if x[ROCK] == 1:
@@ -81,7 +81,7 @@ class BeatLastHeuristic(Policy):
                 elif x[SCISSORS] == 1:
                     return ROCK
                 elif x[-1] == 1:
-                    return random.choice([ROCK, PAPER, SCISSORS])
+                    return secrets.choice([ROCK, PAPER, SCISSORS])
 
         return [successor(x) for x in obs_batch], [], {}
 

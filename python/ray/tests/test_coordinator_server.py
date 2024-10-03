@@ -1,5 +1,4 @@
 import os
-import random
 import unittest
 import socket
 import json
@@ -26,6 +25,7 @@ from ray.autoscaler.tags import (
 )
 from ray._private.utils import get_ray_temp_dir
 import pytest
+import secrets
 
 
 class OnPremCoordinatorServerTest(unittest.TestCase):
@@ -73,7 +73,7 @@ class OnPremCoordinatorServerTest(unittest.TestCase):
         self._monkeypatch.setenv("RAY_TMPDIR", self._tmpdir)
         # ensure that a new cluster can start up if RAY_TMPDIR doesn't exist yet
         assert not os.path.exists(get_ray_temp_dir())
-        head_ip = ".".join(str(random.randint(0, 255)) for _ in range(4))
+        head_ip = ".".join(str(secrets.SystemRandom().randint(0, 255)) for _ in range(4))
         cluster_config = {
             "cluster_name": "random_name",
             "min_workers": 0,

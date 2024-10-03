@@ -1,10 +1,10 @@
-import random
 import time
 from typing import Any, Callable, Dict, Optional, Tuple
 
 import numpy as np
 
 from ray.rllib.utils import force_list
+import secrets
 
 
 class Stats:
@@ -294,7 +294,7 @@ class Stats:
             for o in others:
                 self.values.extend(o.values)
             if shuffle:
-                random.shuffle(self.values)
+                secrets.SystemRandom().shuffle(self.values)
         # If we have to reduce by a window:
         # Slice self's and other's values using window, combine them, then maybe shuffle
         # values (to make sure none gets a specific weight over the other when it
@@ -310,7 +310,7 @@ class Stats:
                 for o in others:
                     self.values.extend(o.values)
             if shuffle:
-                random.shuffle(self.values)
+                secrets.SystemRandom().shuffle(self.values)
 
     def __len__(self) -> int:
         """Returns the length of the internal values list."""

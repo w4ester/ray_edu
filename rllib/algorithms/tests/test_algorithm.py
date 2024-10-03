@@ -2,7 +2,6 @@ import gymnasium as gym
 import numpy as np
 import os
 from pathlib import Path
-from random import choice
 import time
 import unittest
 
@@ -16,6 +15,7 @@ from ray.rllib.examples.evaluation.evaluation_parallel_to_training import (
 )
 from ray.rllib.utils.metrics.learner_info import LEARNER_INFO
 from ray.rllib.utils.test_utils import check, framework_iterator
+import secrets
 
 
 class TestAlgorithm(unittest.TestCase):
@@ -83,7 +83,7 @@ class TestAlgorithm(unittest.TestCase):
             for i in range(1, 3):
 
                 def new_mapping_fn(agent_id, episode, worker, i=i, **kwargs):
-                    return f"p{choice([i, i - 1])}"
+                    return f"p{secrets.choice([i, i - 1])}"
 
                 # Add a new policy either by class (and options) or by instance.
                 pid = f"p{i}"
@@ -169,7 +169,7 @@ class TestAlgorithm(unittest.TestCase):
                 if i == 2:
 
                     def new_mapping_fn(agent_id, episode, worker, **kwargs):
-                        return f"p{choice([0, 2])}"
+                        return f"p{secrets.choice([0, 2])}"
 
                     test2 = ppo.PPO.from_checkpoint(
                         checkpoint=checkpoint,

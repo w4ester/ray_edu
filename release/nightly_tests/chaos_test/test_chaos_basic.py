@@ -2,7 +2,6 @@ import argparse
 import json
 import logging
 import os
-import random
 import string
 import time
 
@@ -12,6 +11,7 @@ import ray
 from ray._private.test_utils import monitor_memory_usage, wait_for_condition
 from ray.data._internal.progress_bar import ProgressBar
 from ray.util.scheduling_strategies import NodeAffinitySchedulingStrategy
+import secrets
 
 
 def run_task_workload(total_num_cpus, smoke):
@@ -24,7 +24,7 @@ def run_task_workload(total_num_cpus, smoke):
 
         a = ""
         for _ in range(100000):
-            a = a + random.choice(string.ascii_letters)
+            a = a + secrets.choice(string.ascii_letters)
         return generate_data(size_in_kb=50)
 
     @ray.remote(num_cpus=1, max_retries=-1)

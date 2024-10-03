@@ -4,7 +4,6 @@ import platform
 import pytest
 import tempfile
 import time
-import random
 from collections import defaultdict
 import queue
 import math
@@ -16,6 +15,7 @@ from ray.util.multiprocessing import Pool, TimeoutError, JoinableQueue
 from ray.util.joblib import register_ray
 
 from joblib import parallel_backend, Parallel, delayed
+import secrets
 
 
 def teardown_function(function):
@@ -473,7 +473,7 @@ def callback_test_helper(args):
     outside the test because Python's Multiprocessing library uses Pickle to
     serialize functions, but Pickle cannot serialize local functions.
     """
-    time.sleep(0.1 * random.random())
+    time.sleep(0.1 * secrets.SystemRandom().random())
     index = args[0]
     err_indices = args[1]
     if index in err_indices:
@@ -484,7 +484,7 @@ def callback_test_helper(args):
 @pytest.mark.parametrize("use_iter", [True, False])
 def test_imap(pool_4_processes, use_iter):
     def f(args):
-        time.sleep(0.1 * random.random())
+        time.sleep(0.1 * secrets.SystemRandom().random())
         index = args[0]
         err_indices = args[1]
         if index in err_indices:
@@ -524,7 +524,7 @@ def test_imap_fail_on_non_iterable(pool):
 @pytest.mark.parametrize("use_iter", [True, False])
 def test_imap_unordered(pool_4_processes, use_iter):
     def f(args):
-        time.sleep(0.1 * random.random())
+        time.sleep(0.1 * secrets.SystemRandom().random())
         index = args[0]
         err_indices = args[1]
         if index in err_indices:
@@ -561,7 +561,7 @@ def test_imap_unordered(pool_4_processes, use_iter):
 def test_imap_timeout(pool_4_processes, use_iter):
     def f(args):
         index, wait_index, signal = args
-        time.sleep(0.1 * random.random())
+        time.sleep(0.1 * secrets.SystemRandom().random())
         if index == wait_index:
             ray.get(signal.wait.remote())
         return index

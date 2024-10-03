@@ -27,8 +27,6 @@ For logging to your WandB account, use:
 --wandb-run-name=[optional: WandB run name (within the defined project)]`
 """
 
-import random
-
 import gymnasium as gym
 from pettingzoo.classic import rps_v2
 
@@ -49,6 +47,7 @@ from ray.rllib.examples.rl_modules.classes import (
     BeatLastHeuristicRLM,
 )
 from ray.tune.registry import get_trainable_cls, register_env
+import secrets
 
 
 parser = add_rllib_example_script_args(
@@ -97,7 +96,7 @@ if __name__ == "__main__":
             policy_mapping_fn=lambda aid, episode: (
                 "learned"
                 if aid == "player_0"
-                else random.choice(["always_same", "beat_last"])
+                else secrets.choice(["always_same", "beat_last"])
             ),
             # Must define this as both heuristic RLMs will throw an error, if their
             # `forward_train` is called.

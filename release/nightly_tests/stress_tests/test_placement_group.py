@@ -6,7 +6,6 @@
 import time
 
 from time import perf_counter
-from random import random
 import json
 import logging
 import os
@@ -14,6 +13,7 @@ import ray
 
 from ray.util.placement_group import placement_group, remove_placement_group
 from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
+import secrets
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def pg_launcher(pre_created_pgs, num_pgs_to_create):
     pgs_unremoved = []
     # Randomly choose placement groups to remove.
     for pg in pgs:
-        if random() < 0.5:
+        if secrets.SystemRandom().random() < 0.5:
             pgs_removed.append(pg)
         else:
             pgs_unremoved.append(pg)
@@ -67,7 +67,7 @@ def pg_launcher(pre_created_pgs, num_pgs_to_create):
     for pg in pgs_unremoved:
         # TODO(sang): Comment in this line causes GCS actor management
         # failure. We need to fix it.
-        if random() < 0.5:
+        if secrets.SystemRandom().random() < 0.5:
             tasks.append(
                 mock_task.options(
                     scheduling_strategy=PlacementGroupSchedulingStrategy(

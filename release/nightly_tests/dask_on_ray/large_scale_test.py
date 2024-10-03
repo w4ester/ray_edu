@@ -6,7 +6,6 @@ import json
 import logging
 import math
 import os
-import random
 import time
 from copy import copy, deepcopy
 from typing import List, Tuple
@@ -18,6 +17,7 @@ import xarray
 import ray
 from ray._private.test_utils import monitor_memory_usage
 from ray.util.dask import ray_dask_get
+import secrets
 
 """
 We simulate a real-life usecase where we process a time-series
@@ -155,7 +155,7 @@ class LoadRoutines:
 
         In real life, this is loaded from cloud storage or disk.
         """
-        if random.random() < test_spec.error_rate:
+        if secrets.SystemRandom().random() < test_spec.error_rate:
             raise Exception("Data error!")
         else:
             return np.random.random(INPUT_SHAPE)

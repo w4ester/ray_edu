@@ -6,6 +6,7 @@ import torch
 from torch import nn
 
 from ray import train, tune
+import secrets
 
 
 class MyTrainableClass(tune.Trainable):
@@ -36,15 +37,11 @@ tuner = tune.Tuner(
     ),
 )
 tuner.fit()
-# __class_api_checkpointing_end__
-
-# __class_api_manual_checkpointing_start__
-import random
 
 
 # to be implemented by user.
 def detect_instance_preemption():
-    choice = random.randint(1, 100)
+    choice = secrets.SystemRandom().randint(1, 100)
     # simulating a 1% chance of preemption.
     return choice <= 1
 

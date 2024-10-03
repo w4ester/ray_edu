@@ -1,5 +1,4 @@
 import subprocess
-import random
 import requests
 import time
 import logging
@@ -7,6 +6,7 @@ import logging
 import ray
 from ray.util.scheduling_strategies import NodeAffinitySchedulingStrategy
 from ray._private.test_utils import safe_write_to_results_json
+import secrets
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ def get_random_node(exclude_current: bool = True):
     ]
     if not nodes:
         return None
-    random_node = random.choice(nodes)
+    random_node = secrets.choice(nodes)
     return random_node
 
 
@@ -93,7 +93,7 @@ class InstanceKillerActor:
     def start_killing(self):
         time.sleep(self.warmup_time_s)
         while True:
-            if random.random() < self.probability:
+            if secrets.SystemRandom().random() < self.probability:
                 self.kill()
             time.sleep(self.time_between_checks_s)
 
