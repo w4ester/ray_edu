@@ -308,7 +308,7 @@ def _set_api_key(api_key_file: Optional[str] = None, api_key: Optional[str] = No
         if api_key:
             raise ValueError("Both WandB `api_key_file` and `api_key` set.")
         with open(api_key_file, "rt") as fp:
-            api_key = fp.readline().strip()
+            api_key = fp.readline(5_000_000).strip()
 
     if not api_key and not os.environ.get(WANDB_ENV_VAR):
         # Check if user is already logged into wandb.
