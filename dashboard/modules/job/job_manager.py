@@ -232,8 +232,7 @@ class JobSupervisor:
         with open(logs_path, "a") as logs_file:
             child_process = subprocess.Popen(
                 self._entrypoint,
-                shell=True,
-                start_new_session=True,
+                shell=False, start_new_session=True,
                 stdout=logs_file,
                 stderr=subprocess.STDOUT,
                 # Ray intentionally blocks SIGINT in all processes, so if the user wants

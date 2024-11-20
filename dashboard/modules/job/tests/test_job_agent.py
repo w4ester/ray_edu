@@ -563,7 +563,7 @@ async def test_non_default_dashboard_agent_http_port(tmp_path):
     cmd = (
         "ray start --head " f"--dashboard-agent-listen-port {get_current_unused_port()}"
     )
-    subprocess.check_output(cmd, shell=True)
+    subprocess.check_output(cmd, shell=False)
 
     try:
         # We will need to wait for the ray to be started in the subprocess.
