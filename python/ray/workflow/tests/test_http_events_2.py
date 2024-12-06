@@ -32,7 +32,7 @@ def test_multiple_events_by_http(workflow_start_regular_shared_serve):
             "http://127.0.0.1:8000/event/send_event/"
             + "workflow_test_multiple_event_by_http",
             json={"event_key": "e1", "event_payload": "hello"},
-        )
+        timeout=60)
         return resp
 
     def send_event2():
@@ -41,7 +41,7 @@ def test_multiple_events_by_http(workflow_start_regular_shared_serve):
             "http://127.0.0.1:8000/event/send_event/"
             + "workflow_test_multiple_event_by_http",
             json={"event_key": "e2", "event_payload": "world"},
-        )
+        timeout=60)
         return resp
 
     @ray.remote

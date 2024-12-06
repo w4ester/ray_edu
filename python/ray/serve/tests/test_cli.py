@@ -37,7 +37,7 @@ def test_start_shutdown(ray_start_stop):
 
 
 def check_http_response(expected_text: str, json: Optional[Dict] = None):
-    resp = requests.post("http://localhost:8000/", json=json)
+    resp = requests.post("http://localhost:8000/", json=json, timeout=60)
     assert resp.text == expected_text
     return True
 
@@ -137,7 +137,7 @@ def test_deploy_with_http_options(ray_start_stop):
     assert success_message_fragment in deploy_response
 
     wait_for_condition(
-        lambda: requests.post("http://localhost:8005/").text == "wonderful world",
+        lambda: requests.post("http://localhost:8005/", timeout=60).text == "wonderful world",
         timeout=15,
     )
 
@@ -177,23 +177,23 @@ def test_deploy_multi_app_basic(ray_start_stop):
 
         # Test add and mul for each of the two apps
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1", json=["ADD", 2]).text
+            lambda: requests.post("http://localhost:8000/app1", json=["ADD", 2], timeout=60).text
             == "3 pizzas please!",
             timeout=15,
         )
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1", json=["MUL", 2]).text
+            lambda: requests.post("http://localhost:8000/app1", json=["MUL", 2], timeout=60).text
             == "2 pizzas please!",
             timeout=15,
         )
         print('Application "app1" is reachable over HTTP.')
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app2", json=["ADD", 2]).text
+            lambda: requests.post("http://localhost:8000/app2", json=["ADD", 2], timeout=60).text
             == "5 pizzas please!",
             timeout=15,
         )
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app2", json=["MUL", 2]).text
+            lambda: requests.post("http://localhost:8000/app2", json=["MUL", 2], timeout=60).text
             == "4 pizzas please!",
             timeout=15,
         )
@@ -217,18 +217,18 @@ def test_deploy_multi_app_basic(ray_start_stop):
 
         # Test app1 (simple wonderful world) and app2 (add + mul)
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app1").text
+            lambda: requests.post("http://localhost:8000/app1", timeout=60).text
             == "wonderful world",
             timeout=15,
         )
         print('Application "app1" is reachable over HTTP.')
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app2", json=["ADD", 2]).text
+            lambda: requests.post("http://localhost:8000/app2", json=["ADD", 2], timeout=60).text
             == "12 pizzas please!",
             timeout=15,
         )
         wait_for_condition(
-            lambda: requests.post("http://localhost:8000/app2", json=["MUL", 2]).text
+            lambda: requests.post("http://localhost:8000/app2", json=["MUL", 2], timeout=60).text
             == "20 pizzas please!",
             timeout=15,
         )
@@ -312,23 +312,23 @@ def test_deploy_multi_app_builder_with_args(ray_start_stop):
     subprocess.check_output(["serve", "deploy", apps_with_args])
 
     wait_for_condition(
-        lambda: requests.post("http://localhost:8000/untyped_default").text
+        lambda: requests.post("http://localhost:8000/untyped_default", timeout=60).text
         == "DEFAULT",
         timeout=10,
     )
 
     wait_for_condition(
-        lambda: requests.post("http://localhost:8000/untyped_hello").text == "hello",
+        lambda: requests.post("http://localhost:8000/untyped_hello", timeout=60).text == "hello",
         timeout=10,
     )
 
     wait_for_condition(
-        lambda: requests.post("http://localhost:8000/typed_default").text == "DEFAULT",
+        lambda: requests.post("http://localhost:8000/typed_default", timeout=60).text == "DEFAULT",
         timeout=10,
     )
 
     wait_for_condition(
-        lambda: requests.post("http://localhost:8000/typed_hello").text == "hello",
+        lambda: requests.post("http://localhost:8000/typed_hello", timeout=60).text == "hello",
         timeout=10,
     )
 

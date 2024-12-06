@@ -1292,7 +1292,7 @@ def get_log(
         f"{api_server_url}/api/v0/logs/{media_type}?"
         f"{urllib.parse.urlencode(options_dict)}",
         stream=True,
-    ) as r:
+    timeout=60) as r:
         if r.status_code != 200:
             raise RayStateApiException(r.text)
         for bytes in r.iter_content(chunk_size=None):
@@ -1359,8 +1359,8 @@ def list_logs(
     options_dict["timeout"] = timeout
 
     r = requests.get(
-        f"{api_server_url}/api/v0/logs?{urllib.parse.urlencode(options_dict)}"
-    )
+        f"{api_server_url}/api/v0/logs?{urllib.parse.urlencode(options_dict)}", 
+    timeout=60)
     # TODO(rickyx): we could do better at error handling here.
     r.raise_for_status()
 

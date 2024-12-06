@@ -79,7 +79,7 @@ import requests
 
 prompt = "Tell me a story about dogs."
 
-response = requests.post(f"http://localhost:8000/?prompt={prompt}", stream=True)
+response = requests.post(f"http://localhost:8000/?prompt={prompt}", stream=True, timeout=60)
 response.raise_for_status()
 for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
     print(chunk, end="")
@@ -329,7 +329,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 
 
 def get_buffered_response(prompt) -> List[str]:
-    response = requests.post(f"http://localhost:8000/?prompt={prompt}", stream=True)
+    response = requests.post(f"http://localhost:8000/?prompt={prompt}", stream=True, timeout=60)
     chunks = []
     for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
         chunks.append(chunk)

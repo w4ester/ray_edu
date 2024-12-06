@@ -120,7 +120,7 @@ def test_get_wheel_filename():
                 )
                 prefix = "https://s3-us-west-2.amazonaws.com/ray-wheels/latest/"
                 url = f"{prefix}{filename}"
-                assert requests.head(url).status_code == 200, url
+                assert requests.head(url, timeout=60).status_code == 200, url
 
 
 def test_get_master_wheel_url():
@@ -136,7 +136,7 @@ def test_get_master_wheel_url():
             url = get_master_wheel_url(
                 test_commit, sys_platform, ray_version, py_version
             )
-            assert requests.head(url).status_code == 200, url
+            assert requests.head(url, timeout=60).status_code == 200, url
 
 
 def test_get_release_wheel_url():
@@ -149,7 +149,7 @@ def test_get_release_wheel_url():
         for py_version in ray_constants.RUNTIME_ENV_CONDA_PY_VERSIONS:
             for version, commit in test_commits.items():
                 url = get_release_wheel_url(commit, sys_platform, version, py_version)
-                assert requests.head(url).status_code == 200, url
+                assert requests.head(url, timeout=60).status_code == 200, url
 
 
 def test_current_py_version_supported():

@@ -118,7 +118,7 @@ def print_shutdown_message(process_id):
 def get_latest_prometheus_version():
     url = "https://api.github.com/repos/prometheus/prometheus/releases/latest"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=60)
         response.raise_for_status()
         data = response.json()
         # Remove the leading 'v' from the version number

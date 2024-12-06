@@ -55,7 +55,7 @@ if __name__ == "__main__":
         "enthralling  from beginning to end. Might be my favorite of the three."
     )
     input = "%20".join(prompt.split(" "))
-    resp = requests.get(f"http://127.0.0.1:8000/classify?sentence={prompt}")
+    resp = requests.get(f"http://127.0.0.1:8000/classify?sentence={prompt}", timeout=60)
     print(resp.status_code, resp.json())
 
     assert resp.status_code == 200

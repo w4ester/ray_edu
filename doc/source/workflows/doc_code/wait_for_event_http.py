@@ -33,7 +33,7 @@ res = requests.post(
         "http://127.0.0.1:8000/event/send_event/"
         + "workflow_receive_event_by_http",
         json={"event_key": "my_event_key", "event_payload": "my_event_message"},
-    )
+    timeout=60)
 if res.status_code == 200:
     print("event processed successfully")
 elif res.status_code == 500:

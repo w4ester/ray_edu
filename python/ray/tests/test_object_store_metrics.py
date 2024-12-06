@@ -369,7 +369,7 @@ def test_object_store_memory_matches_dashboard_obj_memory(shutdown_only):
             if sample.labels["Name"] == "object_store_memory":
                 object_store_memory_bytes_from_metrics += sample.value
 
-        r = requests.get(f"http://{ctx.dashboard_url}/nodes?view=summary")
+        r = requests.get(f"http://{ctx.dashboard_url}/nodes?view=summary", timeout=60)
         object_store_memory_bytes_from_dashboard = int(
             r.json()["data"]["summary"][0]["raylet"]["objectStoreAvailableMemory"]
         )

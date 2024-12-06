@@ -39,6 +39,6 @@ serve.run(BoostingModel.bind(model), route_prefix="/iris")
 # Query it!
 sample_request_input = {"vector": [1.2, 1.0, 1.1, 0.9]}
 response = requests.get(
-    "http://localhost:8000/iris", json=sample_request_input)
+    "http://localhost:8000/iris", json=sample_request_input, timeout=60)
 print(response.text)
 # __serve_example_end__

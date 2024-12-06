@@ -19,7 +19,7 @@ def test_request_id_header_by_default(serve_instance):
             return request_id
 
     serve.run(Model.bind())
-    resp = requests.get("http://localhost:8000")
+    resp = requests.get("http://localhost:8000", timeout=60)
     assert resp.status_code == 200
     assert resp.text == resp.headers["x-request-id"]
 
@@ -37,8 +37,8 @@ class TestUserProvidedRequestIDHeader:
     def verify_result(self):
         for header_attr in ["X-Request-ID"]:
             resp = requests.get(
-                "http://localhost:8000", headers={header_attr: "123-234"}
-            )
+                "http://localhost:8000", headers={header_attr: "123-234"}, 
+            timeout=60)
             assert resp.status_code == 200
             assert resp.json() == 1
             assert resp.headers[header_attr] == "123-234"
@@ -98,7 +98,7 @@ def test_set_request_id_headers_with_two_attributes(serve_instance):
         headers={
             "X-Request-ID": "234",
         },
-    )
+    timeout=60)
 
     assert resp.status_code == 200
     assert "x-request-id" in resp.headers

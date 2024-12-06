@@ -116,7 +116,7 @@ def download_single_shard(
 ) -> None:
 
     print(f"Downloading single shard from {shard_url} to {dst_filename}")
-    with requests.get(shard_url, stream=True) as request:
+    with requests.get(shard_url, stream=True, timeout=60) as request:
         assert request.ok, "Downloading shard failed"
         with open(dst_filename, "wb") as dst:
             for chunk in request.iter_content(chunk_size=chunk_size_mb * 1 << 20):
@@ -180,7 +180,7 @@ class ImageCoder(object):
 
 
 def get_single_image(image_url: str) -> bytes:
-    r = requests.get(image_url)
+    r = requests.get(image_url, timeout=60)
     assert r.ok, "Downloading image failed"
     return r.content
 

@@ -49,8 +49,8 @@ def test_gradio_ingress_correctness(serve_start_shutdown, use_user_defined_class
 
     test_input = "Alice"
     response = requests.post(
-        "http://127.0.0.1:8000/api/predict/", json={"data": [test_input]}
-    )
+        "http://127.0.0.1:8000/api/predict/", json={"data": [test_input]}, 
+    timeout=60)
     assert response.status_code == 200 and response.json()["data"][0] == greet(
         test_input
     )
@@ -75,8 +75,8 @@ def test_gradio_ingress_scaling(serve_start_shutdown):
         @ray.remote
         def get_pid_from_request():
             r = requests.post(
-                "http://127.0.0.1:8000/api/predict/", json={"data": ["input"]}
-            )
+                "http://127.0.0.1:8000/api/predict/", json={"data": ["input"]}, 
+            timeout=60)
             r.raise_for_status()
             return r.json()["data"][0]
 

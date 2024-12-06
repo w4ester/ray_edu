@@ -189,8 +189,8 @@ def setup_serve(model, use_gpu: bool = False):
 def predict_and_validate(index, image, label):
     def predict(image):
         response = requests.post(
-            "http://localhost:8000/mnist", json={"image": image.numpy().tolist()}
-        )
+            "http://localhost:8000/mnist", json={"image": image.numpy().tolist()}, 
+        timeout=60)
         try:
             return response.json()["result"]
         except:  # noqa: E722

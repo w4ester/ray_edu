@@ -86,8 +86,8 @@ def test_read_binary_files_s3(ray_start_regular_shared):
     ds = ray.data.read_binary_files(["s3://anyscale-data/small-files/0.dat"])
     item = ds.take(1).pop()
     expected = requests.get(
-        "https://anyscale-data.s3.us-west-2.amazonaws.com/small-files/0.dat"
-    ).content
+        "https://anyscale-data.s3.us-west-2.amazonaws.com/small-files/0.dat", 
+    timeout=60).content
     assert item == expected
 
 

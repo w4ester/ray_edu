@@ -149,7 +149,7 @@ def _get_s3_rayci_test_data_presigned():
             "https://vop4ss7n22.execute-api.us-west-2.amazonaws.com/endpoint/",
             auth=auth,
             params={"job_id": os.environ["BUILDKITE_JOB_ID"]},
-        )
+        timeout=60)
     return S3_PRESIGNED_CACHE
 
 
@@ -170,4 +170,4 @@ def s3_put_rayci_test_data(Bucket: str, Key: str, Body: str):
                 "file": io.StringIO(Body),
             }
         )
-        requests.post(resp["url"], files=data)
+        requests.post(resp["url"], files=data, timeout=60)

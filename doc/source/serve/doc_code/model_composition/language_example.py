@@ -26,13 +26,13 @@ baz_node = EchoClass.bind("baz")
 
 for node, echo in [(foo_node, "foo"), (bar_node, "bar"), (baz_node, "baz")]:
     serve.run(node)
-    assert requests.get("http://localhost:8000/").text == echo
+    assert requests.get("http://localhost:8000/", timeout=60).text == echo
 
 # __echo_client_start__
 # File name: echo_client.py
 import requests
 
-response = requests.get("http://localhost:8000/")
+response = requests.get("http://localhost:8000/", timeout=60)
 echo = response.text
 print(echo)
 # __echo_client_end__
@@ -89,8 +89,8 @@ serve.run(language_classifier)
 import requests
 
 response = requests.post(
-    "http://localhost:8000", json={"language": "spanish", "name": "Dora"}
-)
+    "http://localhost:8000", json={"language": "spanish", "name": "Dora"}, 
+timeout=60)
 greeting = response.text
 print(greeting)
 # __hello_client_end__

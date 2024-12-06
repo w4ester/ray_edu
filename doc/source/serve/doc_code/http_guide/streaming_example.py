@@ -26,7 +26,7 @@ class StreamingResponder:
 
 serve.run(StreamingResponder.bind())
 
-r = requests.get("http://localhost:8000?max=10", stream=True)
+r = requests.get("http://localhost:8000?max=10", stream=True, timeout=60)
 start = time.time()
 r.raise_for_status()
 for chunk in r.iter_content(chunk_size=None, decode_unicode=True):
@@ -34,7 +34,7 @@ for chunk in r.iter_content(chunk_size=None, decode_unicode=True):
 # __end_example__
 
 
-r = requests.get("http://localhost:8000?max=10", stream=True)
+r = requests.get("http://localhost:8000?max=10", stream=True, timeout=60)
 r.raise_for_status()
 for i, chunk in enumerate(r.iter_content(chunk_size=None, decode_unicode=True)):
     assert chunk == str(i)
@@ -71,7 +71,7 @@ class StreamingResponder:
 
 serve.run(StreamingResponder.bind())
 
-r = requests.get("http://localhost:8000?max=10", stream=True)
+r = requests.get("http://localhost:8000?max=10", stream=True, timeout=60)
 start = time.time()
 r.raise_for_status()
 for i, chunk in enumerate(r.iter_content(chunk_size=None, decode_unicode=True)):

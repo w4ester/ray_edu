@@ -35,7 +35,7 @@ def test_deploy_basic(serve_instance, use_handle):
             handle = serve.get_deployment_handle("d", "default")
             return handle.remote().result()
         else:
-            return requests.get("http://localhost:8000/d").json()
+            return requests.get("http://localhost:8000/d", timeout=60).json()
 
     serve.run(d.bind())
     resp, pid1 = call()
@@ -112,7 +112,7 @@ def test_redeploy_single_replica(serve_instance, use_handle):
             handle = serve.get_deployment_handle(name, "app")
             return handle.handler.remote().result()
         else:
-            return requests.get("http://localhost:8000/").json()
+            return requests.get("http://localhost:8000/", timeout=60).json()
 
     signal_name = f"signal-{get_random_string()}"
     signal = SignalActor.options(name=signal_name).remote()
@@ -256,7 +256,7 @@ def test_reconfigure_multiple_replicas(serve_instance, use_handle):
             handle = serve.get_deployment_handle(name, "app")
             ret = handle.handler.remote().result()
         else:
-            ret = requests.get(f"http://localhost:8000/{name}").text
+            ret = requests.get(f"http://localhost:8000/{name}", timeout=60).text
 
         return ret.split("|")[0], ret.split("|")[1]
 
@@ -370,7 +370,7 @@ def test_redeploy_scale_down(serve_instance, use_handle):
             handle = serve.get_app_handle("app")
             ret = handle.remote().result()
         else:
-            ret = requests.get(f"http://localhost:8000/{name}").text
+            ret = requests.get(f"http://localhost:8000/{name}", timeout=60).text
 
         return ret.split("|")[0], ret.split("|")[1]
 
@@ -421,7 +421,7 @@ def test_redeploy_scale_up(serve_instance, use_handle):
             handle = serve.get_app_handle("app")
             ret = handle.remote().result()
         else:
-            ret = requests.get(f"http://localhost:8000/{name}").text
+            ret = requests.get(f"http://localhost:8000/{name}", timeout=60).text
 
         return ret.split("|")[0], ret.split("|")[1]
 

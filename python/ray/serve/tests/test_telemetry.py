@@ -278,7 +278,7 @@ def test_handle_apis_detected(manage_ray_with_telemetry, call_in_deployment):
     handle = serve.run(Caller.bind(Downstream.bind()))
 
     if call_in_deployment:
-        result = requests.get("http://localhost:8000").text
+        result = requests.get("http://localhost:8000", timeout=60).text
     else:
         result = handle.remote(call_downstream=False).result()
 
@@ -318,7 +318,7 @@ def test_deployment_handle_to_obj_ref_detected(manage_ray_with_telemetry, mode):
     handle = serve.run(Caller.bind(Downstream.bind()))
 
     if mode == "http":
-        result = requests.get("http://localhost:8000").text
+        result = requests.get("http://localhost:8000", timeout=60).text
     elif mode == "outside_deployment":
         result = ray.get(handle.get.remote()._to_object_ref_sync())
     else:
@@ -360,7 +360,7 @@ def test_multiplexed_detect(manage_ray_with_telemetry):
     check_telemetry(ServeUsageTag.MULTIPLEXED_API_USED, expected=None)
 
     headers = {SERVE_MULTIPLEXED_MODEL_ID: "1"}
-    resp = requests.get("http://localhost:8000/app", headers=headers)
+    resp = requests.get("http://localhost:8000/app", headers=headers, timeout=60)
     assert resp.status_code == 200
 
     wait_for_condition(

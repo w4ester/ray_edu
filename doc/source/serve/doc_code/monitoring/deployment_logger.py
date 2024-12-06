@@ -22,8 +22,8 @@ counter = Counter.bind()
 serve.run(counter)
 
 for i in range(10):
-    requests.get("http://127.0.0.1:8000/")
+    requests.get("http://127.0.0.1:8000/", timeout=60)
 # __end__
 
-response = requests.get("http://127.0.0.1:8000/")
+response = requests.get("http://127.0.0.1:8000/", timeout=60)
 assert response.json() == {"count": 11}

@@ -64,7 +64,7 @@ def test_controller_gcs_failure(serve_ha, use_handle):  # noqa: F811
             handle = serve.get_app_handle(SERVE_DEFAULT_APP_NAME)
             ret = handle.remote().result()
         else:
-            ret = requests.get("http://localhost:8000/d").text
+            ret = requests.get("http://localhost:8000/d", timeout=60).text
         return ret
 
     serve.run(d.bind())

@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     serve.run(entrypoint)
     prompt = "Ray is super cool."
-    resp = requests.get(f"http://127.0.0.1:8000/infer?sentence={prompt}")
+    resp = requests.get(f"http://127.0.0.1:8000/infer?sentence={prompt}", timeout=60)
     print(resp.status_code, resp.json())
 
     assert resp.status_code == 200

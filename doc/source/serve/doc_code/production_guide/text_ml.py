@@ -80,7 +80,7 @@ english_text = (
     "It was the best of times, it was the worst of times, it was the age "
     "of wisdom, it was the age of foolishness, it was the epoch of belief"
 )
-response = requests.post("http://127.0.0.1:8000/", json=english_text)
+response = requests.post("http://127.0.0.1:8000/", json=english_text, timeout=60)
 french_text = response.text
 
 print(french_text)
@@ -101,7 +101,7 @@ english_text = (
     "It was the best of times, it was the worst of times, it was the age "
     "of wisdom, it was the age of foolishness, it was the epoch of belief"
 )
-response = requests.post("http://127.0.0.1:8000/", json=english_text)
+response = requests.post("http://127.0.0.1:8000/", json=english_text, timeout=60)
 german_text = response.text
 
 print(german_text)

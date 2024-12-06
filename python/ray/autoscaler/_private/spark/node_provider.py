@@ -104,7 +104,7 @@ class SparkNodeProvider(NodeProvider):
         response = requests.post(
             url=self.spark_job_server_url + "/query_task_status",
             json={"spark_job_group_id": spark_job_group_id},
-        )
+        timeout=60)
         response.raise_for_status()
 
         decoded_resp = response.content.decode("utf-8")
@@ -203,7 +203,7 @@ class SparkNodeProvider(NodeProvider):
                     "worker_node_options": conf["worker_node_options"],
                     "collect_log_to_path": conf["collect_log_to_path"],
                 },
-            )
+            timeout=60)
 
             try:
                 # Spark job server is locally launched, if spark job server request
@@ -232,7 +232,7 @@ class SparkNodeProvider(NodeProvider):
             response = requests.post(
                 url=self.spark_job_server_url + "/terminate_node",
                 json={"spark_job_group_id": self._gen_spark_job_group_id(node_id)},
-            )
+            timeout=60)
             response.raise_for_status()
 
         with self.lock:

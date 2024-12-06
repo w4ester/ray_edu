@@ -55,7 +55,7 @@ def make_http_query(num_words, num_queries):
         prompt = " ".join(prompt_words)
         expected_words = [word[::-1] for word in prompt_words for _ in range(2)]
 
-        response = requests.post(f"http://localhost:8000/?prompt={prompt}", stream=True)
+        response = requests.post(f"http://localhost:8000/?prompt={prompt}", stream=True, timeout=60)
         response.raise_for_status()
         content = response.content.decode()
         assert content == " ".join(expected_words) + " ", content

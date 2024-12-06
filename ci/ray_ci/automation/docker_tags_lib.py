@@ -233,7 +233,7 @@ def _get_docker_auth_token(namespace: str, repository: str) -> Optional[str]:
         f"repository:{namespace}/{repository}:pull",
     )
     auth_url = f"https://auth.docker.io/token?service={service}&scope={scope}"
-    response = requests.get(auth_url)
+    response = requests.get(auth_url, timeout=60)
     if response.status_code != 200:
         raise AuthTokenException(f"Docker. Error code: {response.status_code}")
     token = response.json().get("token", None)
@@ -247,7 +247,7 @@ def _get_docker_hub_auth_token(username: str, password: str) -> Optional[str]:
         "password": password,
     }
     headers = {"Content-Type": "application/json"}
-    response = requests.post(url, headers=headers, json=json_body)
+    response = requests.post(url, headers=headers, json=json_body, timeout=60)
     if response.status_code != 200:
         raise AuthTokenException(f"Docker Hub. Error code: {response.status_code}")
     return response.json().get("token", None)
@@ -294,7 +294,7 @@ def _get_config_docker_oci(tag: str, namespace: str, repository: str):
     image_manifest_url = (
         f"https://registry-1.docker.io/v2/{namespace}/{repository}/manifests/{tag}"
     )
-    response = requests.get(image_manifest_url, headers=headers)
+    response = requests.get(image_manifest_url, headers=headers, timeout=60)
     if response.status_code != 200:
         raise RetrieveImageConfigException("image manifest.")
     config_blob_digest = response.json()["config"]["digest"]
@@ -305,7 +305,7 @@ def _get_config_docker_oci(tag: str, namespace: str, repository: str):
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.docker.container.image.v1+json",
     }
-    response = requests.get(config_blob_url, headers=config_headers)
+    response = requests.get(config_blob_url, headers=config_headers, timeout=60)
     if response.status_code != 200:
         raise RetrieveImageConfigException("image config.")
     return response.json()
@@ -329,7 +329,7 @@ def delete_tag(tag: str, docker_hub_token: str) -> bool:
     repository, tag_name = repo_tag.split(":")
 
     url = f"https://hub.docker.com/v2/repositories/{namespace}/{repository}/tags/{tag_name}"  # noqa E501
-    response = requests.delete(url, headers=headers)
+    response = requests.delete(url, headers=headers, timeout=60)
     if response.status_code == 429:
         raise DockerHubRateLimitException()
     if response.status_code != 204:
@@ -372,7 +372,7 @@ def query_tags_from_docker_hub(
         logger.info(f"Querying page {page_count}")
         url = f"https://hub.docker.com/v2/namespaces/{namespace}/repositories/{repository}/tags?page={page_count}&page_size=100"  # noqa E501
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=60)
         response_json = response.json()
 
         # Stop querying if Docker Hub API returns an error
@@ -416,7 +416,7 @@ def query_tags_from_docker_with_oci(namespace: str, repository: str) -> List[str
         "Authorization": f"Bearer {token}",
     }
     url = f"https://registry-1.docker.io/v2/{namespace}/{repository}/tags/list"
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=60)
     if response.status_code != 200:
         raise Exception(f"Failed to query tags from Docker: {response.json()}")
 

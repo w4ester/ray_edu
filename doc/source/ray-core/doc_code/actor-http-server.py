@@ -28,5 +28,5 @@ class Counter:
 ray.init()
 counter = Counter.remote()
 [ray.get(counter.increment.remote()) for i in range(5)]
-r = requests.get("http://127.0.0.1:25001/")
+r = requests.get("http://127.0.0.1:25001/", timeout=60)
 assert r.text == "5"

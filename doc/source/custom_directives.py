@@ -93,7 +93,7 @@ class DownloadAndPreprocessEcosystemDocs:
     @staticmethod
     def get_latest_release_tag(repo: str) -> str:
         """repo is just the repo name, eg. ray-project/ray"""
-        response = requests.get(f"https://api.github.com/repos/{repo}/releases/latest")
+        response = requests.get(f"https://api.github.com/repos/{repo}/releases/latest", timeout=60)
         return response.json()["tag_name"]
 
     @staticmethod

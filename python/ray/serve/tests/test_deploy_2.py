@@ -34,8 +34,8 @@ def test_deploy_nullify_route_prefix(serve_instance, prefixes):
     for prefix in prefixes:
         dag = f.options(route_prefix=prefix).bind()
         handle = serve.run(dag)
-        assert requests.get("http://localhost:8000/f").status_code == 200
-        assert requests.get("http://localhost:8000/f").text == "got me"
+        assert requests.get("http://localhost:8000/f", timeout=60).status_code == 200
+        assert requests.get("http://localhost:8000/f", timeout=60).text == "got me"
         assert handle.remote().result() == "got me"
 
 
@@ -157,7 +157,7 @@ def test_http_proxy_request_cancellation(serve_instance):
 
     # Sending another request to verify that only one request has been
     # processed so far.
-    assert requests.get(url).text == "2"
+    assert requests.get(url, timeout=60).text == "2"
 
 
 def test_nonserializable_deployment(serve_instance):
@@ -278,9 +278,9 @@ def test_deploy_same_deployment_name_different_app(serve_instance):
     serve.run(Model.bind("alice"), name="app1", route_prefix="/app1")
     serve.run(Model.bind("bob"), name="app2", route_prefix="/app2")
 
-    assert requests.get("http://localhost:8000/app1").text == "hello alice"
-    assert requests.get("http://localhost:8000/app2").text == "hello bob"
-    routes = requests.get("http://localhost:8000/-/routes").json()
+    assert requests.get("http://localhost:8000/app1", timeout=60).text == "hello alice"
+    assert requests.get("http://localhost:8000/app2", timeout=60).text == "hello bob"
+    routes = requests.get("http://localhost:8000/-/routes", timeout=60).json()
     assert routes["/app1"] == "app1"
     assert routes["/app2"] == "app2"
 

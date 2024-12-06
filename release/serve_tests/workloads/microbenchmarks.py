@@ -121,18 +121,18 @@ async def _main(output_path: Optional[str]):
     serve.run(Noop.bind())
     # Microbenchmark: HTTP noop latencies
     latencies = await run_latency_benchmark(
-        lambda: requests.get("http://localhost:8000"), num_requests=NUM_REQUESTS
+        lambda: requests.get("http://localhost:8000", timeout=60), num_requests=NUM_REQUESTS
     )
     perf_metrics.extend(convert_latencies_to_perf_metrics("http", latencies))
     # HTTP latencies: 1MB payload
     latencies = await run_latency_benchmark(
-        lambda: requests.post("http://localhost:8000", data=payload_1mb),
+        lambda: requests.post("http://localhost:8000", data=payload_1mb, timeout=60),
         num_requests=NUM_REQUESTS,
     )
     perf_metrics.extend(convert_latencies_to_perf_metrics("http_1mb", latencies))
     # HTTP latencies: 10MB payload
     latencies = await run_latency_benchmark(
-        lambda: requests.post("http://localhost:8000", data=payload_10mb),
+        lambda: requests.post("http://localhost:8000", data=payload_10mb, timeout=60),
         num_requests=NUM_REQUESTS,
     )
     perf_metrics.extend(convert_latencies_to_perf_metrics("http_10mb", latencies))

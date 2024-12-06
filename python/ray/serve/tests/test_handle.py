@@ -166,7 +166,7 @@ def test_handle_in_endpoint(serve_instance):
     end_p2 = Endpoint2.bind(end_p1)
     serve.run(end_p2)
 
-    assert requests.get("http://127.0.0.1:8000/Endpoint2").text == "hello"
+    assert requests.get("http://127.0.0.1:8000/Endpoint2", timeout=60).text == "hello"
 
 
 def test_handle_option_chaining(serve_instance):

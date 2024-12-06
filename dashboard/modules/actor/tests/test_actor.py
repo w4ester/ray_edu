@@ -57,7 +57,7 @@ def test_actors(disable_aiohttp_cache, ray_start_with_dashboard):
     while True:
         time.sleep(1)
         try:
-            resp = requests.get(f"{webui_url}/logical/actors")
+            resp = requests.get(f"{webui_url}/logical/actors", timeout=60)
             resp_json = resp.json()
             resp_data = resp_json["data"]
             actors = resp_data["actors"]
@@ -231,12 +231,12 @@ def test_nil_node(enable_test_module, disable_aiohttp_cache, ray_start_with_dash
     while True:
         time.sleep(1)
         try:
-            resp = requests.get(f"{webui_url}/logical/actors")
+            resp = requests.get(f"{webui_url}/logical/actors", timeout=60)
             resp_json = resp.json()
             resp_data = resp_json["data"]
             actors = resp_data["actors"]
             assert len(actors) == 1
-            response = requests.get(webui_url + "/test/dump?key=node_actors")
+            response = requests.get(webui_url + "/test/dump?key=node_actors", timeout=60)
             response.raise_for_status()
             result = response.json()
             assert actor_consts.NIL_NODE_ID not in result["data"]["nodeActors"]
@@ -292,7 +292,7 @@ def test_actor_cleanup(
     while True:
         time.sleep(1)
         try:
-            resp = requests.get(f"{webui_url}/logical/actors")
+            resp = requests.get(f"{webui_url}/logical/actors", timeout=60)
             resp_json = resp.json()
             resp_data = resp_json["data"]
             actors = resp_data["actors"]
@@ -326,7 +326,7 @@ def test_actor_cleanup(
     while True:
         time.sleep(1)
         try:
-            resp = requests.get(f"{webui_url}/logical/actors")
+            resp = requests.get(f"{webui_url}/logical/actors", timeout=60)
             resp_json = resp.json()
             resp_data = resp_json["data"]
             actors = resp_data["actors"]

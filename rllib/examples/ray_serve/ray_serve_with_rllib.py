@@ -113,7 +113,7 @@ if __name__ == "__main__":
                 "http://localhost:8000/rllib-rlmodule",
                 json={"observation": obs.tolist()},
                 # timeout=5.0,
-            )
+            timeout=60)
             response = resp.json()
             # print("<- Received response {}".format(response))
 

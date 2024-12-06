@@ -122,7 +122,7 @@ def block_until_http_ready(
 
     while not http_is_ready:
         try:
-            resp = requests.get(http_endpoint)
+            resp = requests.get(http_endpoint, timeout=60)
             assert resp.status_code == 200
             if check_ready is None:
                 http_is_ready = True

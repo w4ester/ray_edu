@@ -134,7 +134,7 @@ def test_node_physical_stats(enable_test_module, shutdown_only):
 
     def _check_workers():
         try:
-            resp = requests.get(webui_url + "/test/dump?key=node_physical_stats")
+            resp = requests.get(webui_url + "/test/dump?key=node_physical_stats", timeout=60)
             resp.raise_for_status()
             result = resp.json()
             assert result["result"] is True
@@ -797,7 +797,7 @@ def test_get_task_traceback_running_task(shutdown_only):
     }
 
     def verify():
-        resp = requests.get(f"{webui_url}/task/traceback", params=params)
+        resp = requests.get(f"{webui_url}/task/traceback", params=params, timeout=60)
         print(f"resp.text {type(resp.text)}: {resp.text}")
 
         assert "Process" in resp.text
@@ -845,7 +845,7 @@ def test_get_memory_profile_running_task(shutdown_only):
     }
 
     def verify():
-        resp = requests.get(f"{webui_url}/memory_profile", params=params)
+        resp = requests.get(f"{webui_url}/memory_profile", params=params, timeout=60)
         print(f"resp.text {type(resp.text)}: {resp.text}")
 
         assert resp.status_code == 200
@@ -898,7 +898,7 @@ def test_get_task_traceback_non_running_task(shutdown_only):
     # Make sure the API works.
     def verify():
         with pytest.raises(requests.exceptions.HTTPError) as exc_info:
-            resp = requests.get(f"{webui_url}/task/traceback", params=params)
+            resp = requests.get(f"{webui_url}/task/traceback", params=params, timeout=60)
             resp.raise_for_status()
         assert isinstance(exc_info.value, requests.exceptions.HTTPError)
         return True
@@ -937,7 +937,7 @@ def test_get_cpu_profile_non_running_task(shutdown_only):
     # Make sure the API works.
     def verify():
         with pytest.raises(requests.exceptions.HTTPError) as exc_info:
-            resp = requests.get(f"{webui_url}/task/cpu_profile", params=params)
+            resp = requests.get(f"{webui_url}/task/cpu_profile", params=params, timeout=60)
             resp.raise_for_status()
         assert isinstance(exc_info.value, requests.exceptions.HTTPError)
         return True
@@ -975,8 +975,8 @@ def test_task_get_memory_profile_missing_params(shutdown_only):
     # Make sure the API works.
     def verify():
         resp = requests.get(
-            f"{webui_url}/memory_profile", params=missing_node_id_params
-        )
+            f"{webui_url}/memory_profile", params=missing_node_id_params, 
+        timeout=60)
         content = resp.content.decode("utf-8")
         assert "task's node id is required" in content, content
         return True
