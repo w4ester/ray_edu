@@ -36,6 +36,7 @@ from ray.serve.tests.common.remote_uris import (
 from ray.serve.tests.conftest import check_ray_stop
 from ray.tests.conftest import tmp_working_dir  # noqa: F401, E501
 from ray.util.state import list_actors
+from security import safe_requests
 
 CONNECTION_ERROR_MSG = "connection error"
 
@@ -44,7 +45,7 @@ def ping_endpoint(endpoint: str, params: str = ""):
     endpoint = endpoint.lstrip("/")
 
     try:
-        return requests.get(f"http://localhost:8000/{endpoint}{params}").text
+        return safe_requests.get(f"http://localhost:8000/{endpoint}{params}").text
     except requests.exceptions.ConnectionError:
         return CONNECTION_ERROR_MSG
 

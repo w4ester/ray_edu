@@ -11,6 +11,7 @@ import boto3
 from botocore.exceptions import ClientError
 from ray_release.logger import logger
 from ray_release.util import DeferredEnvVar
+from security import safe_requests
 
 RELEASE_AWS_BUCKET = DeferredEnvVar(
     "RELEASE_AWS_BUCKET", "ray-release-automation-results"
@@ -145,7 +146,7 @@ def _get_s3_rayci_test_data_presigned():
             aws_region="us-west-2",
             aws_service="execute-api",
         )
-        S3_PRESIGNED_CACHE = requests.get(
+        S3_PRESIGNED_CACHE = safe_requests.get(
             "https://vop4ss7n22.execute-api.us-west-2.amazonaws.com/endpoint/",
             auth=auth,
             params={"job_id": os.environ["BUILDKITE_JOB_ID"]},

@@ -2,6 +2,7 @@
 # __single_sample_begin__
 from ray import serve
 from ray.serve.handle import DeploymentHandle
+from security import safe_requests
 
 
 @serve.deployment
@@ -90,7 +91,7 @@ class StreamingResponder:
 import requests
 
 serve.run(StreamingResponder.bind())
-r = requests.get("http://localhost:8000/", stream=True)
+r = safe_requests.get("http://localhost:8000/", stream=True)
 chunks = []
 for chunk in r.iter_content(chunk_size=None, decode_unicode=True):
     chunks.append(chunk)

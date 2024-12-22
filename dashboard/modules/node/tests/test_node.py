@@ -17,6 +17,7 @@ from ray._private.test_utils import (
     wait_until_server_available,
     wait_for_condition,
 )
+from security import safe_requests
 
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ def test_nodes_update(enable_test_module, ray_start_with_dashboard):
     while True:
         time.sleep(1)
         try:
-            response = requests.get(webui_url + "/test/dump")
+            response = safe_requests.get(webui_url + "/test/dump")
             response.raise_for_status()
             try:
                 dump_info = response.json()
@@ -47,7 +48,7 @@ def test_nodes_update(enable_test_module, ray_start_with_dashboard):
             assert len(dump_data["nodeIdToHostname"]) == 1
             assert dump_data["nodes"].keys() == dump_data["nodeIdToHostname"].keys()
 
-            response = requests.get(webui_url + "/test/notified_agents")
+            response = safe_requests.get(webui_url + "/test/notified_agents")
             response.raise_for_status()
             try:
                 notified_agents = response.json()
@@ -88,7 +89,7 @@ def test_node_info(disable_aiohttp_cache, ray_start_with_dashboard):
     while True:
         time.sleep(1)
         try:
-            response = requests.get(webui_url + "/nodes?view=hostnamelist")
+            response = safe_requests.get(webui_url + "/nodes?view=hostnamelist")
             response.raise_for_status()
             hostname_list = response.json()
             assert hostname_list["result"] is True, hostname_list["msg"]
@@ -96,7 +97,7 @@ def test_node_info(disable_aiohttp_cache, ray_start_with_dashboard):
             assert len(hostname_list) == 1
 
             hostname = hostname_list[0]
-            response = requests.get(webui_url + f"/nodes/{node_id}")
+            response = safe_requests.get(webui_url + f"/nodes/{node_id}")
             response.raise_for_status()
             detail = response.json()
             assert detail["result"] is True, detail["msg"]
@@ -114,7 +115,7 @@ def test_node_info(disable_aiohttp_cache, ray_start_with_dashboard):
                     actor_worker_pids.add(worker["pid"])
             assert actor_worker_pids == actor_pids
 
-            response = requests.get(webui_url + "/nodes?view=summary")
+            response = safe_requests.get(webui_url + "/nodes?view=summary")
             response.raise_for_status()
             summary = response.json()
             assert summary["result"] is True, summary["msg"]
@@ -158,7 +159,7 @@ def test_multi_nodes_info(
 
     def _check_nodes():
         try:
-            response = requests.get(webui_url + "/nodes?view=summary")
+            response = safe_requests.get(webui_url + "/nodes?view=summary")
             response.raise_for_status()
             summary = response.json()
             assert summary["result"] is True, summary["msg"]
@@ -166,13 +167,13 @@ def test_multi_nodes_info(
             assert len(summary) == 3
             for node_info in summary:
                 node_id = node_info["raylet"]["nodeId"]
-                response = requests.get(webui_url + f"/nodes/{node_id}")
+                response = safe_requests.get(webui_url + f"/nodes/{node_id}")
                 response.raise_for_status()
                 detail = response.json()
                 assert detail["result"] is True, detail["msg"]
                 detail = detail["data"]["detail"]
                 assert detail["raylet"]["state"] == "ALIVE"
-            response = requests.get(webui_url + "/test/dump?key=agents")
+            response = safe_requests.get(webui_url + "/test/dump?key=agents")
             response.raise_for_status()
             agents = response.json()
             assert len(agents["data"]["agents"]) == 3
@@ -210,11 +211,11 @@ def test_multi_node_churn(
                 cluster.remove_node(node_to_remove)
 
     def get_index():
-        resp = requests.get(webui_url)
+        resp = safe_requests.get(webui_url)
         resp.raise_for_status()
 
     def get_nodes():
-        resp = requests.get(webui_url + "/nodes?view=summary")
+        resp = safe_requests.get(webui_url + "/nodes?view=summary")
         resp.raise_for_status()
         summary = resp.json()
         assert summary["result"] is True, summary["msg"]
@@ -242,7 +243,7 @@ def test_frequent_node_update(
     webui_url = format_web_url(webui_url)
 
     def verify():
-        response = requests.get(webui_url + "/internal/node_module")
+        response = safe_requests.get(webui_url + "/internal/node_module")
         response.raise_for_status()
         result = response.json()
         data = result["data"]

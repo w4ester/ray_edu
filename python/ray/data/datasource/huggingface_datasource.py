@@ -6,6 +6,7 @@ from ray.data.block import Block, BlockAccessor, BlockMetadata
 from ray.data.dataset import Dataset
 from ray.data.datasource import Datasource, ReadTask
 from ray.util.annotations import DeveloperAPI
+from security import safe_requests
 
 if TYPE_CHECKING:
     import datasets
@@ -109,7 +110,7 @@ class HuggingFaceDatasource(Datasource):
             f"https://huggingface.co/api/datasets/{dataset_name}"
             f"/parquet/{config_name}/{split_name}"
         )
-        resp = requests.get(public_url)
+        resp = safe_requests.get(public_url)
         if resp.status_code == requests.codes["ok"]:
             # dataset corresponds to a public dataset, return list of parquet_files
             return resp.json()

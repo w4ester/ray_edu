@@ -3,7 +3,6 @@ import json
 import os
 import pathlib
 import sys
-import requests
 from collections import defaultdict
 
 from pprint import pformat
@@ -27,6 +26,7 @@ from ray._private.test_utils import (
 from ray.autoscaler._private.constants import AUTOSCALER_METRIC_PORT
 from ray.dashboard.consts import DASHBOARD_METRIC_PORT
 from ray.util.metrics import Counter, Gauge, Histogram
+from security import safe_requests
 
 os.environ["RAY_event_stats"] = "1"
 
@@ -220,7 +220,7 @@ def _setup_cluster_for_test(request, ray_start_cluster):
     b = f.options(resources={"a": 1})  # noqa
 
     # Make a request to the dashboard to produce some dashboard metrics
-    requests.get(f"http://{ray_context.dashboard_url}/nodes")
+    safe_requests.get(f"http://{ray_context.dashboard_url}/nodes")
 
     node_info_list = ray.nodes()
     prom_addresses = []

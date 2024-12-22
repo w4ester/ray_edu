@@ -6,6 +6,7 @@ import sys
 from typing import List
 
 from ray._private.test_utils import wait_for_condition
+from security import safe_requests
 
 
 # Overwrite print statement to make doc code testable
@@ -49,13 +50,11 @@ async def startled():
 # __end_basic_disconnect__
 
 serve.run(startled.bind())
-
-import requests
 from requests.exceptions import Timeout
 
 # Intentionally time out request to test cancellation behavior
 try:
-    requests.get("http://localhost:8000", timeout=0.5)
+    safe_requests.get("http://localhost:8000", timeout=0.5)
 except Timeout:
     pass
 
@@ -96,13 +95,11 @@ app = SnoringSleeper.bind()
 # __end_shielded_disconnect__
 
 serve.run(app)
-
-import requests
 from requests.exceptions import Timeout
 
 # Intentionally time out request to test cancellation behavior
 try:
-    requests.get("http://localhost:8000", timeout=0.5)
+    safe_requests.get("http://localhost:8000", timeout=0.5)
 except Timeout:
     pass
 

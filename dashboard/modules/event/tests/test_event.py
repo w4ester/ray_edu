@@ -4,7 +4,6 @@ import time
 import json
 import copy
 import logging
-import requests
 import asyncio
 import random
 import tempfile
@@ -33,6 +32,7 @@ from ray.dashboard.modules.event.event_utils import (
     monitor_events,
 )
 from ray.job_submission import JobSubmissionClient
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +128,7 @@ def test_event_basic(disable_aiohttp_cache, ray_start_with_dashboard):
 
     def _check_events():
         try:
-            resp = requests.get(f"{webui_url}/events")
+            resp = safe_requests.get(f"{webui_url}/events")
             resp.raise_for_status()
             result = resp.json()
             all_events = result["data"]["events"]
@@ -194,7 +194,7 @@ def test_event_message_limit(
 
     def _check_events():
         try:
-            resp = requests.get(f"{webui_url}/events")
+            resp = safe_requests.get(f"{webui_url}/events")
             resp.raise_for_status()
             result = resp.json()
             all_events = result["data"]["events"]

@@ -9,6 +9,7 @@ import pathlib
 import time
 import ray
 import os
+from security import safe_requests
 
 # global variables for the cluster informations
 CLUSTER_ID = None
@@ -170,7 +171,7 @@ def start_port_forward():
 
     while True:
         try:
-            resp = requests.get(
+            resp = safe_requests.get(
                 "http://localhost:8000/",
                 timeout=1,
                 params={
@@ -193,7 +194,7 @@ def start_port_forward():
 
 def warmup_cluster(num_reqs):
     for _ in range(num_reqs):
-        resp = requests.get(
+        resp = safe_requests.get(
             "http://localhost:8000/",
             timeout=1,
             params={

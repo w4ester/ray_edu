@@ -12,12 +12,13 @@ import ray
 from ray import serve
 from ray._private.test_utils import SignalActor
 from ray.serve.handle import DeploymentHandle
+from security import safe_requests
 
 
 @ray.remote
 class StreamingRequester:
     async def make_request(self) -> AsyncGenerator[str, None]:
-        r = requests.get("http://localhost:8000", stream=True)
+        r = safe_requests.get("http://localhost:8000", stream=True)
         r.raise_for_status()
         for chunk in r.iter_content(chunk_size=None, decode_unicode=True):
             yield chunk
@@ -56,7 +57,7 @@ def test_basic(serve_instance, use_async: bool, use_fastapi: bool):
 
     serve.run(SimpleGenerator.bind())
 
-    r = requests.get("http://localhost:8000", stream=True)
+    r = safe_requests.get("http://localhost:8000", stream=True)
     r.raise_for_status()
     for i, chunk in enumerate(r.iter_content(chunk_size=None, decode_unicode=True)):
         assert chunk == f"hi_{i}"
@@ -186,7 +187,7 @@ def test_metadata_preserved(serve_instance, use_fastapi: bool):
 
     serve.run(SimpleGenerator.bind())
 
-    r = requests.get("http://localhost:8000", stream=True)
+    r = safe_requests.get("http://localhost:8000", stream=True)
     assert r.status_code == 301
     assert r.headers["hello"] == "world"
     assert r.headers["content-type"] == "foo/bar"
@@ -226,7 +227,7 @@ def test_exception_in_generator(serve_instance, use_async: bool, use_fastapi: bo
 
     serve.run(SimpleGenerator.bind())
 
-    r = requests.get("http://localhost:8000", stream=True)
+    r = safe_requests.get("http://localhost:8000", stream=True)
     r.raise_for_status()
     stream_iter = r.iter_content(chunk_size=None, decode_unicode=True)
     assert next(stream_iter) == "first result"
@@ -284,7 +285,7 @@ def test_proxy_from_streaming_handle(
 
     serve.run(SimpleGenerator.bind(Streamer.bind()))
 
-    r = requests.get("http://localhost:8000", stream=True)
+    r = safe_requests.get("http://localhost:8000", stream=True)
     r.raise_for_status()
     for i, chunk in enumerate(r.iter_content(chunk_size=None, decode_unicode=True)):
         assert chunk == f"hi_{i}"
@@ -309,7 +310,7 @@ def test_http_disconnect(serve_instance):
 
     serve.run(SimpleGenerator.bind())
 
-    with requests.get("http://localhost:8000", stream=True):
+    with safe_requests.get("http://localhost:8000", stream=True):
         with pytest.raises(TimeoutError):
             ray.get(signal_actor.wait.remote(), timeout=1)
 

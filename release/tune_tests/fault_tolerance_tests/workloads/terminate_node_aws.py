@@ -7,6 +7,7 @@ import logging
 import ray
 from ray.util.scheduling_strategies import NodeAffinitySchedulingStrategy
 from ray._private.test_utils import safe_write_to_results_json
+from security import safe_requests
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,11 +23,11 @@ def terminate_current_instance():
         "http://169.254.169.254/latest/api/token",
         headers={"X-aws-ec2-metadata-token-ttl-seconds": "300"},
     ).text
-    instance_id = requests.get(
+    instance_id = safe_requests.get(
         "http://169.254.169.254/latest/meta-data/instance-id",
         headers={"X-aws-ec2-metadata-token": token},
     ).text
-    region = requests.get(
+    region = safe_requests.get(
         "http://169.254.169.254/latest/meta-data/placement/region",
         headers={"X-aws-ec2-metadata-token": token},
     ).text

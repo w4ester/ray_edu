@@ -6,6 +6,7 @@ import logging
 from typing import Dict, Optional, List, Tuple
 
 from ray._private.accelerators.accelerator import AcceleratorManager
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +53,7 @@ TPU_SINGLE_HOST_BOUNDS = "1,1,1"
 def _get_tpu_metadata(key: str) -> Optional[str]:
     """Poll and get TPU metadata."""
     try:
-        accelerator_type_request = requests.get(
+        accelerator_type_request = safe_requests.get(
             os.path.join(GCE_TPU_ACCELERATOR_ENDPOINT, key),
             headers=GCE_TPU_HEADERS,
         )

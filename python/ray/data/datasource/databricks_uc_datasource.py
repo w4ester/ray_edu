@@ -12,6 +12,7 @@ import requests
 from ray.data.block import BlockMetadata
 from ray.data.datasource.datasource import Datasource, ReadTask
 from ray.util.annotations import PublicAPI
+from security import safe_requests
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ class DatabricksUCDatasource(Datasource):
         try:
             while state in ["PENDING", "RUNNING"]:
                 time.sleep(_STATEMENT_EXEC_POLL_TIME_S)
-                response = requests.get(
+                response = safe_requests.get(
                     urljoin(url_base, statement_id) + "/",
                     auth=req_auth,
                     headers=req_headers,
@@ -138,7 +139,7 @@ class DatabricksUCDatasource(Datasource):
                         url_base, f"{statement_id}/result/chunks/{chunk_index}"
                     )
 
-                    resolve_response = requests.get(
+                    resolve_response = safe_requests.get(
                         resolve_external_link_url, auth=req_auth, headers=req_headers
                     )
                     resolve_response.raise_for_status()
@@ -146,7 +147,7 @@ class DatabricksUCDatasource(Datasource):
                         "external_link"
                     ]
                     # NOTE: do _NOT_ send the authorization header to external urls
-                    raw_response = requests.get(external_url, auth=None, headers=None)
+                    raw_response = safe_requests.get(external_url, auth=None, headers=None)
                     raw_response.raise_for_status()
 
                     with pyarrow.ipc.open_stream(raw_response.content) as reader:

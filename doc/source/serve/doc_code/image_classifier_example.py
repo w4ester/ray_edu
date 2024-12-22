@@ -8,11 +8,12 @@ from PIL import Image
 
 from ray import serve
 from ray.serve.handle import DeploymentHandle
+from security import safe_requests
 
 
 @serve.deployment
 def downloader(image_url: str):
-    image_bytes = requests.get(image_url).content
+    image_bytes = safe_requests.get(image_url).content
     image = Image.open(BytesIO(image_bytes)).convert("RGB")
     return image
 

@@ -3,7 +3,6 @@ from typing import Tuple
 
 import grpc
 import pytest
-import requests
 from starlette.requests import Request
 
 import ray
@@ -11,6 +10,7 @@ from ray import serve
 from ray._private.test_utils import SignalActor, wait_for_condition
 from ray.serve.exceptions import BackPressureError
 from ray.serve.generated import serve_pb2, serve_pb2_grpc
+from security import safe_requests
 
 
 def test_handle_backpressure(serve_instance):
@@ -60,7 +60,7 @@ def test_http_backpressure(serve_instance):
 
     @ray.remote(num_cpus=0)
     def do_request(msg: str) -> Tuple[int, str]:
-        r = requests.get("http://localhost:8000/", json={"msg": msg})
+        r = safe_requests.get("http://localhost:8000/", json={"msg": msg})
         return r.status_code, r.text
 
     # First response should block. Until the signal is sent, all subsequent requests

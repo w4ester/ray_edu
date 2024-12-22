@@ -9,7 +9,6 @@ from collections import defaultdict
 from ray._private.test_utils import check_call_subprocess
 
 import ray
-import requests
 import pytest
 
 from ray._private.profiling import chrome_tracing_dump
@@ -21,6 +20,7 @@ from ray.util.state import (
     list_nodes,
 )
 from ray._private.test_utils import wait_for_condition
+from security import safe_requests
 
 
 def test_timeline(shutdown_only):
@@ -171,7 +171,7 @@ def test_timeline_request(shutdown_only):
 
     # Make sure the API works.
     def verify():
-        resp = requests.get(f"{dashboard_url}/api/v0/tasks/timeline")
+        resp = safe_requests.get(f"{dashboard_url}/api/v0/tasks/timeline")
         resp.raise_for_status()
         assert resp.json(), "No result has returned"
         return True

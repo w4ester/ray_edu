@@ -41,6 +41,7 @@ from ray.serve.schema import ServeApplicationSchema, ServeDeploySchema
 from ray.tests.conftest import maybe_external_redis  # noqa: F401
 from ray.tests.conftest import ray_start_with_dashboard  # noqa: F401
 from ray.util.state import list_actors
+from security import safe_requests
 
 
 @pytest.fixture
@@ -408,7 +409,7 @@ def test_middleware(ray_shutdown):
     resp = requests.options(root, headers=headers)
     assert resp.headers["access-control-allow-origin"] == "*"
 
-    resp = requests.get(f"{root}/-/routes", headers=headers)
+    resp = safe_requests.get(f"{root}/-/routes", headers=headers)
     assert resp.headers["access-control-allow-origin"] == "*"
 
 
@@ -461,12 +462,12 @@ def test_http_root_path(ray_shutdown):
     assert hello.url == f"http://127.0.0.1:{port}{root_path}/hello"
 
     # check routing works as expected
-    resp = requests.get(hello.url)
+    resp = safe_requests.get(hello.url)
     assert resp.status_code == 200
     assert resp.text == "hello"
 
     # check advertized routes are prefixed correctly
-    resp = requests.get(f"http://127.0.0.1:{port}{root_path}/-/routes")
+    resp = safe_requests.get(f"http://127.0.0.1:{port}{root_path}/-/routes")
     assert resp.status_code == 200
     assert resp.json() == {"/hello": "default"}
 

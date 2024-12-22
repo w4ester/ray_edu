@@ -9,6 +9,7 @@ from websockets.exceptions import ConnectionClosed
 from websockets.sync.client import connect
 
 from ray import serve
+from security import safe_requests
 
 
 @pytest.mark.parametrize("route_prefix", [None, "/prefix"])
@@ -124,7 +125,7 @@ def test_unary_streaming_websocket_same_deployment(serve_instance):
 
     assert requests.get("http://localhost:8000/").json() == "hi"
 
-    r = requests.get("http://localhost:8000/stream", stream=True)
+    r = safe_requests.get("http://localhost:8000/stream", stream=True)
     r.raise_for_status()
     for chunk in r.iter_content(chunk_size=None, decode_unicode=True):
         assert chunk == "hi"

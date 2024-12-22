@@ -1,6 +1,6 @@
-import requests
 from fastapi import FastAPI
 from ray import serve
+from security import safe_requests
 
 # 1: Define a FastAPI app and wrap it in a deployment with a route handler.
 app = FastAPI()
@@ -19,5 +19,5 @@ class FastAPIDeployment:
 serve.run(FastAPIDeployment.bind(), route_prefix="/")
 
 # 3: Query the deployment and print the result.
-print(requests.get("http://localhost:8000/hello", params={"name": "Theodore"}).json())
+print(safe_requests.get("http://localhost:8000/hello", params={"name": "Theodore"}).json())
 # "Hello Theodore!"
