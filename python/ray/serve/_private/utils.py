@@ -4,7 +4,6 @@ import importlib
 import inspect
 import logging
 import os
-import random
 import string
 import time
 import traceback
@@ -29,6 +28,7 @@ from ray.serve._private.common import ServeComponentType
 from ray.serve._private.constants import HTTP_PROXY_TIMEOUT, SERVE_LOGGER_NAME
 from ray.types import ObjectRef
 from ray.util.serialization import StandaloneSerializationContext
+import secrets
 
 try:
     import pandas as pd
@@ -142,7 +142,7 @@ RANDOM_STRING_ALPHABET = string.ascii_lowercase + string.digits
 
 
 def get_random_string(length=8):
-    return "".join(random.choices(RANDOM_STRING_ALPHABET, k=length))
+    return "".join(secrets.SystemRandom().choices(RANDOM_STRING_ALPHABET, k=length))
 
 
 def format_actor_name(actor_name, *modifiers):

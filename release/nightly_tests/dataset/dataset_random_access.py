@@ -1,7 +1,7 @@
 import time
-import random
 import os
 import json
+import secrets
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
     @ray.remote(scheduling_strategy="SPREAD")
     def client():
         total = 0
-        rand_values = [random.randint(0, nrow) for _ in range(batch_size)]
+        rand_values = [secrets.SystemRandom().randint(0, nrow) for _ in range(batch_size)]
         while time.time() - start < run_time:
             rmap.multiget(rand_values)
             total += batch_size
@@ -52,7 +52,7 @@ def main():
     def client():
         total = 0
         while time.time() - start < run_time:
-            ray.get([rmap.get_async(random.randint(0, nrow)) for _ in range(1000)])
+            ray.get([rmap.get_async(secrets.SystemRandom().randint(0, nrow)) for _ in range(1000)])
             total += 1000
         return total
 

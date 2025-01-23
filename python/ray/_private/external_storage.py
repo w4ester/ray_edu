@@ -1,7 +1,6 @@
 import abc
 import logging
 import os
-import random
 import shutil
 import time
 import urllib
@@ -12,6 +11,7 @@ from typing import IO, List, Optional, Tuple, Union
 import ray
 from ray._private.ray_constants import DEFAULT_OBJECT_PREFIX
 from ray._raylet import ObjectRef
+import secrets
 
 ParsedURL = namedtuple("ParsedURL", "base_url, offset, size")
 logger = logging.getLogger(__name__)
@@ -291,7 +291,7 @@ class FileSystemStorage(ExternalStorage):
         # Choose the current directory.
         # It chooses a random index to maximize multiple directories that are
         # mounted at different point.
-        self._current_directory_index = random.randrange(0, len(self._directory_paths))
+        self._current_directory_index = secrets.SystemRandom().randrange(0, len(self._directory_paths))
 
     def spill_objects(self, object_refs, owner_addresses) -> List[str]:
         if len(object_refs) == 0:
@@ -502,7 +502,7 @@ class ExternalStorageSmartOpenImpl(ExternalStorage):
             self._uris = [u.strip("/") for u in uri]
         assert len(self._uris) == len(uri)
 
-        self._current_uri_index = random.randrange(0, len(self._uris))
+        self._current_uri_index = secrets.SystemRandom().randrange(0, len(self._uris))
         self.prefix = f"{DEFAULT_OBJECT_PREFIX}_{node_id}"
         self.override_transport_params = override_transport_params or {}
 
@@ -599,13 +599,13 @@ class UnstableFileStorage(FileSystemStorage):
         self._partial_failure_ratio = 0.2
 
     def spill_objects(self, object_refs, owner_addresses) -> List[str]:
-        r = random.random() < self._failure_rate
+        r = secrets.SystemRandom().random() < self._failure_rate
         failed = r < self._failure_rate
         partial_failed = r < self._partial_failure_ratio
         if failed:
             raise IOError("Spilling object failed")
         elif partial_failed:
-            i = random.choice(range(len(object_refs)))
+            i = secrets.choice(range(len(object_refs)))
             return super().spill_objects(object_refs[:i], owner_addresses)
         else:
             return super().spill_objects(object_refs, owner_addresses)
@@ -620,7 +620,7 @@ class SlowFileStorage(FileSystemStorage):
         self._max_delay = 2
 
     def spill_objects(self, object_refs, owner_addresses) -> List[str]:
-        delay = random.random() * (self._max_delay - self._min_delay) + self._min_delay
+        delay = secrets.SystemRandom().random() * (self._max_delay - self._min_delay) + self._min_delay
         time.sleep(delay)
         return super().spill_objects(object_refs, owner_addresses)
 

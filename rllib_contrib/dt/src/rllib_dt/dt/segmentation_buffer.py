@@ -1,5 +1,4 @@
 import logging
-import random
 from collections import defaultdict
 from typing import List
 
@@ -8,6 +7,7 @@ import numpy as np
 from ray.rllib.evaluation.postprocessing import discount_cumsum
 from ray.rllib.policy.sample_batch import MultiAgentBatch, SampleBatch, concat_samples
 from ray.rllib.utils.typing import SampleBatchType
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ class SegmentationBuffer:
             self._buffer.append(episode)
         else:
             # TODO: add config for sampling and eviction policies.
-            replace_ind = random.randint(0, self.capacity - 1)
+            replace_ind = secrets.SystemRandom().randint(0, self.capacity - 1)
             self._buffer[replace_ind] = episode
 
     def sample(self, batch_size: int) -> SampleBatch:
@@ -107,13 +107,13 @@ class SegmentationBuffer:
         # TODO: sample proportional to episode length
         # Sample a random episode from the buffer and then sample a random
         # segment from that episode.
-        buffer_ind = random.randint(0, len(self._buffer) - 1)
+        buffer_ind = secrets.SystemRandom().randint(0, len(self._buffer) - 1)
 
         episode = self._buffer[buffer_ind]
         ep_len = episode[SampleBatch.OBS].shape[0]
 
         # ei (end index) is exclusive
-        ei = random.randint(1, ep_len)
+        ei = secrets.SystemRandom().randint(1, ep_len)
         # si (start index) is inclusive
         si = max(ei - self.max_seq_len, 0)
 

@@ -1,4 +1,3 @@
-import random
 import unittest
 
 import gymnasium as gym
@@ -6,6 +5,7 @@ from ray.rllib.env.wrappers.exception_wrapper import (
     ResetOnExceptionWrapper,
     TooManyResetAttemptsException,
 )
+import secrets
 
 
 class TestResetOnExceptionWrapper(unittest.TestCase):
@@ -15,7 +15,7 @@ class TestResetOnExceptionWrapper(unittest.TestCase):
             action_space = gym.spaces.Discrete(2)
 
             def step(self, action):
-                if random.choice([True, False]):
+                if secrets.choice([True, False]):
                     raise ValueError("An error from a unstable environment.")
                 return self.observation_space.sample(), 0.0, False, False, {}
 

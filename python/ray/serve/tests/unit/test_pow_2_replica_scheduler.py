@@ -1,7 +1,6 @@
 import asyncio
 import importlib
 import os
-import random
 import sys
 import time
 import uuid
@@ -22,6 +21,7 @@ from ray.serve._private.replica_scheduler import (
 )
 from ray.serve._private.replica_scheduler.pow_2_scheduler import ReplicaQueueLengthCache
 from ray.serve._private.test_utils import MockTimer
+import secrets
 
 TIMER = MockTimer()
 
@@ -504,7 +504,7 @@ async def test_retried_tasks_scheduled_fifo(pow_2_scheduler):
     pending_requests = [fake_pending_request(created_at=start + i) for i in range(10)]
 
     random_order_index = list(range(len(pending_requests)))
-    random.shuffle(random_order_index)
+    secrets.SystemRandom().shuffle(random_order_index)
 
     # Schedule the requests in parallel; they cannot be fulfilled yet.
     tasks = []
@@ -1581,8 +1581,8 @@ async def test_queue_len_cache_entries_added_correctly(pow_2_scheduler):
     s.update_replicas([r1, r2])
 
     for i in range(100):
-        r1_queue_len = int(DEFAULT_MAX_ONGOING_REQUESTS * random.random())
-        r2_queue_len = int(DEFAULT_MAX_ONGOING_REQUESTS * random.random())
+        r1_queue_len = int(DEFAULT_MAX_ONGOING_REQUESTS * secrets.SystemRandom().random())
+        r2_queue_len = int(DEFAULT_MAX_ONGOING_REQUESTS * secrets.SystemRandom().random())
         r1.set_queue_len_response(r1_queue_len)
         r2.set_queue_len_response(r2_queue_len)
 

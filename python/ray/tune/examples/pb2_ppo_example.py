@@ -1,6 +1,5 @@
 import argparse
 import os
-import random
 from datetime import datetime
 
 import pandas as pd
@@ -8,6 +7,7 @@ import pandas as pd
 from ray.tune import run, sample_from
 from ray.tune.schedulers import PopulationBasedTraining
 from ray.tune.schedulers.pb2 import PB2
+import secrets
 
 
 # Postprocess the perturbed config to ensure it's still valid used if PBT.
@@ -62,10 +62,10 @@ if __name__ == "__main__":
         quantile_fraction=args.perturb,  # copy bottom % with top %
         # Specifies the search space for these hyperparams
         hyperparam_mutations={
-            "lambda": lambda: random.uniform(0.9, 1.0),
-            "clip_param": lambda: random.uniform(0.1, 0.5),
-            "lr": lambda: random.uniform(1e-3, 1e-5),
-            "train_batch_size": lambda: random.randint(1000, 60000),
+            "lambda": lambda: secrets.SystemRandom().uniform(0.9, 1.0),
+            "clip_param": lambda: secrets.SystemRandom().uniform(0.1, 0.5),
+            "lr": lambda: secrets.SystemRandom().uniform(1e-3, 1e-5),
+            "train_batch_size": lambda: secrets.SystemRandom().randint(1000, 60000),
         },
         custom_explore_fn=explore,
     )
@@ -127,10 +127,10 @@ if __name__ == "__main__":
             },
             "num_sgd_iter": 10,
             "sgd_minibatch_size": 128,
-            "lambda": sample_from(lambda spec: random.uniform(0.9, 1.0)),
-            "clip_param": sample_from(lambda spec: random.uniform(0.1, 0.5)),
-            "lr": sample_from(lambda spec: random.uniform(1e-3, 1e-5)),
-            "train_batch_size": sample_from(lambda spec: random.randint(1000, 60000)),
+            "lambda": sample_from(lambda spec: secrets.SystemRandom().uniform(0.9, 1.0)),
+            "clip_param": sample_from(lambda spec: secrets.SystemRandom().uniform(0.1, 0.5)),
+            "lr": sample_from(lambda spec: secrets.SystemRandom().uniform(1e-3, 1e-5)),
+            "train_batch_size": sample_from(lambda spec: secrets.SystemRandom().randint(1000, 60000)),
         },
     )
 

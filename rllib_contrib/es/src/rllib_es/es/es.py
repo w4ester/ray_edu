@@ -2,7 +2,6 @@
 # https://github.com/openai/evolution-strategies-starter.
 
 import logging
-import random
 import time
 from collections import namedtuple
 from typing import Dict, List, Optional
@@ -29,6 +28,7 @@ from ray.rllib.utils.metrics import (
 )
 from ray.rllib.utils.torch_utils import set_torch_seed
 from ray.rllib.utils.typing import PolicyID
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -255,7 +255,7 @@ class Worker(FaultAwareApply):
         seed = config.seed
         if seed is not None:
             # Python random module.
-            random.seed(seed)
+            secrets.SystemRandom().seed(seed)
             # Numpy.
             np.random.seed(seed)
             # Torch.

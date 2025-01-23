@@ -1,7 +1,7 @@
-import random
 from typing import Any, Callable, Dict, Iterable, Optional, Set, Tuple, Union
 
 import ray
+import secrets
 
 _ResultCallback = Callable[[Any], None]
 _ErrorCallback = Callable[[Exception], None]
@@ -139,7 +139,7 @@ class RayEventManager:
         futures = list(self.get_futures())
 
         if self._shuffle_futures:
-            random.shuffle(futures)
+            secrets.SystemRandom().shuffle(futures)
 
         num_results = num_results or len(futures)
 

@@ -3,7 +3,6 @@ from gymnasium.spaces import Box, Discrete
 import json
 import numpy as np
 import os
-import random
 import tempfile
 import time
 import unittest
@@ -38,6 +37,7 @@ from ray.rllib.utils.annotations import override
 from ray.rllib.utils.metrics import NUM_AGENT_STEPS_SAMPLED, NUM_AGENT_STEPS_TRAINED
 from ray.rllib.utils.test_utils import check, framework_iterator
 from ray.tune.registry import register_env
+import secrets
 
 
 class MockPolicy(RandomPolicy):
@@ -53,7 +53,7 @@ class MockPolicy(RandomPolicy):
         timestep=None,
         **kwargs
     ):
-        return np.array([random.choice([0, 1])] * len(obs_batch)), [], {}
+        return np.array([secrets.choice([0, 1])] * len(obs_batch)), [], {}
 
     @override(Policy)
     def postprocess_trajectory(self, batch, other_agent_batches=None, episode=None):

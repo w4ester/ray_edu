@@ -1,5 +1,4 @@
 import os
-import random
 import signal
 import sys
 import threading
@@ -19,6 +18,7 @@ from ray.exceptions import (
 from ray._private.utils import DeferSigint
 from ray._private.test_utils import SignalActor, wait_for_condition
 from ray.util.state import list_tasks
+import secrets
 
 
 def valid_exceptions(use_force):
@@ -392,13 +392,13 @@ def test_stress(shutdown_only, use_force):
 
     first = infinite_sleep.remote(True)
 
-    sleep_or_no = [random.randint(0, 1) for _ in range(100)]
+    sleep_or_no = [secrets.SystemRandom().randint(0, 1) for _ in range(100)]
     tasks = [infinite_sleep.remote(i) for i in sleep_or_no]
     cancelled = set()
 
     # Randomly kill queued tasks (infinitely sleeping or not).
     for t in tasks:
-        if random.random() > 0.5:
+        if secrets.SystemRandom().random() > 0.5:
             ray.cancel(t, force=use_force)
             cancelled.add(t)
 
@@ -453,7 +453,7 @@ def test_fast(shutdown_only, use_force):
         ids.append(x)
 
     for idx in range(100, 5100):
-        if random.random() > 0.95:
+        if secrets.SystemRandom().random() > 0.95:
             ray.cancel(ids[idx], force=use_force)
     signaler.send.remote()
     for i, obj_ref in enumerate(ids):

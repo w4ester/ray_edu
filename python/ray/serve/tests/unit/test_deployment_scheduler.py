@@ -1,4 +1,3 @@
-import random
 import sys
 from collections import defaultdict
 from typing import List
@@ -30,6 +29,7 @@ from ray.util.scheduling_strategies import (
     NodeLabelSchedulingStrategy,
     PlacementGroupSchedulingStrategy,
 )
+import secrets
 
 
 def dummy():
@@ -44,17 +44,17 @@ def get_random_resources(n: int) -> List[Resources]:
     """Gets n random resources."""
 
     resources = {
-        "CPU": lambda: random.randint(0, 10),
-        "GPU": lambda: random.randint(0, 10),
-        "memory": lambda: random.randint(0, 10),
-        "custom_A": lambda: random.randint(0, 10),
+        "CPU": lambda: secrets.SystemRandom().randint(0, 10),
+        "GPU": lambda: secrets.SystemRandom().randint(0, 10),
+        "memory": lambda: secrets.SystemRandom().randint(0, 10),
+        "custom_A": lambda: secrets.SystemRandom().randint(0, 10),
     }
 
     res = list()
     for _ in range(n):
         resource_dict = dict()
         for resource, callable in resources.items():
-            if random.randint(0, 1) == 0:
+            if secrets.SystemRandom().randint(0, 1) == 0:
                 resource_dict[resource] = callable()
 
         res.append(Resources(resource_dict))
@@ -123,7 +123,7 @@ class TestResources:
 
         for _ in range(10):
             resources = [a, b, c, d, e, f]
-            random.shuffle(resources)
+            secrets.SystemRandom().shuffle(resources)
             resources.sort(reverse=True)
             assert resources == [e, f, d, c, a, b]
 
@@ -304,7 +304,7 @@ def test_get_node_to_running_replicas():
     # Test random case
     node_to_running_replicas = defaultdict(set)
     for i in range(40):
-        node_id = f"node{random.randint(0,5)}"
+        node_id = f"node{secrets.SystemRandom().randint(0,5)}"
         r_id = ReplicaID(f"r{i}", d_id)
         node_to_running_replicas[node_id].add(r_id)
         scheduler.on_replica_running(r_id, node_id)

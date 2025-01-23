@@ -1,7 +1,6 @@
 # Demonstration of RLlib's ReplayBuffer workflow
 
 from typing import Optional
-import random
 import numpy as np
 
 from ray import air, tune
@@ -12,6 +11,7 @@ from ray.rllib.utils.replay_buffers.utils import validate_buffer_config
 from ray.rllib.examples.envs.classes.random_env import RandomEnv
 from ray.rllib.policy.sample_batch import SampleBatch, concat_samples
 from ray.rllib.algorithms.dqn.dqn import DQNConfig
+import secrets
 
 
 # __sphinx_doc_replay_buffer_type_specification__begin__
@@ -56,7 +56,7 @@ class LessSampledReplayBuffer(ReplayBuffer):
         self, num_items: int, evict_sampled_more_then: int = 30, **kwargs
     ) -> Optional[SampleBatchType]:
         """Evicts experiences that have been sampled > evict_sampled_more_then times."""
-        idxes = [random.randint(0, len(self) - 1) for _ in range(num_items)]
+        idxes = [secrets.SystemRandom().randint(0, len(self) - 1) for _ in range(num_items)]
         often_sampled_idxes = list(
             filter(lambda x: self._hit_count[x] >= evict_sampled_more_then, set(idxes))
         )

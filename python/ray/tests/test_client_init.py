@@ -2,7 +2,6 @@
 import pytest
 
 import time
-import random
 import sys
 import subprocess
 from unittest.mock import patch
@@ -14,12 +13,13 @@ from ray.util.client import _ClientContext
 from ray.cluster_utils import cluster_not_supported
 
 import ray
+import secrets
 
 
 @ray.remote
 def hello_world():
-    c1 = complex_task.remote(random.randint(1, 10))
-    c2 = complex_task.remote(random.randint(1, 10))
+    c1 = complex_task.remote(secrets.SystemRandom().randint(1, 10))
+    c2 = complex_task.remote(secrets.SystemRandom().randint(1, 10))
     return sum(ray.get([c1, c2]))
 
 

@@ -5,6 +5,7 @@ import ray
 import json
 import tempfile
 import shutil
+import secrets
 
 
 @ray.remote(num_cpus=1)
@@ -71,9 +72,8 @@ class ImmortalActor:
             self.state = {}
 
     def update(self, key, value):
-        import random
 
-        if random.randrange(10) < 5:
+        if secrets.SystemRandom().randrange(10) < 5:
             sys.exit(1)
 
         self.state[key] = value

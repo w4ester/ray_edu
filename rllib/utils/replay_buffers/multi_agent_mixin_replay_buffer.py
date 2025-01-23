@@ -1,6 +1,5 @@
 import collections
 import logging
-import random
 from typing import Any, Dict, Optional
 
 import numpy as np
@@ -24,6 +23,7 @@ from ray.rllib.utils.replay_buffers.replay_buffer import _ALL_POLICIES, StorageU
 from ray.rllib.utils.typing import PolicyID, SampleBatchType
 from ray.util.annotations import DeveloperAPI
 from ray.util.debug import log_once
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -303,7 +303,7 @@ class MultiAgentMixInReplayBuffer(MultiAgentPrioritizedReplayBuffer):
                 """Returns an integer averaging to value*ratio."""
                 product = value * ratio
                 ceil_prob = product % 1
-                if random.uniform(0, 1) < ceil_prob:
+                if secrets.SystemRandom().uniform(0, 1) < ceil_prob:
                     return int(np.ceil(product))
                 else:
                     return int(np.floor(product))

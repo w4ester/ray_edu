@@ -1,5 +1,4 @@
 import asyncio
-import random
 import sys
 from collections import defaultdict
 from typing import Dict, List, Optional, Set, Tuple, Union
@@ -30,6 +29,7 @@ from ray.serve._private.test_utils import FakeCounter, FakeGauge, MockTimer
 from ray.serve._private.utils import FakeObjectRef, FakeObjectRefGen, get_random_string
 from ray.serve.config import AutoscalingConfig
 from ray.serve.exceptions import BackPressureError
+import secrets
 
 
 class FakeReplica(ReplicaWrapper):
@@ -525,7 +525,7 @@ class TestRouterMetricsManager:
         )
         assert metrics_manager.num_router_requests.get_count(tags) is None
 
-        n = random.randint(1, 10)
+        n = secrets.SystemRandom().randint(1, 10)
         for _ in range(n):
             metrics_manager.inc_num_total_requests(route="/alice")
         assert metrics_manager.num_router_requests.get_count(tags) == n
@@ -551,7 +551,7 @@ class TestRouterMetricsManager:
         )
         assert metrics_manager.num_queued_requests_gauge.get_value(tags) == 0
 
-        n, m = random.randint(0, 10), random.randint(0, 5)
+        n, m = secrets.SystemRandom().randint(0, 10), secrets.SystemRandom().randint(0, 5)
         for _ in range(n):
             metrics_manager.inc_num_queued_requests()
         assert metrics_manager.num_queued_requests_gauge.get_value(tags) == n
@@ -674,7 +674,7 @@ class TestRouterMetricsManager:
     )
     def test_push_autoscaling_metrics_to_controller(self):
         timer = MockTimer()
-        start = random.randint(50, 100)
+        start = secrets.SystemRandom().randint(50, 100)
         timer.reset(start)
         deployment_id = DeploymentID(name="a", app_name="b")
         handle_id = "random"
@@ -705,7 +705,7 @@ class TestRouterMetricsManager:
             )
 
             # Set up some requests
-            n = random.randint(0, 5)
+            n = secrets.SystemRandom().randint(0, 5)
             replica_ids = [
                 ReplicaID(get_random_string(), DeploymentID("d", "a")) for _ in range(3)
             ]
@@ -713,7 +713,7 @@ class TestRouterMetricsManager:
             for _ in range(n):
                 metrics_manager.inc_num_queued_requests()
             for _ in range(20):
-                r = random.choice(replica_ids)
+                r = secrets.choice(replica_ids)
                 running_requests[r] += 1
                 metrics_manager.inc_num_running_requests_for_replica(r)
 

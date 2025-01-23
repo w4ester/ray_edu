@@ -1,6 +1,5 @@
 import bisect
 import logging
-import random
 import time
 from collections import defaultdict
 from typing import TYPE_CHECKING, Any, List, Optional
@@ -13,6 +12,7 @@ from ray.data.block import BlockAccessor
 from ray.data.context import DataContext
 from ray.types import ObjectRef
 from ray.util.annotations import PublicAPI
+import secrets
 
 try:
     import pyarrow as pa
@@ -122,7 +122,7 @@ class RandomAccessDataset:
         # TODO: the load balancing here could be improved.
         for block_idx, block in enumerate(self._non_empty_blocks):
             if len(block_to_workers[block_idx]) == 0:
-                worker = random.choice(self._workers)
+                worker = secrets.choice(self._workers)
                 block_to_workers[block_idx].append(worker)
                 worker_to_blocks[worker].append(block_idx)
 
@@ -191,7 +191,7 @@ class RandomAccessDataset:
         return msg
 
     def _worker_for(self, block_index: int):
-        return random.choice(self._block_to_workers_map[block_index])
+        return secrets.choice(self._block_to_workers_map[block_index])
 
     def _find_le(self, x: Any) -> int:
         i = bisect.bisect_left(self._upper_bounds, x)

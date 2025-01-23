@@ -1,4 +1,3 @@
-import random
 from pathlib import Path
 from typing import List
 
@@ -6,6 +5,7 @@ import pytest
 
 from ray.train import Checkpoint, CheckpointConfig
 from ray.train._internal.checkpoint_manager import _CheckpointManager, _TrainingResult
+import secrets
 
 
 @pytest.fixture
@@ -76,7 +76,7 @@ def test_keep_checkpoints_by_score(order, checkpoint_paths):
 
     scores = []
     for i in range(10):
-        score = random.random()
+        score = secrets.SystemRandom().random()
         manager.register_checkpoint(
             _TrainingResult(
                 checkpoint=Checkpoint.from_directory(checkpoint_paths[i]),

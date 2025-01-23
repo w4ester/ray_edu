@@ -1,7 +1,6 @@
 import collections
 import logging
 import os
-import random
 import types
 from typing import Any, Callable, Dict, List, Optional, Union
 
@@ -24,6 +23,7 @@ from ray.train._internal import session
 from ray.train._internal.accelerator import Accelerator
 from ray.train._internal.session import get_accelerator, set_accelerator
 from ray.util.annotations import Deprecated, PublicAPI
+import secrets
 
 if Version(torch.__version__) < Version("1.11.0"):
     FullyShardedDataParallel = None
@@ -539,7 +539,7 @@ class _TorchAccelerator(Accelerator):
                     def wrapper(worker_id: int):
                         worker_seed = torch.initial_seed() % 2**32
                         np.random.seed(worker_seed)
-                        random.seed(worker_seed)
+                        secrets.SystemRandom().seed(worker_seed)
                         if worker_init_fn:
                             worker_init_fn(worker_id)
 
@@ -612,7 +612,7 @@ class _TorchAccelerator(Accelerator):
         self._seed = seed
 
         torch.manual_seed(seed)
-        random.seed(seed)
+        secrets.SystemRandom().seed(seed)
         np.random.seed(seed)
 
         torch.use_deterministic_algorithms(True)

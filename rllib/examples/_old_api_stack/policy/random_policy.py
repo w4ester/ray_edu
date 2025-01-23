@@ -1,6 +1,5 @@
 from gymnasium.spaces import Box
 import numpy as np
-import random
 import tree  # pip install dm_tree
 from typing import (
     List,
@@ -12,6 +11,7 @@ from ray.rllib.policy.policy import Policy
 from ray.rllib.policy.sample_batch import SampleBatch
 from ray.rllib.utils.annotations import override
 from ray.rllib.utils.typing import ModelWeights, TensorStructType, TensorType
+import secrets
 
 
 class RandomPolicy(Policy):
@@ -77,7 +77,7 @@ class RandomPolicy(Policy):
         prev_reward_batch=None,
         **kwargs,
     ):
-        return np.array([random.random()] * len(obs_batch))
+        return np.array([secrets.SystemRandom().random()] * len(obs_batch))
 
     @override(Policy)
     def get_weights(self) -> ModelWeights:

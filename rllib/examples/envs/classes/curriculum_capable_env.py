@@ -1,9 +1,9 @@
 import gymnasium as gym
-import random
 
 from ray.rllib.env.apis.task_settable_env import TaskSettableEnv
 from ray.rllib.env.env_context import EnvContext
 from ray.rllib.utils.annotations import override
+import secrets
 
 
 class CurriculumCapableEnv(TaskSettableEnv):
@@ -55,7 +55,7 @@ class CurriculumCapableEnv(TaskSettableEnv):
     @override(TaskSettableEnv)
     def sample_tasks(self, n_tasks):
         """Implement this to sample n random tasks."""
-        return [random.randint(1, 10) for _ in range(n_tasks)]
+        return [secrets.SystemRandom().randint(1, 10) for _ in range(n_tasks)]
 
     @override(TaskSettableEnv)
     def get_task(self):

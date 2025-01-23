@@ -1,6 +1,6 @@
 import argparse
-import random
 import subprocess
+import secrets
 
 
 def run():
@@ -17,7 +17,7 @@ def run():
     )
 
     args = parser.parse_args()
-    random_id = random.randint(1, 9999)
+    random_id = secrets.SystemRandom().randint(1, 9999)
 
     if args.command != "profile":
         print("nothing")

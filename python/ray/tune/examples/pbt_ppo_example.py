@@ -9,11 +9,10 @@ Note that Tune in general does not need 8 GPUs, and this is just a more
 computationally demanding example.
 """
 
-import random
-
 from ray import train, tune
 from ray.rllib.algorithms.ppo import PPO
 from ray.tune.schedulers import PopulationBasedTraining
+import secrets
 
 if __name__ == "__main__":
     # Postprocess the perturbed config to ensure it's still valid
@@ -32,12 +31,12 @@ if __name__ == "__main__":
         resample_probability=0.25,
         # Specifies the mutations of these hyperparams
         hyperparam_mutations={
-            "lambda": lambda: random.uniform(0.9, 1.0),
-            "clip_param": lambda: random.uniform(0.01, 0.5),
+            "lambda": lambda: secrets.SystemRandom().uniform(0.9, 1.0),
+            "clip_param": lambda: secrets.SystemRandom().uniform(0.01, 0.5),
             "lr": [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],
-            "num_sgd_iter": lambda: random.randint(1, 30),
-            "sgd_minibatch_size": lambda: random.randint(128, 16384),
-            "train_batch_size": lambda: random.randint(2000, 160000),
+            "num_sgd_iter": lambda: secrets.SystemRandom().randint(1, 30),
+            "sgd_minibatch_size": lambda: secrets.SystemRandom().randint(128, 16384),
+            "train_batch_size": lambda: secrets.SystemRandom().randint(2000, 160000),
         },
         custom_explore_fn=explore,
     )

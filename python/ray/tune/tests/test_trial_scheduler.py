@@ -1,6 +1,5 @@
 import json
 import os
-import random
 import shutil
 import sys
 import tempfile
@@ -36,6 +35,7 @@ from ray.tune.schedulers.pbt import PopulationBasedTrainingReplay, _explore
 from ray.tune.search import ConcurrencyLimiter
 from ray.tune.search._mock import _MockSearcher
 from ray.tune.trainable.metadata import _TrainingRunMetadata
+import secrets
 
 _register_all()
 
@@ -1366,7 +1366,7 @@ class PopulationBasedTestingSuite(unittest.TestCase):
 
     def testPerturbationValues(self):
         def assertProduces(fn, values):
-            random.seed(0)
+            secrets.SystemRandom().seed(0)
             seen = set()
             for _ in range(100):
                 seen.add(fn()["v"])
@@ -1412,19 +1412,19 @@ class PopulationBasedTestingSuite(unittest.TestCase):
         # Continuous case
         assertProduces(
             lambda: explore_fn(
-                {"v": 100}, {"v": lambda: random.choice([10, 100])}, 0.0
+                {"v": 100}, {"v": lambda: secrets.choice([10, 100])}, 0.0
             ),
             {80, 120},
         )
         assertProduces(
             lambda: explore_fn(
-                {"v": 100.0}, {"v": lambda: random.choice([10, 100])}, 0.0
+                {"v": 100.0}, {"v": lambda: secrets.choice([10, 100])}, 0.0
             ),
             {80.0, 120.0},
         )
         assertProduces(
             lambda: explore_fn(
-                {"v": 100.0}, {"v": lambda: random.choice([10, 100])}, 1.0
+                {"v": 100.0}, {"v": lambda: secrets.choice([10, 100])}, 1.0
             ),
             {10.0, 100.0},
         )
@@ -1443,7 +1443,7 @@ class PopulationBasedTestingSuite(unittest.TestCase):
             return seen
 
         def assertNestedProduces(fn, values):
-            random.seed(0)
+            secrets.SystemRandom().seed(0)
             seen = {}
             for _ in range(100):
                 new_config = fn()
@@ -1459,7 +1459,7 @@ class PopulationBasedTestingSuite(unittest.TestCase):
                 },
                 {
                     "a": {"b": [3, 4, 8, 10]},
-                    "1": {"2": {"3": lambda: random.choice([10, 100])}},
+                    "1": {"2": {"3": lambda: secrets.choice([10, 100])}},
                 },
                 0.0,
             ),
@@ -1480,7 +1480,7 @@ class PopulationBasedTestingSuite(unittest.TestCase):
                 },
                 {
                     "a": {"b": [3, 4, 8, 10]},
-                    "1": {"2": {"3": lambda: random.choice([10, 100])}},
+                    "1": {"2": {"3": lambda: secrets.choice([10, 100])}},
                 },
                 0.0,
                 custom_explore_fn=custom_explore_fn,

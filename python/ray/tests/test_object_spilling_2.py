@@ -1,6 +1,5 @@
 import os
 import platform
-import random
 import subprocess
 import sys
 import tempfile
@@ -15,6 +14,7 @@ from ray._private.external_storage import (
     FileSystemStorage,
     ExternalStorageRayStorageImpl,
 )
+import secrets
 
 
 # Note: Disk write speed can be as low as 6 MiB/s in AWS Mac instances, so we have to
@@ -76,12 +76,12 @@ def test_delete_objects_delete_while_creating(object_spilling_config, shutdown_o
             ref = ray.put(arr)
             replay_buffer.append(ref)
         # Remove the replay buffer with 60% probability.
-        if random.randint(0, 9) < 6:
+        if secrets.SystemRandom().randint(0, 9) < 6:
             replay_buffer.pop()
 
     # Do random sampling.
     for _ in range(200):
-        ref = random.choice(replay_buffer)
+        ref = secrets.choice(replay_buffer)
         sample = ray.get(ref, timeout=None)
         assert np.array_equal(sample, arr)
 
@@ -125,12 +125,12 @@ def test_delete_objects_on_worker_failure(object_spilling_config, shutdown_only)
                     ref = ray.put(arr)
                     self.replay_buffer.append(ref)
                 # Remove the replay buffer with 60% probability.
-                if random.randint(0, 9) < 6:
+                if secrets.SystemRandom().randint(0, 9) < 6:
                     self.replay_buffer.pop()
 
             # Do random sampling.
             for _ in range(200):
-                ref = random.choice(self.replay_buffer)
+                ref = secrets.choice(self.replay_buffer)
                 sample = ray.get(ref, timeout=None)
                 assert np.array_equal(sample, arr)
 
@@ -231,12 +231,12 @@ def test_delete_objects_multi_node(
                     ref = ray.put(arr)
                     self.replay_buffer.append(ref)
                 # Remove the replay buffer with 60% probability.
-                if random.randint(0, 9) < 6:
+                if secrets.SystemRandom().randint(0, 9) < 6:
                     self.replay_buffer.pop()
 
             # Do random sampling.
             for _ in range(50):
-                ref = random.choice(self.replay_buffer)
+                ref = secrets.choice(self.replay_buffer)
                 sample = ray.get(ref, timeout=10)
                 assert np.array_equal(sample, arr)
 
@@ -282,7 +282,7 @@ def test_fusion_objects(fs_only_object_spilling_config, shutdown_only):
     for _ in range(buffer_length):
         ref = None
         while ref is None:
-            multiplier = random.choice([1, 2, 3])
+            multiplier = secrets.choice([1, 2, 3])
             arr = np.random.rand(multiplier * 1024 * 1024)
             ref = ray.put(arr)
             replay_buffer.append(ref)
@@ -291,7 +291,7 @@ def test_fusion_objects(fs_only_object_spilling_config, shutdown_only):
     print("-----------------------------------")
     # randomly sample objects
     for _ in range(1000):
-        index = random.choice(list(range(buffer_length)))
+        index = secrets.choice(list(range(buffer_length)))
         ref = replay_buffer[index]
         solution = solution_buffer[index]
         sample = ray.get(ref, timeout=None)

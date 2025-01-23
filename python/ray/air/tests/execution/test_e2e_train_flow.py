@@ -1,4 +1,3 @@
-import random
 from typing import Any, List, Optional
 
 import pytest
@@ -10,6 +9,7 @@ from ray.air.execution._internal import Barrier
 from ray.air.execution._internal.actor_manager import RayActorManager
 from ray.air.execution._internal.tracked_actor import TrackedActor
 from ray.exceptions import RayActorError
+import secrets
 
 
 @pytest.fixture(scope="module")
@@ -106,7 +106,7 @@ class TrainFlow:
         for actor_id in range(self._actors_to_run):
             error_kwargs = {}
             if self._errors:
-                error = random.choice(self._errors)
+                error = secrets.choice(self._errors)
                 error_kwargs[error] = True
 
             print("Actor", actor_id, "will be failing with", error_kwargs)

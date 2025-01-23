@@ -1,6 +1,5 @@
 import json
 import logging
-import random
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, Callable
@@ -9,6 +8,7 @@ from azure.common.credentials import get_cli_profile
 from azure.identity import AzureCliCredential
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.resource.resources.models import DeploymentMode
+import secrets
 
 UNIQUE_ID_LEN = 4
 
@@ -93,8 +93,8 @@ def _configure_resource_group(config):
     subnet_mask = config["provider"].get("subnet_mask")
     if subnet_mask is None:
         # choose a random subnet, skipping most common value of 0
-        random.seed(unique_id)
-        subnet_mask = "10.{}.0.0/16".format(random.randint(1, 254))
+        secrets.SystemRandom().seed(unique_id)
+        subnet_mask = "10.{}.0.0/16".format(secrets.SystemRandom().randint(1, 254))
     logger.info("Using subnet mask: %s", subnet_mask)
 
     # Copy over properties from existing subnet.

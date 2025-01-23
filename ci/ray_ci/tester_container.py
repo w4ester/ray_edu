@@ -1,7 +1,6 @@
 import json
 import os
 import platform
-import random
 import shutil
 import string
 import subprocess
@@ -14,6 +13,7 @@ from ci.ray_ci.container import Container
 from ray_release.test import TestResult, Test
 from ray_release.test_automation.ci_state_machine import CITestStateMachine
 from ray_release.configs.global_config import get_global_config
+import secrets
 
 
 class TesterContainer(Container):
@@ -59,7 +59,7 @@ class TesterContainer(Container):
         the host machine as a shared directory between all containers.
         """
         tmp_dir = tmp_dir or "".join(
-            random.choice(string.ascii_lowercase) for _ in range(5)
+            secrets.choice(string.ascii_lowercase) for _ in range(5)
         )
         artifact_host, artifact_container = self.get_artifact_mount()
         bazel_log_dir_host = os.path.join(artifact_host, tmp_dir)

@@ -3,7 +3,6 @@ import json
 import pytest
 import ray
 from unittest.mock import MagicMock, AsyncMock
-import random
 import sys
 from dataclasses import asdict
 
@@ -37,6 +36,7 @@ from click.testing import CliRunner
 from ray.util.state.state_cli import summary_state_cli_group
 from ray.dashboard.state_aggregator import StateAPIManager
 from ray.util.state.state_manager import StateDataSourceClient
+import secrets
 
 
 @pytest.fixture
@@ -649,7 +649,7 @@ def test_summarize_by_lineage():
     for group in expected_summary:
         grab_tasks_from_task_group(group, None, f"{DRIVER_TASK_ID_PREFIX}01000000")
 
-    random.shuffle(tasks)
+    secrets.SystemRandom().shuffle(tasks)
 
     summary = TaskSummaries.to_summary_by_lineage(tasks=tasks, actors=[])
 

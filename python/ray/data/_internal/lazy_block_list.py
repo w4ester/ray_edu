@@ -20,6 +20,7 @@ from ray.data.block import (
 from ray.data.context import DataContext
 from ray.data.datasource import ReadTask
 from ray.types import ObjectRef
+import secrets
 
 
 class LazyBlockList(BlockList):
@@ -458,10 +459,9 @@ class LazyBlockList(BlockList):
             seed: Fix the random seed to use, otherwise one will be chosen
                 based on system randomness.
         """
-        import random
 
         if seed is not None:
-            random.seed(seed)
+            secrets.SystemRandom().seed(seed)
 
         zipped = list(
             zip(
@@ -472,7 +472,7 @@ class LazyBlockList(BlockList):
             )
         )
 
-        random.shuffle(zipped)
+        secrets.SystemRandom().shuffle(zipped)
         tasks, block_partition_refs, block_partition_meta_refs, cached_metadata = map(
             list, zip(*zipped)
         )

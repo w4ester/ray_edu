@@ -9,7 +9,6 @@ import logging
 import math
 import os
 import pathlib
-import random
 import socket
 import subprocess
 import sys
@@ -48,6 +47,7 @@ from ray.core.generated import (
 )
 from ray.util.queue import Empty, Queue, _QueueActor
 from ray.util.scheduling_strategies import NodeAffinitySchedulingStrategy
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -1466,7 +1466,7 @@ class ResourceKillerActor:
             if self.kill_immediately_after_found:
                 sleep_interval = 0
             else:
-                sleep_interval = random.random() * self.kill_interval_s
+                sleep_interval = secrets.SystemRandom().random() * self.kill_interval_s
                 time.sleep(sleep_interval)
 
             self._kill_resource(*to_kill)

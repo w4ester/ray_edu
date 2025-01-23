@@ -2,7 +2,6 @@ import asyncio
 import enum
 import logging
 import math
-import random
 import time
 from collections import defaultdict, deque
 from typing import (
@@ -37,6 +36,7 @@ from ray.serve._private.replica_scheduler.common import (
     ReplicaWrapper,
 )
 from ray.util import metrics
+import secrets
 
 logger = logging.getLogger(SERVE_LOGGER_NAME)
 
@@ -319,8 +319,7 @@ class PowerOfTwoChoicesReplicaScheduler(ReplicaScheduler):
             tried_same_node = False
 
             multiplexed_start_matching_time = None
-            multiplexed_matching_timeout = random.uniform(
-                RAY_SERVE_MULTIPLEXED_MODEL_ID_MATCHING_TIMEOUT_S,
+            multiplexed_matching_timeout = secrets.SystemRandom().uniform(RAY_SERVE_MULTIPLEXED_MODEL_ID_MATCHING_TIMEOUT_S,
                 RAY_SERVE_MULTIPLEXED_MODEL_ID_MATCHING_TIMEOUT_S * 2,
             )
             tried_fewest_multiplexed_models = False
@@ -420,8 +419,7 @@ class PowerOfTwoChoicesReplicaScheduler(ReplicaScheduler):
                     candidate_replica_ids = self._replica_id_set
 
                 if candidate_replica_ids:
-                    chosen_ids = random.sample(
-                        list(candidate_replica_ids),
+                    chosen_ids = secrets.SystemRandom().sample(list(candidate_replica_ids),
                         k=min(2, len(candidate_replica_ids)),
                     )
                     yield [self._replicas[chosen_id] for chosen_id in chosen_ids]

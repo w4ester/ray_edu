@@ -3,7 +3,6 @@ from functools import partial
 import logging
 import platform
 import queue
-import random
 from typing import Callable, List, Optional, Set, Tuple, Type, Union
 
 import numpy as np
@@ -54,6 +53,7 @@ from ray.rllib.utils.typing import (
     SampleBatchType,
 )
 from ray.tune.execution.placement_groups import PlacementGroupFactory
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -1098,8 +1098,7 @@ class Impala(Algorithm):
                 f"be given ObjectRefs instead of {type(batch)}."
             )
             # Randomly pick an aggregation worker to process this batch.
-            aggregator_id = random.choice(
-                self._aggregator_actor_manager.healthy_actor_ids()
+            aggregator_id = secrets.choice(self._aggregator_actor_manager.healthy_actor_ids()
             )
             calls_placed = self._aggregator_actor_manager.foreach_actor_async(
                 partial(_process_episodes, batch=batch),

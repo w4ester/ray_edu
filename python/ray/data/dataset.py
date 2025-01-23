@@ -104,6 +104,7 @@ from ray.util.annotations import Deprecated, DeveloperAPI, PublicAPI
 from ray.util.scheduling_strategies import NodeAffinitySchedulingStrategy
 from ray.widgets import Template
 from ray.widgets.util import repr_with_fallback
+import secrets
 
 if TYPE_CHECKING:
     import dask
@@ -1105,7 +1106,6 @@ class Dataset:
         Returns:
             Returns a :class:`Dataset` containing the sampled rows.
         """
-        import random
 
         import pandas as pd
         import pyarrow as pa
@@ -1117,21 +1117,21 @@ class Dataset:
             raise ValueError("Fraction must be between 0 and 1.")
 
         if seed is not None:
-            random.seed(seed)
+            secrets.SystemRandom().seed(seed)
 
         def random_sample(batch):
             if isinstance(batch, list):
-                return [row for row in batch if random.random() <= fraction]
+                return [row for row in batch if secrets.SystemRandom().random() <= fraction]
             if isinstance(batch, pa.Table):
                 # Lets the item pass if weight generated for that item <= fraction
                 return batch.filter(
-                    pa.array(random.random() <= fraction for _ in range(len(batch)))
+                    pa.array(secrets.SystemRandom().random() <= fraction for _ in range(len(batch)))
                 )
             if isinstance(batch, pd.DataFrame):
                 return batch.sample(frac=fraction)
             if isinstance(batch, np.ndarray):
                 return _create_possibly_ragged_ndarray(
-                    [row for row in batch if random.random() <= fraction]
+                    [row for row in batch if secrets.SystemRandom().random() <= fraction]
                 )
             raise ValueError(f"Unsupported batch type: {type(batch)}")
 

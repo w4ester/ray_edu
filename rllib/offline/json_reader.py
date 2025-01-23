@@ -6,12 +6,12 @@ import math
 import numpy as np
 import os
 from pathlib import Path
-import random
 import re
 import tree  # pip install dm_tree
 from typing import List, Optional, TYPE_CHECKING, Union
 from urllib.parse import urlparse
 import zipfile
+import secrets
 
 try:
     from smart_open import smart_open
@@ -419,7 +419,7 @@ class JsonReader(InputReader):
             path = self.files[round((len(self.files) - 1) * (idx / total))]
         # After the first file, pick all others randomly.
         else:
-            path = random.choice(self.files)
+            path = secrets.choice(self.files)
         return self._try_open_file(path)
 
     def _from_json(self, data: str) -> SampleBatchType:

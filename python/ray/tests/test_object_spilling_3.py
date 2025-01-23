@@ -1,6 +1,5 @@
 import json
 import platform
-import random
 import re
 import shutil
 import sys
@@ -15,6 +14,7 @@ import ray
 from ray._private.test_utils import wait_for_condition
 from ray.cluster_utils import Cluster, cluster_not_supported
 from ray.tests.test_object_spilling import assert_no_thrashing, is_dir_empty
+import secrets
 
 # Note: Disk write speed can be as low as 6 MiB/s in AWS Mac instances, so we have to
 # increase the timeout.
@@ -316,9 +316,9 @@ def test_spill_deadlock(object_spilling_config, shutdown_only):
             ref = ray.put(arr)
             replay_buffer.append(ref)
         # This is doing random sampling with 50% prob.
-        if random.randint(0, 9) < 5:
+        if secrets.SystemRandom().randint(0, 9) < 5:
             for _ in range(5):
-                ref = random.choice(replay_buffer)
+                ref = secrets.choice(replay_buffer)
                 sample = ray.get(ref, timeout=None)
                 assert np.array_equal(sample, arr)
     assert_no_thrashing(address["address"])

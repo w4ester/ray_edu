@@ -1,7 +1,6 @@
 # coding: utf-8
 import logging
 import os
-import random
 import sys
 import time
 import asyncio
@@ -15,6 +14,7 @@ from ray.tests.conftest import *  # noqa
 from ray._private.utils import (
     get_or_create_event_loop,
 )
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class Actor:
         self.i += x
         if self.fail_after and self.i > self.fail_after:
             # Randomize the failures to better cover multi actor scenarios.
-            if random.random() > 0.5:
+            if secrets.SystemRandom().random() > 0.5:
                 if self.sys_exit:
                     os._exit(1)
                 else:

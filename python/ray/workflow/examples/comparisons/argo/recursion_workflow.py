@@ -1,5 +1,6 @@
 import ray
 from ray import workflow
+import secrets
 
 
 @ray.remote
@@ -15,7 +16,6 @@ def handle_tails() -> str:
 
 @ray.remote
 def flip_coin() -> str:
-    import random
 
     @ray.remote
     def decide(heads: bool) -> str:
@@ -24,7 +24,7 @@ def flip_coin() -> str:
         else:
             return workflow.continuation(handle_tails.bind())
 
-    return workflow.continuation(decide.bind(random.random() > 0.5))
+    return workflow.continuation(decide.bind(secrets.SystemRandom().random() > 0.5))
 
 
 if __name__ == "__main__":

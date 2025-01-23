@@ -1,5 +1,4 @@
 import os
-import random
 import shutil
 import socket
 import string
@@ -47,6 +46,7 @@ from ray.experimental.internal_kv import (
     _internal_kv_get,
     _internal_kv_reset,
 )
+import secrets
 
 TOP_LEVEL_DIR_NAME = "top_level"
 ARCHIVE_NAME = "archive.zip"
@@ -61,7 +61,7 @@ GS_PACKAGE_URI = "gs://public-runtime-env-test/test_module.zip"
 
 
 def random_string(size: int = 10):
-    return "".join(random.choice(string.ascii_uppercase) for _ in range(size))
+    return "".join(secrets.choice(string.ascii_uppercase) for _ in range(size))
 
 
 @pytest.fixture
@@ -722,12 +722,12 @@ def test_travel(tmp_path, ignore_gitignore, monkeypatch):
             return
         if item_num > 500:
             return
-        dir_num = random.randint(0, 10)
-        file_num = random.randint(0, 10)
+        dir_num = secrets.SystemRandom().randint(0, 10)
+        file_num = secrets.SystemRandom().randint(0, 10)
         for _ in range(dir_num):
             uid = str(uuid.uuid4()).split("-")[0]
             dir_path = path / uid
-            exclud_sub = random.randint(0, 5) == 0
+            exclud_sub = secrets.SystemRandom().randint(0, 5) == 0
             if not excluded and exclud_sub:
                 excludes.append(str(dir_path.relative_to(root)))
             if not excluded:
@@ -738,11 +738,11 @@ def test_travel(tmp_path, ignore_gitignore, monkeypatch):
 
         for _ in range(file_num):
             uid = str(uuid.uuid4()).split("-")[0]
-            v = random.randint(0, 1000)
+            v = secrets.SystemRandom().randint(0, 1000)
             with (path / uid).open("w") as f:
                 f.write(str(v))
             if not excluded:
-                if random.randint(0, 5) == 0:
+                if secrets.SystemRandom().randint(0, 5) == 0:
                     excludes.append(str((path / uid).relative_to(root)))
                 else:
                     file_paths.add((str(path / uid), str(v)))

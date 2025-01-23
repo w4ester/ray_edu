@@ -1,6 +1,6 @@
 import gymnasium as gym
 from gymnasium.spaces import Discrete
-import random
+import secrets
 
 
 class RepeatInitialObsEnv(gym.Env):
@@ -18,7 +18,7 @@ class RepeatInitialObsEnv(gym.Env):
         self.num_steps = 0
 
     def reset(self, *, seed=None, options=None):
-        self.token = random.choice([0, 1])
+        self.token = secrets.choice([0, 1])
         self.num_steps = 0
         return self.token, {}
 

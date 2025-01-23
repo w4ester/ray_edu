@@ -1,7 +1,7 @@
-import random
 
 from ray.rllib.algorithms.appo import APPOConfig
 from ray.rllib.algorithms.sac import SACConfig
+import secrets
 
 
 def create_appo_cartpole_checkpoint(output_dir):
@@ -14,7 +14,7 @@ def create_appo_cartpole_checkpoint(output_dir):
 
 def create_open_spiel_checkpoint(output_dir):
     def _policy_mapping_fn(*args, **kwargs):
-        random.choice(["main", "opponent"])
+        secrets.choice(["main", "opponent"])
 
     config = (
         SACConfig()

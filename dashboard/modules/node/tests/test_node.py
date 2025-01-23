@@ -4,7 +4,6 @@ import logging
 import requests
 import time
 import traceback
-import random
 import pytest
 import ray
 import threading
@@ -17,6 +16,7 @@ from ray._private.test_utils import (
     wait_until_server_available,
     wait_for_condition,
 )
+import secrets
 
 
 logger = logging.getLogger(__name__)
@@ -201,11 +201,11 @@ def test_multi_node_churn(
             if len(worker_nodes) < 2:
                 worker_nodes.append(cluster.add_node())
                 continue
-            should_add_node = random.randint(0, 1)
+            should_add_node = secrets.SystemRandom().randint(0, 1)
             if should_add_node:
                 worker_nodes.append(cluster.add_node())
             else:
-                node_index = random.randrange(0, len(worker_nodes))
+                node_index = secrets.SystemRandom().randrange(0, len(worker_nodes))
                 node_to_remove = worker_nodes.pop(node_index)
                 cluster.remove_node(node_to_remove)
 

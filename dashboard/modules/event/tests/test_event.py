@@ -6,7 +6,6 @@ import copy
 import logging
 import requests
 import asyncio
-import random
 import tempfile
 import socket
 
@@ -33,6 +32,7 @@ from ray.dashboard.modules.event.event_utils import (
     monitor_events,
 )
 from ray.job_submission import JobSubmissionClient
+import secrets
 
 logger = logging.getLogger(__name__)
 
@@ -40,17 +40,17 @@ logger = logging.getLogger(__name__)
 def _get_event(msg="empty message", job_id=None, source_type=None):
     return {
         "event_id": binary_to_hex(np.random.bytes(18)),
-        "source_type": random.choice(event_pb2.Event.SourceType.keys())
+        "source_type": secrets.choice(event_pb2.Event.SourceType.keys())
         if source_type is None
         else source_type,
         "host_name": "po-dev.inc.alipay.net",
-        "pid": random.randint(1, 65536),
+        "pid": secrets.SystemRandom().randint(1, 65536),
         "label": "",
         "message": msg,
         "timestamp": time.time(),
         "severity": "INFO",
         "custom_fields": {
-            "job_id": ray.JobID.from_int(random.randint(1, 100)).hex()
+            "job_id": ray.JobID.from_int(secrets.SystemRandom().randint(1, 100)).hex()
             if job_id is None
             else job_id,
             "node_id": "",
@@ -117,7 +117,7 @@ def test_event_basic(disable_aiohttp_cache, ray_start_with_dashboard):
     for source_type in [source_type_gcs, source_type_raylet]:
         test_log_file = os.path.join(event_dir, f"event_{source_type}.log")
         test_logger = _test_logger(
-            __name__ + str(random.random()),
+            __name__ + str(secrets.SystemRandom().random()),
             test_log_file,
             max_bytes=2000,
             backup_count=1000,
@@ -220,7 +220,7 @@ async def test_monitor_events():
         common = event_pb2.Event.SourceType.Name(event_pb2.Event.COMMON)
         common_log = os.path.join(temp_dir, f"event_{common}.log")
         test_logger = _test_logger(
-            __name__ + str(random.random()), common_log, max_bytes=10, backup_count=10
+            __name__ + str(secrets.SystemRandom().random()), common_log, max_bytes=10, backup_count=10
         )
         test_events1 = []
         monitor_task = monitor_events(
@@ -272,7 +272,7 @@ async def test_monitor_events():
         log_file_count = len(os.listdir(temp_dir))
 
         test_logger = _test_logger(
-            __name__ + str(random.random()), common_log, max_bytes=1000, backup_count=10
+            __name__ + str(secrets.SystemRandom().random()), common_log, max_bytes=1000, backup_count=10
         )
         assert len(os.listdir(temp_dir)) == log_file_count
 

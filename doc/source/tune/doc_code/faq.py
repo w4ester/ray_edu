@@ -3,6 +3,7 @@
 # __reproducible_start__
 import numpy as np
 from ray import train, tune
+import secrets
 
 
 def train_func(config):
@@ -145,26 +146,15 @@ data = np.random.random(size=100000000)
 
 tuner = tune.Tuner(tune.with_parameters(train_func, num_epochs=5, data=data))
 tuner.fit()
-# __huge_data_end__
 
-
-# __seeded_1_start__
-import random
-
-random.seed(1234)
-output = [random.randint(0, 100) for _ in range(10)]
+secrets.SystemRandom().seed(1234)
+output = [secrets.SystemRandom().randint(0, 100) for _ in range(10)]
 
 # The output will always be the same.
 assert output == [99, 56, 14, 0, 11, 74, 4, 85, 88, 10]
-# __seeded_1_end__
-
-
-# __seeded_2_start__
-# This should suffice to initialize the RNGs for most Python-based libraries
-import random
 import numpy as np
 
-random.seed(1234)
+secrets.SystemRandom().seed(1234)
 np.random.seed(5678)
 # __seeded_2_end__
 
@@ -177,17 +167,13 @@ torch.manual_seed(0)
 import tensorflow as tf
 
 tf.random.set_seed(0)
-# __torch_tf_seeds_end__
-
-# __torch_seed_example_start__
-import random
 import numpy as np
 from ray import tune
 
 
 def trainable(config):
     # config["seed"] is set deterministically, but differs between training runs
-    random.seed(config["seed"])
+    secrets.SystemRandom().seed(config["seed"])
     np.random.seed(config["seed"])
     # torch.manual_seed(config["seed"])
     # ... training code
@@ -200,7 +186,7 @@ config = {
 
 if __name__ == "__main__":
     # Set seed for the search algorithms/schedulers
-    random.seed(1234)
+    secrets.SystemRandom().seed(1234)
     np.random.seed(1234)
     # Don't forget to check if the search alg has a `seed` parameter
     tuner = tune.Tuner(trainable, param_space=config)
@@ -293,7 +279,6 @@ import torch
 
 from ray import train, tune
 from ray.train import Checkpoint
-import random
 
 
 def trainable(config):
@@ -305,7 +290,7 @@ def trainable(config):
                 {"model_state_dict": {"x": 1}}, os.path.join(tempdir, "model.pt")
             )
             train.report(
-                {"score": random.random()},
+                {"score": secrets.SystemRandom().random()},
                 checkpoint=Checkpoint.from_directory(tempdir),
             )
 
@@ -340,7 +325,7 @@ def trainable(config):
         # Do some more training...
         ...
 
-        train.report({"score": random.random()})
+        train.report({"score": secrets.SystemRandom().random()})
 
 
 new_tuner = tune.Tuner(

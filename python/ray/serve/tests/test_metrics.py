@@ -1,5 +1,4 @@
 import os
-import random
 import sys
 from typing import DefaultDict, Dict, List, Optional
 
@@ -28,6 +27,7 @@ from ray.serve.config import gRPCOptions
 from ray.serve.handle import DeploymentHandle
 from ray.serve.metrics import Counter, Gauge, Histogram
 from ray.serve.tests.test_config_files.grpc_deployment import g, g2
+import secrets
 
 TEST_METRICS_EXPORT_PORT = 9999
 
@@ -1472,7 +1472,7 @@ class TestHandleMetrics:
 
         requests_sent = {1: 0, 2: 0}
         for i in range(5):
-            index = random.choice([1, 2])
+            index = secrets.choice([1, 2])
             print(f"Sending request to d{index}")
             call.remote("Router", "app1", index)
             requests_sent[index] += 1

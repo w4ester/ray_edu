@@ -5,7 +5,6 @@ import errno
 import json
 import logging
 import os
-import random
 import signal
 import socket
 import subprocess
@@ -27,6 +26,7 @@ from ray._raylet import GcsClient, get_session_key_from_storage
 from ray._private.resource_spec import ResourceSpec
 from ray._private.services import serialize_config, get_address
 from ray._private.utils import open_log, try_to_create_directory, try_to_symlink
+import secrets
 
 # Logger for this module. It should be configured at the entry point
 # into the program using Ray. Ray configures it by default automatically
@@ -910,7 +910,7 @@ class Node:
         # This solves issue #8254 where GRPC fails because the port assigned
         # from this method has been used by a different process.
         for _ in range(ray_constants.NUM_PORT_RETRIES):
-            new_port = random.randint(port, 65535)
+            new_port = secrets.SystemRandom().randint(port, 65535)
             if new_port in allocated_ports:
                 # This port is allocated for other usage already,
                 # so we shouldn't use it even if it's not in use right now.

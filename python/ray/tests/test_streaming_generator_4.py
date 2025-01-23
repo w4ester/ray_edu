@@ -3,13 +3,13 @@ import numpy as np
 import sys
 import time
 import gc
-import random
 import asyncio
 from typing import Optional
 from pydantic import BaseModel
 
 import ray
 from ray._private.test_utils import SignalActor
+import secrets
 
 RECONSTRUCTION_CONFIG = {
     "health_check_failure_threshold": 10,
@@ -107,7 +107,7 @@ def test_ray_datasetlike_mini_stress_test(
 
         for _ in range(10):
             time.sleep(0.1)
-            node_to_kill = random.choices(nodes)[0]
+            node_to_kill = secrets.SystemRandom().choices(nodes)[0]
             nodes.remove(node_to_kill)
             cluster.remove_node(node_to_kill, allow_graceful=False)
             nodes.append(cluster.add_node(num_cpus=1, object_store_memory=10**8))

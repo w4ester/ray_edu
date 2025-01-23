@@ -1,7 +1,6 @@
 import logging
 import math
 import os
-import random
 import sys
 import time
 from unittest.mock import patch
@@ -30,6 +29,7 @@ from ray.data.tests.conftest import (
 from ray.data.tests.util import column_udf, extract_values
 from ray.tests.conftest import *  # noqa
 from ray.util.scheduling_strategies import PlacementGroupSchedulingStrategy
+import secrets
 
 
 def test_schema(ray_start_regular):
@@ -1105,7 +1105,7 @@ def test_iter_batches_grid(ray_start_regular_shared):
     #       batch_size x drop_last
     seed = int(time.time())
     print(f"Seeding RNG for test_iter_batches_grid with: {seed}")
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     max_num_blocks = 20
     max_num_rows_per_block = 20
     num_blocks_samples = 3
@@ -1266,9 +1266,9 @@ def test_block_builder_for_block(ray_start_regular_shared):
 def test_global_tabular_min(ray_start_regular_shared, ds_format, num_parts):
     seed = int(time.time())
     print(f"Seeding RNG for test_global_arrow_min with: {seed}")
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     xs = list(range(100))
-    random.shuffle(xs)
+    secrets.SystemRandom().shuffle(xs)
 
     def _to_pandas(ds):
         return ds.map_batches(lambda x: x, batch_size=None, batch_format="pandas")
@@ -1309,9 +1309,9 @@ def test_global_tabular_min(ray_start_regular_shared, ds_format, num_parts):
 def test_global_tabular_max(ray_start_regular_shared, ds_format, num_parts):
     seed = int(time.time())
     print(f"Seeding RNG for test_global_arrow_max with: {seed}")
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     xs = list(range(100))
-    random.shuffle(xs)
+    secrets.SystemRandom().shuffle(xs)
 
     def _to_pandas(ds):
         return ds.map_batches(lambda x: x, batch_size=None, batch_format="pandas")
@@ -1352,9 +1352,9 @@ def test_global_tabular_max(ray_start_regular_shared, ds_format, num_parts):
 def test_global_tabular_mean(ray_start_regular_shared, ds_format, num_parts):
     seed = int(time.time())
     print(f"Seeding RNG for test_global_arrow_mean with: {seed}")
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     xs = list(range(100))
-    random.shuffle(xs)
+    secrets.SystemRandom().shuffle(xs)
 
     def _to_pandas(ds):
         return ds.map_batches(lambda x: x, batch_size=None, batch_format="pandas")
@@ -1395,9 +1395,9 @@ def test_global_tabular_mean(ray_start_regular_shared, ds_format, num_parts):
 def test_global_tabular_std(ray_start_regular_shared, ds_format, num_parts):
     seed = int(time.time())
     print(f"Seeding RNG for test_global_arrow_std with: {seed}")
-    random.seed(seed)
+    secrets.SystemRandom().seed(seed)
     xs = list(range(100))
-    random.shuffle(xs)
+    secrets.SystemRandom().shuffle(xs)
 
     def _to_arrow(ds):
         return ds.map_batches(lambda x: x, batch_size=None, batch_format="pyarrow")
