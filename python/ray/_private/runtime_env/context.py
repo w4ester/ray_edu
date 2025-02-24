@@ -90,7 +90,7 @@ class RuntimeEnvContext:
 
             cmd = [*self.command_prefix, *executable, *passthrough_args]
             logger.debug(f"Exec'ing worker with command: {cmd}")
-            subprocess.Popen(cmd, shell=True).wait()
+            subprocess.Popen(cmd, shell=False).wait()
         else:
             # We use shlex to do the necessary shell escape
             # of special characters in passthrough_args.
