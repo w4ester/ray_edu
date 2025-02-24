@@ -48,7 +48,7 @@ class BedMaker:
         # running in the background. We don't want to kill the daemon when
         # the actor is alive; we want to kill it after the actor is killed.
         command = "nohup sleep 1000 >/dev/null 2>&1 & echo $!"
-        output = subprocess.check_output(command, shell=True, text=True)
+        output = subprocess.check_output(command, shell=False, text=True)
         return int(output.strip())
 
     def my_pid(self):

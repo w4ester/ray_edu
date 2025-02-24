@@ -52,7 +52,7 @@ class TestBackwardsCompatibility:
             shell_cmd = f"{_compatibility_script_path('test_backwards_compatibility.sh')}"  # noqa: E501
 
             try:
-                subprocess.check_output(shell_cmd, shell=True, stderr=subprocess.STDOUT)
+                subprocess.check_output(shell_cmd, shell=False, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError as e:
                 logger.error(str(e))
                 logger.error(e.stdout.decode())
